@@ -106,8 +106,8 @@
       min-height: 0; /* flex 컨테이너 안에서 스크롤 가능하게 */
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
-      padding-bottom: 16px;
-    }
+      padding-bottom: calc(140px + env(safe-area-inset-bottom));
+}
 
     .center-screen {
       height: 100%;
