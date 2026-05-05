@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SLEEPERS - 온보딩 프로토타입</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #04144b;
+      --bg-deep: #03103d;
+      --bg-mid: #0a1c62;
+      --surface: rgba(255,255,255,0.06);
+      --surface-2: rgba(255,255,255,0.1);
+      --text: #f5f7ff;
+      --text-soft: rgba(245,247,255,0.76);
+      --text-faint: rgba(245,247,255,0.5);
+      --line: rgba(255,255,255,0.1);
+      --primary: #9f8dff;
+      --mint: #85e4d1;
+      --gold: #ffc96b;
+      --pink: #ff5ea8;
+      --naver: #03c75a;
+      --kakao: #fee500;
+      --shadow: 0 18px 40px rgba(0,0,0,0.24);
+      --radius-xxl: 32px;
+      --radius-xl: 28px;
+      --radius-lg: 24px;
+      --radius-md: 20px;
+      --phone-width: 393px;
+      --phone-height: 852px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: #d8dded; }
+    body {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans KR', sans-serif;
+    }
+    button { font: inherit; }
+    .phone {
+      width: min(100%, var(--phone-width));
+      height: min(96vh, var(--phone-height));
+      border-radius: 40px;
+      overflow: hidden;
+      position: relative;
+      border: 8px solid #32457e;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(159,141,255,0.35), transparent 26%),
+        radial-gradient(circle at 90% 10%, rgba(113,158,255,0.18), transparent 18%),
+        linear-gradient(180deg, #0a1c62 0%, #04144b 30%, #03103d 100%);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.28);
+      color: var(--text);
+      isolation: isolate;
+    }
+    .phone::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image:
+        radial-gradient(circle at 10% 12%, rgba(255,255,255,0.7) 0 1px, transparent 1px),
+        radial-gradient(circle at 26% 7%, rgba(255,255,255,0.55) 0 1px, transparent 1px),
+        radial-gradient(circle at 61% 9%, rgba(255,255,255,0.5) 0 1px, transparent 1px),
+        radial-gradient(circle at 84% 14%, rgba(255,255,255,0.72) 0 1px, transparent 1px),
+        radial-gradient(circle at 74% 5%, rgba(255,255,255,0.4) 0 1px, transparent 1px);
+      opacity: 0.85;
+    }
+    .screen {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 320ms ease;
+      z-index: 1;
+    }
+    .screen.active {
+      opacity: 1;
+      pointer-events: auto;
+      z-index: 5;
+    }
+    .stage {
+      position: absolute;
+      inset: 0;
+      padding: 22px 18px 26px;
+    }
+    .center-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      height: 100%;
+      position: relative;
+    }
+    .soft-orb {
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      filter: blur(8px);
+      background: radial-gradient(circle, rgba(159,141,255,0.28) 0%, rgba(159,141,255,0.08) 42%, transparent 72%);
+      top: 15%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .constellation-wrap {
+      position: relative;
+      width: 150px;
+      height: 150px;
+      margin-bottom: 26px;
+      display: grid;
+      place-items: center;
+    }
+    .brand-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 54px;
+      line-height: 1;
+      letter-spacing: 0.08em;
+      font-weight: 600;
+      margin: 0;
+    }
+    .brand-sub {
+      margin-top: 10px;
+      color: var(--text-soft);
+      font-size: 14px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+    .brand-copy {
+      margin-top: 22px;
+      max-width: 26ch;
+      color: var(--text-soft);
+      font-size: 15px;
+      line-height: 1.75;
+    }
+    .splash-footer {
+      position: absolute;
+      bottom: 38px;
+      left: 18px;
+      right: 18px;
+      text-align: center;
+      color: var(--text-faint);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+    }
+    .onboarding-stage, .login-stage {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      position: relative;
+    }
+    .onboard-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 22px;
+      padding-top: 6px;
+    }
+    .ghost-btn {
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+      color: var(--text-soft);
+      border-radius: 999px;
+      padding: 10px 14px;
+      cursor: pointer;
+    }
+    .progress-dots { display: flex; gap: 8px; align-items: center; }
+    .progress-dots span {
+      width: 8px; height: 8px; border-radius: 999px; background: rgba(255,255,255,0.2); transition: all 220ms ease;
+    }
+    .progress-dots span.active { width: 26px; background: var(--primary); }
+    .art-card {
+      position: relative; min-height: 338px; border-radius: var(--radius-xxl); overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.05); box-shadow: var(--shadow); margin-bottom: 22px;
+    }
+    .art-card::after {
+      content: ""; position: absolute; inset: auto 0 0 0; height: 48%;
+      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(3,16,61,0.34) 20%, rgba(3,16,61,0.88) 100%);
+    }
+    .art-inner { position: absolute; inset: 0; }
+    .art-1 { background: radial-gradient(circle at 62% 26%, rgba(255,236,188,0.96) 0 26px, rgba(255,236,188,0.22) 28px, transparent 50px), linear-gradient(180deg, #bfd8d6 0%, #d9cfb5 42%, #ebc37f 60%, #3a5c86 100%); }
+    .art-1 .mountain1, .art-1 .mountain2, .art-1 .mountain3, .art-1 .branch, .art-1 .bird { position: absolute; }
+    .art-1 .mountain1 { inset: auto -10% 0 -10%; height: 38%; background: #0f2747; clip-path: polygon(0 100%, 16% 54%, 26% 67%, 36% 43%, 48% 67%, 60% 40%, 71% 63%, 84% 47%, 100% 72%, 100% 100%); }
+    .art-1 .mountain2 { inset: auto -8% 11% -8%; height: 24%; background: #476b8f; opacity: 0.68; clip-path: polygon(0 100%, 18% 52%, 35% 74%, 55% 42%, 71% 66%, 100% 34%, 100% 100%); }
+    .art-1 .mountain3 { inset: auto -10% 18% -10%; height: 18%; background: #7191ad; opacity: 0.58; clip-path: polygon(0 100%, 14% 56%, 29% 76%, 45% 42%, 61% 72%, 76% 50%, 100% 78%, 100% 100%); }
+    .art-1 .branch { left: -2%; top: 14%; width: 46%; height: 22%; border-top: 5px solid rgba(91,56,23,0.85); transform: rotate(16deg); }
+    .art-1 .branch::before, .art-1 .branch::after { content: ""; position: absolute; border-top: 4px solid rgba(91,56,23,0.85); width: 34%; }
+    .art-1 .branch::before { top: 20px; left: 20%; transform: rotate(23deg); }
+    .art-1 .branch::after { top: 42px; left: 44%; transform: rotate(-12deg); }
+    .art-1 .bird { right: 16%; top: 31%; width: 18px; height: 10px; border-top: 2px solid rgba(30,39,66,0.9); border-radius: 50%; transform: rotate(-8deg); }
+    .art-2 { background: radial-gradient(circle at 50% 25%, rgba(255,255,255,0.18), transparent 20%), linear-gradient(180deg, #7c70d7 0%, #9b86f0 38%, #1a2564 100%); }
+    .art-2 .map-silhouette, .art-2 .line, .art-2 .star { position: absolute; }
+    .art-2 .map-silhouette {
+      left: 8%; right: 8%; top: 18%; bottom: 12%; background: rgba(205,226,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+      clip-path: polygon(14% 30%, 22% 11%, 40% 7%, 54% 14%, 68% 10%, 84% 19%, 90% 39%, 86% 63%, 72% 80%, 48% 88%, 32% 84%, 17% 87%, 6% 72%, 7% 49%);
+    }
+    .art-2 .line { height: 2px; background: rgba(171,232,255,0.65); transform-origin: left center; box-shadow: 0 0 14px rgba(171,232,255,0.18); }
+    .art-2 .line.l1 { left: 24%; top: 62%; width: 22%; transform: rotate(-14deg); }
+    .art-2 .line.l2 { left: 44%; top: 57%; width: 18%; transform: rotate(18deg); }
+    .art-2 .line.l3 { left: 59%; top: 52%; width: 16%; transform: rotate(-28deg); }
+    .art-2 .line.l4 { left: 42%; top: 57%; width: 7%; transform: rotate(-62deg); }
+    .art-2 .star { width: 12px; height: 12px; border-radius: 50%; background: #fff2b8; box-shadow: 0 0 0 8px rgba(255,201,107,0.08), 0 0 16px rgba(255,201,107,0.32); }
+    .art-2 .s1 { left: 21%; top: 60%; } .art-2 .s2 { left: 43%; top: 55%; } .art-2 .s3 { left: 60%; top: 60%; } .art-2 .s4 { left: 74%; top: 47%; } .art-2 .s5 { left: 49%; top: 40%; }
+    .art-3 { background: radial-gradient(circle at 75% 18%, rgba(255,246,196,0.2), transparent 18%), linear-gradient(180deg, #d4e2d8 0%, #cfc79f 34%, #7f9f85 62%, #1a2b63 100%); }
+    .art-3 .path, .art-3 .hill1, .art-3 .hill2, .art-3 .moon { position: absolute; }
+    .art-3 .hill1 { inset: auto -10% 0 -10%; height: 42%; background: #305c52; clip-path: polygon(0 100%, 0 55%, 14% 62%, 26% 48%, 43% 68%, 56% 44%, 73% 70%, 87% 52%, 100% 66%, 100% 100%); }
+    .art-3 .hill2 { inset: auto -10% 18% -10%; height: 24%; background: #679780; opacity: 0.9; clip-path: polygon(0 100%, 18% 58%, 32% 70%, 48% 42%, 63% 60%, 79% 47%, 100% 72%, 100% 100%); }
+    .art-3 .path { left: 50%; bottom: 0; width: 44%; height: 45%; transform: translateX(-50%); background: linear-gradient(180deg, rgba(240,226,182,0.15), rgba(246,223,162,0.95)); clip-path: polygon(36% 0, 61% 0, 80% 100%, 18% 100%); }
+    .art-3 .moon { top: 12%; right: 12%; width: 44px; height: 44px; border-radius: 50%; background: radial-gradient(circle, rgba(255,243,189,1) 0%, rgba(255,243,189,0.12) 60%, transparent 75%); }
+    .art-copy { position: absolute; left: 18px; right: 18px; bottom: 18px; z-index: 1; }
+    .art-copy h2 { margin: 0 0 10px; font-size: 30px; line-height: 1.24; letter-spacing: -0.04em; font-weight: 800; max-width: 10.5ch; }
+    .art-copy p { margin: 0; color: rgba(255,255,255,0.86); font-size: 14px; line-height: 1.7; max-width: 24ch; }
+    .action-block { margin-top: auto; }
+    .primary-btn, .secondary-btn, .social-btn { width: 100%; border: 0; cursor: pointer; }
+    .primary-btn { background: linear-gradient(135deg, var(--primary) 0%, #b9a6ff 100%); color: #fff; border-radius: 18px; padding: 16px 18px; font-weight: 800; box-shadow: 0 16px 26px rgba(159,141,255,0.24); font-size: 15px; }
+    .secondary-btn { margin-top: 10px; background: rgba(255,255,255,0.06); color: var(--text-soft); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 15px 18px; font-weight: 600; font-size: 14px; }
+    .onboarding-note { margin-top: 14px; text-align: center; color: var(--text-faint); font-size: 12px; line-height: 1.6; }
+    .login-stage { padding-top: 8px; }
+    .login-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+    .icon-round {
+      width: 42px; height: 42px; border-radius: 999px; display: grid; place-items: center; border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.05); color: var(--text); cursor: pointer;
+    }
+    .login-panel {
+      border-radius: var(--radius-xxl); border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.05); box-shadow: var(--shadow);
+      padding: 22px 18px 18px; position: relative; overflow: hidden;
+    }
+    .login-panel::before {
+      content: ""; position: absolute; inset: 0 0 auto 0; height: 160px;
+      background: radial-gradient(circle at 80% 20%, rgba(159,141,255,0.22), transparent 28%), radial-gradient(circle at 18% 18%, rgba(255,255,255,0.08), transparent 18%);
+    }
+    .login-logo { display: flex; align-items: center; gap: 14px; position: relative; z-index: 1; margin-bottom: 18px; }
+    .mini-mark {
+      width: 58px; height: 58px; border-radius: 18px; display: grid; place-items: center; background: rgba(159,141,255,0.12);
+      border: 1px solid rgba(255,255,255,0.08); flex: 0 0 auto;
+    }
+    .mini-brand { font-family: 'Cormorant Garamond', serif; font-size: 34px; line-height: 1; letter-spacing: 0.08em; font-weight: 600; margin: 0; }
+    .mini-copy { margin: 4px 0 0; color: var(--text-soft); font-size: 13px; line-height: 1.55; }
+    .login-title { margin: 18px 0 8px; font-size: 28px; line-height: 1.3; letter-spacing: -0.04em; font-weight: 800; position: relative; z-index: 1; }
+    .login-desc { margin: 0 0 22px; color: var(--text-soft); font-size: 14px; line-height: 1.7; position: relative; z-index: 1; max-width: 26ch; }
+    .social-stack { display: grid; gap: 10px; position: relative; z-index: 1; }
+    .social-btn {
+      padding: 15px 16px; border-radius: 18px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 800; font-size: 15px;
+    }
+    .social-btn.kakao { background: var(--kakao); color: #191600; }
+    .social-btn.naver { background: var(--naver); color: #fff; }
+    .social-btn.apple { background: rgba(255,255,255,0.92); color: #111; }
+    .divider { display: flex; align-items: center; gap: 10px; color: var(--text-faint); font-size: 12px; margin: 18px 0 14px; position: relative; z-index: 1; }
+    .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
+    .guest-btn {
+      width: 100%; padding: 15px 16px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.05); color: var(--text); font-size: 14px; font-weight: 700; cursor: pointer; position: relative; z-index: 1;
+    }
+    .skip-login { margin-top: 16px; color: var(--text-soft); font-size: 13px; text-align: center; position: relative; z-index: 1; }
+    .login-footnote { margin-top: 16px; color: var(--text-faint); font-size: 11px; line-height: 1.6; text-align: center; }
+    .home-screen .app { position: absolute; inset: 0; overflow-y: auto; padding: 18px 18px 110px; scrollbar-width: none; }
+    .home-screen .app::-webkit-scrollbar { display: none; }
+    .topbar {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; position: sticky; top: 0; z-index: 10; padding-top: 6px;
+      backdrop-filter: blur(12px); background: linear-gradient(180deg, rgba(4,20,75,0.95) 0%, rgba(4,20,75,0.72) 70%, rgba(4,20,75,0) 100%);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-mark {
+      width: 36px; height: 36px; border-radius: 12px; background: linear-gradient(135deg, rgba(159,141,255,0.35), rgba(255,255,255,0.08));
+      border: 1px solid rgba(255,255,255,0.08); display: grid; place-items: center;
+    }
+    .brand-copy-home small { display: block; color: var(--text-faint); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 3px; }
+    .brand-copy-home strong { display: block; font-family: 'Cormorant Garamond', serif; font-size: 24px; line-height: 1; letter-spacing: 0.08em; font-weight: 600; }
+    .icon-btn {
+      width: 42px; height: 42px; border: 1px solid rgba(255,255,255,0.08); border-radius: 999px; background: rgba(255,255,255,0.05); color: var(--text);
+      display: grid; place-items: center; font-size: 18px; cursor: pointer;
+    }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 999px; background: rgba(159,141,255,0.12);
+      color: #dcd6ff; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; margin-bottom: 14px;
+    }
+    .hero-copy-home h1 { margin: 0; font-size: 32px; line-height: 1.25; letter-spacing: -0.04em; font-weight: 800; max-width: 11ch; }
+    .hero-copy-home p { margin: 12px 0 0; color: var(--text-soft); font-size: 15px; line-height: 1.72; max-width: 31ch; }
+    .card { border-radius: var(--radius-xl); border: 1px solid var(--line); background: var(--surface); backdrop-filter: blur(14px); box-shadow: var(--shadow); }
+    .map-card { padding: 18px; margin-bottom: 16px; background: linear-gradient(180deg, rgba(157,139,255,0.18) 0%, rgba(255,255,255,0.03) 100%), rgba(255,255,255,0.04); }
+    .map-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+    .map-top h2 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.35; }
+    .map-top p { margin: 6px 0 0; color: var(--text-soft); font-size: 13px; line-height: 1.6; max-width: 25ch; }
+    .progress-chip { padding: 10px 12px; border-radius: 18px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.08); text-align: right; min-width: 88px; }
+    .progress-chip small { display: block; color: var(--text-faint); font-size: 11px; margin-bottom: 4px; }
+    .progress-chip strong { font-size: 20px; font-weight: 800; }
+    .map-visual {
+      position: relative; height: 280px; border-radius: 24px; overflow: hidden; background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.12), transparent 28%), linear-gradient(180deg, rgba(16,28,83,0.96) 0%, rgba(9,21,63,0.96) 100%);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .yeongwol-shape { position: absolute; inset: 42px 18px 22px 18px; z-index: 1; }
+    .route-line { fill: none; stroke: rgba(168, 223, 255, 0.42); stroke-width: 3; stroke-dasharray: 6 8; stroke-linecap: round; }
+    .star-node { position: absolute; width: 20px; height: 20px; transform: translate(-50%, -50%); z-index: 3; }
+    .star-node .glow { position: absolute; inset: 0; border-radius: 999px; background: radial-gradient(circle, rgba(255,216,107,0.85) 0%, rgba(255,216,107,0.1) 60%, transparent 70%); transform: scale(1.7); opacity: 0.65; }
+    .star-node .dot { position: absolute; inset: 4px; border-radius: 999px; background: var(--gold); box-shadow: 0 0 0 5px rgba(255,201,107,0.12); }
+    .star-node.future .dot { background: var(--mint); box-shadow: 0 0 0 5px rgba(133,228,209,0.12); }
+    .label { position: absolute; transform: translate(-50%, 10px); white-space: nowrap; color: var(--text); font-size: 11px; font-weight: 700; text-shadow: 0 2px 10px rgba(0,0,0,0.36); }
+    .legend { margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .pill { display: inline-flex; align-items: center; gap: 8px; padding: 9px 12px; border-radius: 999px; background: rgba(255,255,255,0.06); font-size: 12px; color: var(--text-soft); border: 1px solid rgba(255,255,255,0.08); }
+    .pill i { display: inline-block; width: 8px; height: 8px; border-radius: 999px; }
+    .section { margin-top: 18px; }
+    .section-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    .section-header h3 { margin: 0; font-size: 24px; letter-spacing: -0.03em; font-weight: 800; }
+    .section-header p { margin: 6px 0 0; color: var(--text-soft); font-size: 13px; line-height: 1.55; max-width: 26ch; }
+    .recommend-grid { display: grid; gap: 12px; }
+    .recommend-card {
+      position: relative; min-height: 166px; padding: 16px; overflow: hidden; border-radius: 26px; border: 1px solid rgba(255,255,255,0.08); box-shadow: var(--shadow);
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .recommend-card::before { content: ""; position: absolute; inset: 0; opacity: 0.96; }
+    .recommend-card .content, .recommend-card .footer { position: relative; z-index: 1; }
+    .recommend-card.forest::before { background: linear-gradient(180deg, #bfdac6 0%, #9ebc8c 38%, #3b6a4d 100%); }
+    .recommend-card.stars::before { background: linear-gradient(180deg, #7f72d6 0%, #3f3a8f 34%, #07144d 100%); }
+    .recommend-card.river::before { background: linear-gradient(180deg, #d8e8de 0%, #b9d8cb 28%, #7db8bf 65%, #3a678b 100%); }
+    .tag { display: inline-flex; align-items: center; width: fit-content; padding: 7px 10px; border-radius: 12px; font-size: 12px; font-weight: 800; box-shadow: 0 8px 16px rgba(0,0,0,0.18); }
+    .tag.new { background: var(--pink); } .tag.best { background: #2fd7c4; } .tag.night { background: rgba(255,255,255,0.18); }
+    .recommend-card h4 { margin: 0; font-size: 24px; line-height: 1.28; letter-spacing: -0.04em; font-weight: 800; max-width: 11ch; }
+    .recommend-card p { margin: 8px 0 0; font-size: 13px; line-height: 1.58; color: rgba(255,255,255,0.86); max-width: 28ch; }
+    .meta { display: flex; gap: 8px; flex-wrap: wrap; }
+    .meta span { display: inline-flex; align-items: center; gap: 6px; padding: 8px 10px; border-radius: 999px; font-size: 12px; color: rgba(255,255,255,0.92); background: rgba(5,15,54,0.26); border: 1px solid rgba(255,255,255,0.08); }
+    .round-play { width: 46px; height: 46px; border-radius: 999px; background: rgba(255,255,255,0.18); display: grid; place-items: center; border: 1px solid rgba(255,255,255,0.12); font-size: 18px; }
+    .bottom-nav {
+      position: absolute; left: 0; right: 0; bottom: 0; padding: 10px 12px 24px; background: linear-gradient(180deg, rgba(9,20,69,0.24), rgba(45,59,109,0.96));
+      backdrop-filter: blur(16px); border-top: 1px solid rgba(255,255,255,0.08); z-index: 20;
+    }
+    .nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); text-align: center; gap: 4px; }
+    .nav-item { color: #8f97d6; font-size: 11px; display: grid; justify-items: center; gap: 6px; font-weight: 600; }
+    .nav-item.active { color: #cdbfff; }
+    .home-indicator { width: 126px; height: 5px; border-radius: 999px; background: rgba(255,255,255,0.92); margin: 12px auto 0; }
+    @media (max-width: 430px) {
+      body { padding: 0; }
+      .phone { width: 100vw; height: 100dvh; border-radius: 0; border-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <section class="screen active" id="splash-screen">
+      <div class="stage center-stage">
+        <div class="soft-orb"></div>
+        <div class="constellation-wrap" aria-hidden="true">
+          <svg viewBox="0 0 180 180" width="150" height="150" fill="none">
+            <path d="M38 109 L58 93 L80 100 L100 78 L120 85 L140 63 L154 69" stroke="rgba(182,230,255,0.66)" stroke-width="2.6" stroke-linecap="round"/>
+            <circle cx="38" cy="109" r="5" fill="#fff1ad"/>
+            <circle cx="58" cy="93" r="5.5" fill="#fff1ad"/>
+            <circle cx="80" cy="100" r="4.5" fill="#fff1ad"/>
+            <circle cx="100" cy="78" r="6" fill="#fff1ad"/>
+            <circle cx="120" cy="85" r="5" fill="#fff1ad"/>
+            <circle cx="140" cy="63" r="6.5" fill="#fff1ad"/>
+            <circle cx="154" cy="69" r="4.5" fill="#fff1ad"/>
+          </svg>
+        </div>
+        <h1 class="brand-name">SLEEPERS</h1>
+        <div class="brand-sub">Starry Sleep Tourism</div>
+        <div class="brand-copy">여행하며 쉬고, 별자리처럼 회복을 기록하다.</div>
+        <div class="splash-footer">별자리 · 영월 · 숙면</div>
+      </div>
+    </section>
+
+    <section class="screen" id="onboarding-screen">
+      <div class="stage onboarding-stage">
+        <div class="onboard-top">
+          <button class="ghost-btn" id="skip-onboarding">건너뛰기</button>
+          <div class="progress-dots" aria-label="온보딩 진행도">
+            <span class="active" data-dot="0"></span>
+            <span data-dot="1"></span>
+            <span data-dot="2"></span>
+          </div>
+        </div>
+        <div class="art-card">
+          <div class="art-inner art-1 slide-art" data-slide="0">
+            <div class="mountain1"></div><div class="mountain2"></div><div class="mountain3"></div><div class="branch"></div><div class="bird"></div>
+            <div class="art-copy"><h2>숙면을 위한 여행이 시작됩니다</h2><p>영월의 수면 친화 관광지를 따라 이동하며 몸과 마음의 속도를 천천히 낮춰보세요.</p></div>
+          </div>
+          <div class="art-inner art-2 slide-art" data-slide="1" style="display:none;">
+            <div class="map-silhouette"></div><div class="line l1"></div><div class="line l2"></div><div class="line l3"></div><div class="line l4"></div><div class="star s1"></div><div class="star s2"></div><div class="star s3"></div><div class="star s4"></div><div class="star s5"></div>
+            <div class="art-copy"><h2>방문한 장소가 나만의 별자리가 됩니다</h2><p>수면에 도움이 되는 관광 자원을 방문하면 지도 위에 별이 기록되고, 당신만의 회복 궤적이 완성됩니다.</p></div>
+          </div>
+          <div class="art-inner art-3 slide-art" data-slide="2" style="display:none;">
+            <div class="hill2"></div><div class="hill1"></div><div class="path"></div><div class="moon"></div>
+            <div class="art-copy"><h2>오늘의 회복 동선을 추천해드려요</h2><p>사전 진단을 통해 현재 상태를 확인하고, 낮-저녁-밤에 맞는 영월 숙면 관광 코스를 받아보세요.</p></div>
+          </div>
+        </div>
+        <div class="action-block">
+          <button class="primary-btn" id="next-onboarding">다음</button>
+          <button class="secondary-btn" id="to-login">로그인 화면 보기</button>
+          <div class="onboarding-note">대표 키워드 · 별자리 · 영월 · 숙면</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="login-screen">
+      <div class="stage login-stage">
+        <div class="login-header">
+          <button class="icon-round" id="back-to-onboarding" aria-label="이전 화면">←</button>
+          <button class="ghost-btn" id="skip-to-home-top">비로그인으로 입장</button>
+        </div>
+        <div class="login-panel">
+          <div class="login-logo">
+            <div class="mini-mark" aria-hidden="true">
+              <svg viewBox="0 0 80 80" width="42" height="42" fill="none">
+                <path d="M14 49 L25 41 L37 45 L48 33 L60 37 L69 26 L74 29" stroke="rgba(182,230,255,0.78)" stroke-width="2.4" stroke-linecap="round"/>
+                <circle cx="14" cy="49" r="3.5" fill="#fff1ad"/><circle cx="25" cy="41" r="4" fill="#fff1ad"/><circle cx="37" cy="45" r="3.4" fill="#fff1ad"/><circle cx="48" cy="33" r="4.2" fill="#fff1ad"/><circle cx="60" cy="37" r="3.8" fill="#fff1ad"/><circle cx="69" cy="26" r="4.4" fill="#fff1ad"/><circle cx="74" cy="29" r="3.2" fill="#fff1ad"/>
+              </svg>
+            </div>
+            <div><h2 class="mini-brand">SLEEPERS</h2><p class="mini-copy">영월의 고요한 밤을 따라, 수면을 위한 여행을 시작해보세요.</p></div>
+          </div>
+          <h3 class="login-title">당신의 회복 별자리를 시작할 준비가 되었어요</h3>
+          <p class="login-desc">원하는 로그인 방식으로 시작하거나, 지금은 비로그인으로 먼저 둘러볼 수도 있어요.</p>
+          <div class="social-stack">
+            <button class="social-btn kakao">카카오로 시작하기</button>
+            <button class="social-btn naver">네이버로 시작하기</button>
+            <button class="social-btn apple">Apple ID로 시작하기</button>
+          </div>
+          <div class="divider">또는</div>
+          <button class="guest-btn" id="skip-to-home">로그인 생략하고 다음 페이지로</button>
+          <div class="skip-login">비로그인으로 둘러본 뒤, 나중에 별자리 기록을 저장할 수 있습니다.</div>
+        </div>
+        <div class="login-footnote">현재는 화면 프로토타입 단계로, 소셜 로그인 버튼은 실제 인증 대신 시각 구조만 반영했습니다.</div>
+      </div>
+    </section>
+
+    <section class="screen home-screen" id="home-screen">
+      <div class="app">
+        <div class="topbar">
+          <div class="brand">
+            <div class="brand-mark">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 16L12 5l8 11"/><path d="M8 16h8"/><path d="M10 19h4"/></svg>
+            </div>
+            <div class="brand-copy-home"><small>Starry Sleep Tourism</small><strong>SLEEPERS</strong></div>
+          </div>
+          <button class="icon-btn" aria-label="기록 보기">✦</button>
+        </div>
+        <section class="hero-copy-home">
+          <div class="eyebrow">영월 숙면 관광 · 별자리 지도</div>
+          <h1>오늘의 회복 여정을 따라 나만의 별자리를 완성해보세요</h1>
+          <p>수면에 도움이 되는 영월의 관광 자원을 따라 이동하고, 방문한 장소를 별처럼 모아 개인별 회복 별자리를 만드는 홈 화면 프로토타입입니다.</p>
+        </section>
+        <section class="card map-card">
+          <div class="map-top">
+            <div><h2>오늘의 별자리 지도</h2><p>숙소에 도착하기 전, 몸과 마음의 각성을 천천히 낮춰주는 영월의 회복 자원을 별로 표시했습니다.</p></div>
+            <div class="progress-chip"><small>완성도</small><strong>4 / 7</strong></div>
+          </div>
+          <div class="map-visual">
+            <svg class="yeongwol-shape" viewBox="0 0 340 220" preserveAspectRatio="none" aria-label="영월 숙면 관광 별자리 지도">
+              <path d="M39 95 C60 46, 124 19, 175 30 C219 40, 249 27, 299 54 C328 70, 320 123, 293 151 C267 177, 214 196, 165 190 C120 184, 66 194, 40 157 C20 129, 21 123, 39 95 Z" fill="rgba(193, 214, 255, 0.09)" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
+              <path class="route-line" d="M72 150 C92 133, 118 122, 144 130 C173 139, 194 154, 214 136 C231 121, 243 96, 267 84" />
+              <path class="route-line" d="M144 130 C139 110, 128 90, 132 71 C136 55, 150 49, 171 54 C186 58, 194 66, 205 78" />
+            </svg>
+            <div class="star-node" style="left: 18%; top: 62%;"><div class="glow"></div><div class="dot"></div><div class="label">청령포</div></div>
+            <div class="star-node" style="left: 35%; top: 54%;"><div class="glow"></div><div class="dot"></div><div class="label">동강 전망</div></div>
+            <div class="star-node" style="left: 49%; top: 58%;"><div class="glow"></div><div class="dot"></div><div class="label">숲 산책</div></div>
+            <div class="star-node future" style="left: 63%; top: 46%;"><div class="glow"></div><div class="dot"></div><div class="label">별마로천문대</div></div>
+            <div class="star-node future" style="left: 75%; top: 34%;"><div class="glow"></div><div class="dot"></div><div class="label">숙소 체크인</div></div>
+          </div>
+          <div class="legend">
+            <span class="pill"><i style="background:#fff3b0"></i> 이미 방문한 회복 자원</span>
+            <span class="pill"><i style="background:var(--mint)"></i> 오늘 방문 추천 자원</span>
+          </div>
+        </section>
+        <section class="section">
+          <div class="section-header"><div><h3>오늘의 수면 친화 관광지</h3><p>수면에 도움이 되는 시간대와 감각 자극 수준에 맞춰, 영월의 회복 장소를 추천합니다.</p></div></div>
+          <div class="recommend-grid">
+            <article class="recommend-card forest"><div class="content"><span class="tag best">추천</span><h4>느린 숲길 산책 코스</h4><p>낮의 햇빛과 조용한 걸음을 통해 생체리듬을 정돈하고, 과한 각성을 낮추는 자연 체류형 코스입니다.</p></div><div class="footer"><div class="meta"><span>저자극</span><span>30분</span></div><div class="round-play">→</div></div></article>
+            <article class="recommend-card stars"><div class="content"><span class="tag night">Night</span><h4>별 보기 전환 루트</h4><p>해질 무렵부터 별마로천문대 방향으로 이어지는 조용한 동선으로, 밤의 감각 전환을 돕는 코스입니다.</p></div><div class="footer"><div class="meta"><span>야간 추천</span><span>40분</span></div><div class="round-play">→</div></div></article>
+            <article class="recommend-card river"><div class="content"><span class="tag new">새 루트</span><h4>강변 감각 리셋 포인트</h4><p>시야가 트인 강변에서 머무르며 호흡을 정리하고, 숙소 도착 전 몸의 긴장을 풀어주는 정적 체류형 장소입니다.</p></div><div class="footer"><div class="meta"><span>정서 회복형</span><span>20분</span></div><div class="round-play">→</div></div></article>
+          </div>
+        </section>
+      </div>
+      <nav class="bottom-nav" aria-label="하단 메뉴">
+        <div class="nav-grid">
+          <div class="nav-item active"><div>⌂</div><div>홈</div></div>
+          <div class="nav-item"><div>◎</div><div>진단</div></div>
+          <div class="nav-item"><div>✦</div><div>코스</div></div>
+          <div class="nav-item"><div>☾</div><div>기록</div></div>
+          <div class="nav-item"><div>☻</div><div>마이</div></div>
+        </div>
+        <div class="home-indicator"></div>
+      </nav>
+    </section>
+  </div>
+  <script>
+    const screens = {
+      splash: document.getElementById('splash-screen'),
+      onboarding: document.getElementById('onboarding-screen'),
+      login: document.getElementById('login-screen'),
+      home: document.getElementById('home-screen')
+    };
+    function showScreen(name) {
+      Object.values(screens).forEach(screen => screen.classList.remove('active'));
+      screens[name].classList.add('active');
+    }
+    setTimeout(() => showScreen('onboarding'), 1700);
+    const slides = document.querySelectorAll('.slide-art');
+    const dots = document.querySelectorAll('[data-dot]');
+    const nextBtn = document.getElementById('next-onboarding');
+    let currentSlide = 0;
+    function renderSlide(index) {
+      slides.forEach((slide, i) => slide.style.display = i === index ? 'block' : 'none');
+      dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+      nextBtn.textContent = index === slides.length - 1 ? '로그인 화면으로' : '다음';
+    }
+    nextBtn.addEventListener('click', () => {
+      if (currentSlide < slides.length - 1) {
+        currentSlide += 1;
+        renderSlide(currentSlide);
+      } else {
+        showScreen('login');
+      }
+    });
+    dots.forEach((dot, index) => dot.addEventListener('click', () => { currentSlide = index; renderSlide(currentSlide); }));
+    document.getElementById('skip-onboarding').addEventListener('click', () => showScreen('login'));
+    document.getElementById('to-login').addEventListener('click', () => showScreen('login'));
+    document.getElementById('back-to-onboarding').addEventListener('click', () => showScreen('onboarding'));
+    document.getElementById('skip-to-home').addEventListener('click', () => showScreen('home'));
+    document.getElementById('skip-to-home-top').addEventListener('click', () => showScreen('home'));
+    renderSlide(currentSlide);
+  </script>
+</body>
+</html>
