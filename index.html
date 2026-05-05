@@ -94,6 +94,8 @@
     .screen-inner {
       min-height: 100dvh;
       padding-bottom: calc(110px + env(safe-area-inset-bottom));
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .center-screen {
@@ -841,12 +843,12 @@
     </section>
   </div>
 
-  <nav class="bottom-nav" aria-label="하단 탭 내비게이션">
+  <nav class="bottom-nav" aria-label="하단 탭 내비게이션" style="display:none;" id="bottom-nav">
     <div class="bottom-nav-inner">
       <div class="nav-grid">
-        <button class="tab-button active" data-tab="home" aria-label="홈"><span class="ico">⌂</span><span>홈</span></button>
         <button class="tab-button" data-tab="diagnosis" aria-label="진단"><span class="ico">◎</span><span>진단</span></button>
         <button class="tab-button" data-tab="course" aria-label="코스"><span class="ico">✦</span><span>코스</span></button>
+        <button class="tab-button active" data-tab="home" aria-label="홈"><span class="ico">⌂</span><span>홈</span></button>
         <button class="tab-button" data-tab="record" aria-label="기록"><span class="ico">☾</span><span>기록</span></button>
         <button class="tab-button" data-tab="mypage" aria-label="마이"><span class="ico">☻</span><span>마이</span></button>
       </div>
@@ -881,9 +883,15 @@
       home: document.getElementById('home-screen')
     };
 
-    function showScreen(name) {
+        function showScreen(name) {
       Object.values(screens).forEach(screen => screen.classList.remove('active'));
       screens[name].classList.add('active');
+      const bottomNav = document.getElementById('bottom-nav');
+      if (name === 'home') {
+        bottomNav.style.display = 'block';
+      } else {
+        bottomNav.style.display = 'none';
+      }
     }
 
     setTimeout(() => showScreen('onboarding'), 1600);
@@ -1070,7 +1078,7 @@
       tabButtons.forEach(button => button.classList.toggle('active', button.dataset.tab === tab));
       pageSections.forEach(section => section.classList.toggle('active', section.dataset.page === tab));
       if (!screens.home.classList.contains('active')) showScreen('home');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      screens.home.querySelector(".screen-inner").scrollTo({ top: 0, behavior: "smooth" });
     }
 
     tabButtons.forEach(button => {
