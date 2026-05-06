@@ -1538,39 +1538,52 @@
 
         <!-- DIAGNOSIS -->
         <section class="page-section" data-page="diagnosis">
-          <div class="page-hero">
-            <div class="eyebrow">진단 · 오늘의 상태</div>
-            <h1>오늘의 수면 상태를 간단히 진단해보세요</h1>
-            <p>환경 민감도, 각성 수준, 오늘 필요한 회복 방향을 빠르게 파악하는 섹션입니다.</p>
-          </div>
+  <div class="page-hero">
+    <div class="eyebrow">진단 · 사전 설문</div>
+    <h1>오늘 당신에게 맞는 회복 타입을 먼저 알아볼게요</h1>
+    <p>3개의 짧은 질문으로 오늘의 컨디션과 여행 스타일을 확인한 뒤, 홈에서 맞춤 코스를 보여드립니다.</p>
+  </div>
 
-          <section class="section">
-            <div class="stat-grid">
-              <div class="card stat-card"><small>어젯밤 수면 만족도</small><strong>보통</strong></div>
-              <div class="card stat-card"><small>오늘 추천 유형</small><strong>환경 민감형</strong></div>
-              <div class="card stat-card"><small>최근 가장 잘 맞은 활동</small><strong>숲길 걷기</strong></div>
-            </div>
-          </section>
+  <section class="section card" id="pre-survey">
+    <h4>사전 설문 · 오늘의 회복 성향</h4>
+    <p>오늘 하루를 어떻게 보내고 싶은지 떠올리면서, 각 질문에 가장 가까운 답을 골라주세요.</p>
 
-          <section class="section">
-            <div class="quick-grid">
-              <div class="card quick-card">
-                <div class="ico">◎</div>
-                <div>
-                  <h5>진단 시작</h5>
-                  <p>수면 시간, 피로도, 자극 민감도를 확인합니다.</p>
-                </div>
-              </div>
-              <div class="card quick-card">
-                <div class="ico">☾</div>
-                <div>
-                  <h5>야간 준비도</h5>
-                  <p>오늘 밤 숙면에 방해가 될 요소를 점검합니다.</p>
-                </div>
-              </div>
-            </div>
-          </section>
-        </section>
+    <!-- Q1 -->
+    <div class="survey-question">
+      <h5>Q1. 오늘은 어떤 환경에서 가장 편안함을 느낄 것 같나요?</h5>
+      <label><input type="radio" name="q1" value="calm"> 사람 적고 조용한 자연 환경</label><br>
+      <label><input type="radio" name="q1" value="active"> 적당히 사람과 활기가 있는 장소</label><br>
+      <label><input type="radio" name="q1" value="night"> 해질 무렵, 야경이나 별을 볼 수 있는 장소</label>
+    </div>
+
+    <!-- Q2 -->
+    <div class="survey-question" style="margin-top:14px;">
+      <h5>Q2. 지금 몸 상태에 가장 가까운 것은 무엇인가요?</h5>
+      <label><input type="radio" name="q2" value="calm"> 쉽게 피로하고 자극에 민감한 편이다</label><br>
+      <label><input type="radio" name="q2" value="active"> 조금 피곤하지만 몸을 움직이면 괜찮아질 것 같다</label><br>
+      <label><input type="radio" name="q2" value="night"> 낮엔 괜찮지만, 밤이 되면 긴장감이 올라가는 편이다</label>
+    </div>
+
+    <!-- Q3 -->
+    <div class="survey-question" style="margin-top:14px;">
+      <h5>Q3. 오늘 이 여행에서 가장 기대하는 것은 무엇인가요?</h5>
+      <label><input type="radio" name="q3" value="calm"> 조용히 머무를 수 있는 장소 추천</label><br>
+      <label><input type="radio" name="q3" value="active"> 걸으면서 둘러볼 수 있는 회복 코스 추천</label><br>
+      <label><input type="radio" name="q3" value="night"> 별 보기와 숙소 전 감각 전환 루틴 제안</label>
+    </div>
+
+    <button class="cta-btn" id="run-survey" style="margin-top:18px;">내 회복 타입 확인하기</button>
+
+    <div class="card survey-result" id="survey-result" style="display:none; margin-top:14px;">
+      <small>오늘의 회복 타입</small>
+      <h4 id="survey-type-title">저자극 자연 체류형</h4>
+      <p id="survey-type-desc">
+        낮의 햇빛과 조용한 자연 속에 있을 때 가장 잘 회복되는 타입이에요.
+        홈 화면에서 숲길 산책과 강변 체류 포인트를 먼저 추천해드릴게요.
+      </p>
+    </div>
+  </section>
+</section>
 
         <!-- COURSE -->
         <section class="page-section" data-page="course">
@@ -1925,6 +1938,61 @@
     tabButtons.forEach(button => {
       button.addEventListener('click', () => switchTab(button.dataset.tab));
     });
+    const surveyBtn = document.getElementById('run-survey');
+const surveyResult = document.getElementById('survey-result');
+const surveyTypeTitle = document.getElementById('survey-type-title');
+const surveyTypeDesc = document.getElementById('survey-type-desc');
+
+if (surveyBtn) {
+  const typeCopy = {
+    calm: {
+      title: '저자극 자연 체류형',
+      desc: '낮의 햇빛과 조용한 자연 속에 있을 때 가장 잘 회복되는 타입이에요. 홈 화면에서 숲길 산책과 강변 체류 포인트를 먼저 추천해드릴게요.'
+    },
+    active: {
+      title: '리듬 회복 활동형',
+      desc: '적당한 움직임과 가벼운 체험을 통해 몸의 리듬을 되찾는 타입이에요. 오늘은 걸으면서 둘러볼 수 있는 회복 코스를 중심으로 안내해드릴게요.'
+    },
+    night: {
+      title: '야간 감각 전환형',
+      desc: '해질 무렵부터 밤 시간대의 감각 전환에 민감한 타입이에요. 별 보기와 숙소 전 루틴을 중심으로, 숙면을 준비하는 밤 코스를 추천해드릴게요.'
+    }
+  };
+
+  surveyBtn.addEventListener('click', () => {
+    const names = ['q1','q2','q3'];
+    const answers = names.map(name => {
+      const checked = document.querySelector(`input[name="${name}"]:checked`);
+      return checked ? checked.value : null;
+    });
+
+    if (answers.includes(null)) {
+      alert('모든 질문에 답변해 주세요.');
+      return;
+    }
+
+    const score = { calm:0, active:0, night:0 };
+    answers.forEach(v => { score[v] += 1; });
+
+    const winner = Object.entries(score).sort((a,b) => b[1]-a[1])[0][0];
+
+    surveyTypeTitle.textContent = typeCopy[winner].title;
+    surveyTypeDesc.textContent = typeCopy[winner].desc;
+    surveyResult.style.display = 'block';
+
+    // 홈 히어로 문구도 함께 업데이트
+    const homeSubtitle = document.querySelector('section[data-page="home"] .page-hero p');
+    if (homeSubtitle) {
+      if (winner === 'calm') {
+        homeSubtitle.textContent = '조용한 자연 체류와 낮은 자극의 장소를 중심으로, 오늘 당신의 속도를 천천히 낮출 수 있는 동선을 보여드려요.';
+      } else if (winner === 'active') {
+        homeSubtitle.textContent = '걷고 둘러볼 수 있는 회복 코스를 중심으로, 낮과 저녁의 리듬을 다시 맞출 수 있도록 돕습니다.';
+      } else {
+        homeSubtitle.textContent = '해질 무렵부터 밤까지 이어지는 감각 전환 루트를 중심으로, 숙면을 준비하는 밤길을 안내해드려요.';
+      }
+    }
+  });
+}
   </script>
 </body>
 </html>
