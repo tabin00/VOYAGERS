@@ -2032,33 +2032,7 @@
     tabButtons.forEach(button => {
       button.addEventListener('click', () => switchTab(button.dataset.tab));
     });
-    const surveyBtn = document.getElementById('run-survey');
-const surveyResult = document.getElementById('survey-result');
-const surveyTypeTitle = document.getElementById('survey-type-title');
-const surveyTypeDesc = document.getElementById('survey-type-desc');
-
-if (surveyBtn) {
-  const typeCopy = {
-    calm: {
-      title: '저자극 자연 체류형',
-      desc: '낮의 햇빛과 조용한 자연 속에 있을 때 가장 잘 회복되는 타입이에요. 홈 화면에서 숲길 산책과 강변 체류 포인트를 먼저 추천해드릴게요.'
-    },
-    active: {
-      title: '리듬 회복 활동형',
-      desc: '적당한 움직임과 가벼운 체험을 통해 몸의 리듬을 되찾는 타입이에요. 오늘은 걸으면서 둘러볼 수 있는 회복 코스를 중심으로 안내해드릴게요.'
-    },
-    night: {
-      title: '야간 감각 전환형',
-      desc: '해질 무렵부터 밤 시간대의 감각 전환에 민감한 타입이에요. 별 보기와 숙소 전 루틴을 중심으로, 숙면을 준비하는 밤 코스를 추천해드릴게요.'
-    }
-  };
-
-  surveyBtn.addEventListener('click', () => {
-    const names = ['q1','q2','q3'];
-    const answers = names.map(name => {
-      const checked = document.querySelector(`input[name="${name}"]:checked`);
-      return checked ? checked.value : null;
-    });
+   
 
     if (answers.includes(null)) {
       alert('모든 질문에 답변해 주세요.');
