@@ -1537,51 +1537,51 @@
         </section>
 
         <!-- DIAGNOSIS -->
-        <section class="page-section" data-page="diagnosis">
+       <section class="page-section" data-page="diagnosis">
   <div class="page-hero">
     <div class="eyebrow">진단 · 사전 설문</div>
-    <h1>오늘 당신에게 맞는 회복 타입을 먼저 알아볼게요</h1>
-    <p>3개의 짧은 질문으로 오늘의 컨디션과 여행 스타일을 확인한 뒤, 홈에서 맞춤 코스를 보여드립니다.</p>
+    <h1>오늘의 회복 여행을 설계하기 위한 3가지 진단</h1>
+    <p>여행 성향 · 수면 습관 · 환경 민감도 3가지를 차례대로 체크하면, 홈에서 맞춤 회복 코스를 보여드립니다.</p>
   </div>
 
-  <section class="section card" id="pre-survey">
-    <h4>사전 설문 · 오늘의 회복 성향</h4>
-    <p>오늘 하루를 어떻게 보내고 싶은지 떠올리면서, 각 질문에 가장 가까운 답을 골라주세요.</p>
+  <!-- 상단 탭 -->
+  <section class="section card" id="survey-tabs">
+    <div style="display:flex; gap:8px; margin-bottom:12px;">
+      <button class="ghost-btn survey-tab active" data-survey="travel">여행 성향</button>
+      <button class="ghost-btn survey-tab" data-survey="sleep">수면 습관</button>
+      <button class="ghost-btn survey-tab" data-survey="sensitivity">환경 민감도</button>
+    </div>
+    <p style="color:var(--text-soft); font-size:13px; margin:0;">
+      각 항목마다 5개의 짧은 질문에 답하면, 당신의 회복 타입을 알려드립니다.
+    </p>
+  </section>
 
-    <!-- Q1 -->
-    <div class="survey-question">
-      <h5>Q1. 오늘은 어떤 환경에서 가장 편안함을 느낄 것 같나요?</h5>
-      <label><input type="radio" name="q1" value="calm"> 사람 적고 조용한 자연 환경</label><br>
-      <label><input type="radio" name="q1" value="active"> 적당히 사람과 활기가 있는 장소</label><br>
-      <label><input type="radio" name="q1" value="night"> 해질 무렵, 야경이나 별을 볼 수 있는 장소</label>
+  <!-- 설문 컨테이너 -->
+  <section class="section card" id="survey-container">
+    <!-- 공통 진행 상태 -->
+    <div id="survey-progress" style="margin-bottom:14px; font-size:13px; color:var(--text-soft);">
+      여행 성향 Q1 / 5
     </div>
 
-    <!-- Q2 -->
-    <div class="survey-question" style="margin-top:14px;">
-      <h5>Q2. 지금 몸 상태에 가장 가까운 것은 무엇인가요?</h5>
-      <label><input type="radio" name="q2" value="calm"> 쉽게 피로하고 자극에 민감한 편이다</label><br>
-      <label><input type="radio" name="q2" value="active"> 조금 피곤하지만 몸을 움직이면 괜찮아질 것 같다</label><br>
-      <label><input type="radio" name="q2" value="night"> 낮엔 괜찮지만, 밤이 되면 긴장감이 올라가는 편이다</label>
+    <!-- 질문 표시 영역 -->
+    <div id="survey-question-block">
+      <!-- JS에서 채우는 영역 -->
     </div>
 
-    <!-- Q3 -->
-    <div class="survey-question" style="margin-top:14px;">
-      <h5>Q3. 오늘 이 여행에서 가장 기대하는 것은 무엇인가요?</h5>
-      <label><input type="radio" name="q3" value="calm"> 조용히 머무를 수 있는 장소 추천</label><br>
-      <label><input type="radio" name="q3" value="active"> 걸으면서 둘러볼 수 있는 회복 코스 추천</label><br>
-      <label><input type="radio" name="q3" value="night"> 별 보기와 숙소 전 감각 전환 루틴 제안</label>
+    <!-- 버튼 영역 -->
+    <div style="display:flex; gap:8px; margin-top:18px;">
+      <button class="sub-btn" id="survey-prev">이전</button>
+      <button class="cta-btn" id="survey-next">다음</button>
     </div>
+  </section>
 
-    <button class="cta-btn" id="run-survey" style="margin-top:18px;">내 회복 타입 확인하기</button>
-
-    <div class="card survey-result" id="survey-result" style="display:none; margin-top:14px;">
-      <small>오늘의 회복 타입</small>
-      <h4 id="survey-type-title">저자극 자연 체류형</h4>
-      <p id="survey-type-desc">
-        낮의 햇빛과 조용한 자연 속에 있을 때 가장 잘 회복되는 타입이에요.
-        홈 화면에서 숲길 산책과 강변 체류 포인트를 먼저 추천해드릴게요.
-      </p>
-    </div>
+  <!-- 설문 결과 카드 -->
+  <section class="section card" id="survey-summary" style="display:none; margin-top:18px;">
+    <small>오늘의 회복 프로파일</small>
+    <h4 id="survey-summary-title" style="margin-top:6px;">여행 성향 · 수면 습관 · 민감도 요약</h4>
+    <p id="survey-summary-desc" style="margin-top:8px; color:var(--text-soft); font-size:13px; line-height:1.7;">
+      세 가지 설문을 완료하면, 여기에서 당신의 회복 타입과 추천 여행 스타일이 요약됩니다.
+    </p>
   </section>
 </section>
 
@@ -1992,6 +1992,316 @@ if (surveyBtn) {
       }
     }
   });
+}// === 다중 설문: 여행 성향 / 수면 습관 / 환경 민감도 ===
+const surveyTabs = document.querySelectorAll('.survey-tab');
+const surveyContainer = document.getElementById('survey-container');
+const surveyProgress = document.getElementById('survey-progress');
+const surveyQuestionBlock = document.getElementById('survey-question-block');
+const surveyPrevBtn = document.getElementById('survey-prev');
+const surveyNextBtn = document.getElementById('survey-next');
+const surveySummary = document.getElementById('survey-summary');
+const surveySummaryTitle = document.getElementById('survey-summary-title');
+const surveySummaryDesc = document.getElementById('survey-summary-desc');
+
+// 설문 문항 정의
+const surveyDefinitions = {
+  travel: {
+    label: '여행 성향',
+    questions: [
+      {
+        id: 't1',
+        text: 'Q1. 여행 첫날 오후, 가장 끌리는 일정은 무엇인가요?',
+        options: [
+          { value: 'calm', label: '사람 적은 숲이나 강변을 천천히 걷는다' },
+          { value: 'active', label: '걷기 루트나 가벼운 체험 프로그램을 즐긴다' },
+          { value: 'night', label: '해질 무렵/밤 풍경이 좋은 장소를 미리 찾아둔다' }
+        ]
+      },
+      {
+        id: 't2',
+        text: 'Q2. 여행지에서 카페/식당을 고를 때 더 신경 쓰는 것은?',
+        options: [
+          { value: 'calm', label: '조용함, 사람 수, 소음 정도' },
+          { value: 'active', label: '메뉴 다양성, 활동/체험이 함께 있는지' },
+          { value: 'night', label: '야외석/뷰, 밤 분위기' }
+        ]
+      },
+      {
+        id: 't3',
+        text: 'Q3. 여행 후 가장 기억에 남는 순간은 보통 언제인가요?',
+        options: [
+          { value: 'calm', label: '숲/강/마을에서 조용히 머물렀던 시간' },
+          { value: 'active', label: '걸으면서 곳곳을 활발히 돌아다녔던 시간' },
+          { value: 'night', label: '별, 야경, 밤 공기를 느끼던 순간' }
+        ]
+      },
+      {
+        id: 't4',
+        text: 'Q4. 동행과의 여행에서 나의 역할에 더 가까운 것은?',
+        options: [
+          { value: 'calm', label: '느긋하게 쉬자고 제안하는 사람' },
+          { value: 'active', label: '이곳저곳 일정과 동선을 짜는 사람' },
+          { value: 'night', label: '밤에 어디 갈지, 언제 잘지 조율하는 사람' }
+        ]
+      },
+      {
+        id: 't5',
+        text: 'Q5. “이 여행은 잘 쉬고 왔다”라고 느낄 때의 조건은?',
+        options: [
+          { value: 'calm', label: '조용한 곳에서 충분히 머무르고 돌아왔을 때' },
+          { value: 'active', label: '해보고 싶었던 체험을 몸으로 해봤을 때' },
+          { value: 'night', label: '밤 시간까지 편안하게 보내고 숙면했을 때' }
+        ]
+      }
+    ]
+  },
+  sleep: {
+    label: '수면 습관',
+    questions: [
+      {
+        id: 's1',
+        text: 'Q1. 최근 2주 동안, 평균 수면 시간은 어느 정도인가요?',
+        options: [
+          { value: 'lack', label: '5시간 이하' },
+          { value: 'mid', label: '5~7시간' },
+          { value: 'enough', label: '7시간 이상' }
+        ]
+      },
+      {
+        id: 's2',
+        text: 'Q2. 잠들기까지 걸리는 시간은 보통 어느 정도인가요?',
+        options: [
+          { value: 'lack', label: '30분 이상, 자주 뒤척인다' },
+          { value: 'mid', label: '15~30분 정도' },
+          { value: 'enough', label: '15분 이내로 금방 잠든다' }
+        ]
+      },
+      {
+        id: 's3',
+        text: 'Q3. 밤중에 깨는 일이 얼마나 자주 있나요?',
+        options: [
+          { value: 'lack', label: '자주 깨고 다시 잠들기 어렵다' },
+          { value: 'mid', label: '가끔 깨지만 다시 잠들 수 있다' },
+          { value: 'enough', label: '거의 깨지 않는다' }
+        ]
+      },
+      {
+        id: 's4',
+        text: 'Q4. 아침에 일어났을 때 기분/컨디션은 어떤가요?',
+        options: [
+          { value: 'lack', label: '몽롱하고 피곤함이 남아 있다' },
+          { value: 'mid', label: '그럭저럭 버틸 수 있는 정도' },
+          { value: 'enough', label: '상대적으로 개운하고 가벼운 편이다' }
+        ]
+      },
+      {
+        id: 's5',
+        text: 'Q5. 요즘 본인이 느끼는 “수면 위기감”에 가장 가까운 것은?',
+        options: [
+          { value: 'lack', label: '지금 수면 패턴을 꼭 바꿔야 한다고 느낀다' },
+          { value: 'mid', label: '좀 더 잘 자면 좋겠다고 느낀다' },
+          { value: 'enough', label: '큰 위기감은 없다' }
+        ]
+      }
+    ]
+  },
+  sensitivity: {
+    label: '환경 민감도',
+    questions: [
+      {
+        id: 'e1',
+        text: 'Q1. 잠들 때 방 안의 빛(조명/창밖 불빛)에 얼마나 민감한가요?',
+        options: [
+          { value: 'high', label: '아주 민감하다, 조금만 밝아도 불편하다' },
+          { value: 'mid', label: '어느 정도 신경 쓰이지만 적응한다' },
+          { value: 'low', label: '거의 신경 쓰이지 않는다' }
+        ]
+      },
+      {
+        id: 'e2',
+        text: 'Q2. 주변 소음(이웃/도로/냉장고 소리 등)에 대한 반응은?',
+        options: [
+          { value: 'high', label: '작은 소리에도 쉽게 잠에서 깬다' },
+          { value: 'mid', label: '큰 소리면 깨지만, 대부분은 버틴다' },
+          { value: 'low', label: '웬만한 소리는 잘 못 듣고 자는 편이다' }
+        ]
+      },
+      {
+        id: 'e3',
+        text: 'Q3. 침구(매트리스/베개)의 단단함·재질에 대한 선호/민감도는?',
+        options: [
+          { value: 'high', label: '조금만 달라져도 잘 못 자는 편이다' },
+          { value: 'mid', label: '맞으면 좋고 아니어도 적응은 한다' },
+          { value: 'low', label: '어느 정도 아무 데서나 잘 잔다' }
+        ]
+      },
+      {
+        id: 'e4',
+        text: 'Q4. 잠들기 전 디지털 기기 사용(폰/넷플릭스 등)은 어떤 편인가요?',
+        options: [
+          { value: 'high', label: '잠들기 직전까지 자주 본다' },
+          { value: 'mid', label: '잠들기 30분 전에는 끄려고 노력한다' },
+          { value: 'low', label: '잠들기 전에는 거의 사용하지 않는다' }
+        ]
+      },
+      {
+        id: 'e5',
+        text: 'Q5. 낯선 숙소에 갔을 때, 첫날 밤 잠드는 편인가요?',
+        options: [
+          { value: 'high', label: '첫날은 거의 항상 잠이 잘 안 온다' },
+          { value: 'mid', label: '조금 뒤척이다가 결국은 잔다' },
+          { value: 'low', label: '집이든 숙소든 바로 자는 편이다' }
+        ]
+      }
+    ]
+  }
+};
+
+// 사용자 응답 저장
+const surveyAnswers = {
+  travel: {},
+  sleep: {},
+  sensitivity: {}
+};
+
+let currentSurveyKey = 'travel';
+let currentStepIndex = 0;
+
+function renderSurveyStep() {
+  const def = surveyDefinitions[currentSurveyKey];
+  const q = def.questions[currentStepIndex];
+
+  surveyProgress.textContent = `${def.label} Q${currentStepIndex + 1} / ${def.questions.length}`;
+
+  const saved = surveyAnswers[currentSurveyKey][q.id] || null;
+
+  surveyQuestionBlock.innerHTML = `
+    <h5 style="margin:0 0 12px; font-size:15px;">${q.text}</h5>
+    ${q.options.map(opt => `
+      <label style="display:block; margin-bottom:8px; font-size:13px; line-height:1.6;">
+        <input type="radio" name="survey-${q.id}" value="${opt.value}" ${saved === opt.value ? 'checked' : ''}>
+        ${opt.label}
+      </label>
+    `).join('')}
+  `;
+
+  surveyPrevBtn.disabled = currentStepIndex === 0;
+  surveyNextBtn.textContent = currentStepIndex === def.questions.length - 1 ? '이 설문 마치기' : '다음';
+}
+
+function getCurrentAnswer() {
+  const def = surveyDefinitions[currentSurveyKey];
+  const q = def.questions[currentStepIndex];
+  const checked = surveyQuestionBlock.querySelector(`input[name="survey-${q.id}"]:checked`);
+  return checked ? checked.value : null;
+}
+
+function summarizeProfiles() {
+  // travel: calm/active/night 중 최다
+  const tScore = { calm:0, active:0, night:0 };
+  Object.values(surveyAnswers.travel).forEach(v => { if (tScore[v] != null) tScore[v] += 1; });
+  const tWinner = Object.entries(tScore).sort((a,b) => b[1]-a[1])[0][0];
+
+  // sleep: lack/mid/enough 중 최다
+  const sScore = { lack:0, mid:0, enough:0 };
+  Object.values(surveyAnswers.sleep).forEach(v => { if (sScore[v] != null) sScore[v] += 1; });
+  const sWinner = Object.entries(sScore).sort((a,b) => b[1]-a[1])[0][0];
+
+  // sensitivity: high/mid/low 중 최다
+  const eScore = { high:0, mid:0, low:0 };
+  Object.values(surveyAnswers.sensitivity).forEach(v => { if (eScore[v] != null) eScore[v] += 1; });
+  const eWinner = Object.entries(eScore).sort((a,b) => b[1]-a[1])[0][0];
+
+  let travelText = '';
+  if (tWinner === 'calm') travelText = '조용한 자연 체류형 회복 관광자';
+  else if (tWinner === 'active') travelText = '리듬 회복 활동형 회복 관광자';
+  else travelText = '야간 감각 전환형 회복 관광자';
+
+  let sleepText = '';
+  if (sWinner === 'lack') sleepText = '지속적인 수면 부족 상태로, 이번 여행에서 수면 회복에 특히 집중이 필요합니다.';
+  else if (sWinner === 'mid') sleepText = '어느 정도 버티고 있지만, 수면의 질을 한 단계 끌어올릴 여지가 있습니다.';
+  else sleepText = '상대적으로 수면 상태는 양호하지만, 여행을 통해 더 좋은 패턴을 유지할 수 있습니다.';
+
+  let sensText = '';
+  if (eWinner === 'high') sensText = '빛·소리·침구·환경 변화에 매우 민감한 편이라, 숙소와 루트 설계 시 환경 조정이 필수입니다.';
+  else if (eWinner === 'mid') sensText = '환경에 어느 정도 영향은 받지만, 적절한 가이드만으로도 충분히 조정 가능합니다.';
+  else sensText = '환경 변화에 비교적 둔감한 편이라, 다양한 숙소와 루트를 폭넓게 실험해 볼 수 있습니다.';
+
+  surveySummaryTitle.textContent = `${travelText}`;
+  surveySummaryDesc.textContent = [
+    `여행 성향: ${travelText}.`,
+    sleepText,
+    sensText
+  ].join(' ');
+
+  surveySummary.style.display = 'block';
+
+  // 홈 히어로 문구도 살짝 업데이트 (여행 성향 기준)
+  const homeSubtitle = document.querySelector('section[data-page="home"] .page-hero p');
+  if (homeSubtitle) {
+    if (tWinner === 'calm') {
+      homeSubtitle.textContent = '조용한 자연 체류와 낮은 자극의 장소를 중심으로, 오늘 당신의 속도를 천천히 낮출 수 있는 회복 여행 동선을 보여드려요.';
+    } else if (tWinner === 'active') {
+      homeSubtitle.textContent = '걷고 둘러볼 수 있는 회복 코스를 중심으로, 낮과 저녁의 리듬을 다시 맞출 수 있도록 돕습니다.';
+    } else {
+      homeSubtitle.textContent = '해질 무렵부터 밤까지 이어지는 감각 전환 루트를 중심으로, 숙면을 준비하는 밤길을 안내해드려요.';
+    }
+  }
+}
+
+// 탭 클릭 처리
+surveyTabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    const key = tab.dataset.survey;
+    if (!surveyDefinitions[key]) return;
+    surveyTabs.forEach(t => t.classList.toggle('active', t === tab));
+    currentSurveyKey = key;
+    currentStepIndex = 0;
+    renderSurveyStep();
+  });
+});
+
+// 이전/다음 버튼 처리
+if (surveyNextBtn && surveyPrevBtn) {
+  surveyPrevBtn.addEventListener('click', () => {
+    if (currentStepIndex === 0) return;
+    currentStepIndex -= 1;
+    renderSurveyStep();
+  });
+
+  surveyNextBtn.addEventListener('click', () => {
+    const def = surveyDefinitions[currentSurveyKey];
+    if (!def) return;
+
+    const answer = getCurrentAnswer();
+    if (!answer) {
+      alert('하나를 선택해 주세요.');
+      return;
+    }
+
+    const qId = def.questions[currentStepIndex].id;
+    surveyAnswers[currentSurveyKey][qId] = answer;
+
+    if (currentStepIndex < def.questions.length - 1) {
+      currentStepIndex += 1;
+      renderSurveyStep();
+    } else {
+      // 해당 설문 완료
+      // 세 설문이 모두 어느 정도 채워졌다면 요약 카드 표시
+      const travelDone = Object.keys(surveyAnswers.travel).length === surveyDefinitions.travel.questions.length;
+      const sleepDone = Object.keys(surveyAnswers.sleep).length === surveyDefinitions.sleep.questions.length;
+      const sensDone = Object.keys(surveyAnswers.sensitivity).length === surveyDefinitions.sensitivity.questions.length;
+
+      if (travelDone && sleepDone && sensDone) {
+        summarizeProfiles();
+      } else {
+        alert('다른 설문 탭도 차례대로 진행해 보세요.');
+      }
+    }
+  });
+
+  // 초기 렌더링
+  renderSurveyStep();
 }
   </script>
 </body>
