@@ -7,1295 +7,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #04144b;
-      --bg-deep: #03103d;
-      --bg-mid: #0a1c62;
-      --surface: rgba(255,255,255,0.06);
-      --surface-2: rgba(255,255,255,0.1);
-      --surface-3: rgba(159,141,255,0.16);
-      --text: #f5f7ff;
-      --text-soft: rgba(245,247,255,0.76);
-      --text-faint: rgba(245,247,255,0.5);
-      --line: rgba(255,255,255,0.1);
-      --primary: #9f8dff;
-      --primary-2: #b7a7ff;
-      --mint: #85e4d1;
-      --gold: #ffc96b;
-      --pink: #ff5ea8;
-      --naver: #03c75a;
-      --kakao: #fee500;
-      --shadow: 0 18px 40px rgba(0,0,0,0.24);
-      --radius-2xl: 32px;
-      --radius-xl: 28px;
-      --radius-lg: 24px;
-      --radius-md: 20px;
-      --radius-sm: 16px;
-      --content-max: 460px;
-    }
-
-    * { box-sizing: border-box; }
-
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-    }
-
-    body {
-      min-height: 100vh;
-      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(circle at 20% 0%, rgba(159,141,255,0.35), transparent 26%),
-        radial-gradient(circle at 90% 10%, rgba(113,158,255,0.18), transparent 18%),
-        linear-gradient(180deg, #0a1c62 0%, #04144b 30%, #03103d 100%);
-      overflow: hidden; /* 전체는 고정, 내부 컨테이너만 스크롤 */
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background-image:
-        radial-gradient(circle at 10% 12%, rgba(255,255,255,0.72) 0 1px, transparent 1px),
-        radial-gradient(circle at 26% 7%, rgba(255,255,255,0.55) 0 1px, transparent 1px),
-        radial-gradient(circle at 61% 9%, rgba(255,255,255,0.5) 0 1px, transparent 1px),
-        radial-gradient(circle at 84% 14%, rgba(255,255,255,0.7) 0 1px, transparent 1px),
-        radial-gradient(circle at 74% 5%, rgba(255,255,255,0.4) 0 1px, transparent 1px);
-      opacity: 0.8;
-      z-index: 0;
-    }
-
-    button { font: inherit; }
-
-    .app-shell {
-      position: relative;
-      width: min(100%, var(--content-max));
-      margin: 0 auto;
-      height: 100vh;
-      padding-top: calc(16px + env(safe-area-inset-top));
-      padding-right: max(16px, env(safe-area-inset-right));
-      padding-left: max(16px, env(safe-area-inset-left));
-      padding-bottom: calc(80px + env(safe-area-inset-bottom)); /* 하단 탭 여백 */
-      z-index: 1;
-      overflow: hidden;
-    }
-
-    .screen {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      pointer-events: none;
-      transform: translateY(10px);
-      transition: opacity 260ms ease, transform 260ms ease;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .screen.active {
-      opacity: 1;
-      pointer-events: auto;
-      transform: translateY(0);
-    }
-
-    .screen-inner {
-      flex: 1 1 auto;
-      min-height: 0; /* flex 컨테이너 안에서 스크롤 가능하게 */
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      padding-bottom: calc(140px + env(safe-area-inset-bottom));
-}
-
-    .center-screen {
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding-bottom: calc(40px + env(safe-area-inset-bottom));
-    }
-
-    .soft-orb {
-      position: absolute;
-      width: min(68vw, 280px);
-      aspect-ratio: 1;
-      border-radius: 50%;
-      filter: blur(8px);
-      background: radial-gradient(circle, rgba(159,141,255,0.28) 0%, rgba(159,141,255,0.08) 42%, transparent 72%);
-      top: 14%;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    .logo-lockup { position: relative; z-index: 1; }
-
-    .brand-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(44px, 11vw, 64px);
-      line-height: 1;
-      letter-spacing: 0.08em;
-      font-weight: 600;
-      margin: 0;
-    }
-
-    .brand-sub {
-      margin-top: 10px;
-      color: var(--text-soft);
-      font-size: 14px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-    }
-
-    .brand-copy {
-      margin: 22px auto 0;
-      max-width: 24ch;
-      color: var(--text-soft);
-      font-size: 15px;
-      line-height: 1.75;
-    }
-
-    .splash-footer {
-      position: absolute;
-      left: 0; right: 0;
-      bottom: calc(26px + env(safe-area-inset-bottom));
-      text-align: center;
-      color: var(--text-faint);
-      font-size: 12px;
-      letter-spacing: 0.08em;
-    }
-
-    .constellation-wrap {
-      width: 150px; height: 150px;
-      margin: 0 auto 24px;
-      display: grid;
-      place-items: center;
-    }
-
-    .top-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 18px;
-      padding-top: 6px;
-    }
-
-    .chip-btn, .ghost-btn {
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.05);
-      color: var(--text-soft);
-      border-radius: 999px;
-      padding: 10px 14px;
-      cursor: pointer;
-      min-height: 44px;
-    }
-
-    .progress-dots { display: flex; gap: 8px; align-items: center; }
-
-    .progress-dots span {
-      width: 8px; height: 8px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.2);
-      transition: all 220ms ease;
-    }
-
-    .progress-dots span.active {
-      width: 26px;
-      background: var(--primary);
-    }
-
-    .hero-card, .card {
-      border-radius: var(--radius-xl);
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.05);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(16px);
-    }
-
-    .hero-card {
-      position: relative;
-      overflow: hidden;
-      min-height: clamp(320px, 52vh, 400px);
-      margin-bottom: 18px;
-    }
-
-    .hero-card::after {
-      content: "";
-      position: absolute;
-      inset: auto 0 0 0;
-      height: 48%;
-      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(3,16,61,0.34) 18%, rgba(3,16,61,0.9) 100%);
-    }
-
-    .hero-slide { position: absolute; inset: 0; }
-
-    .hero-copy {
-      position: absolute;
-      left: 18px; right: 18px; bottom: 18px;
-      z-index: 1;
-    }
-
-    .hero-copy h2 {
-      margin: 0 0 10px;
-      font-size: clamp(26px, 7vw, 32px);
-      line-height: 1.22;
-      letter-spacing: -0.04em;
-      font-weight: 800;
-      max-width: 11ch;
-    }
-
-    .hero-copy p {
-      margin: 0;
-      color: rgba(255,255,255,0.88);
-      font-size: 14px;
-      line-height: 1.7;
-      max-width: 27ch;
-    }
-
-    .art-1 {
-      background:
-        radial-gradient(circle at 62% 26%, rgba(255,236,188,0.96) 0 26px, rgba(255,236,188,0.22) 28px, transparent 50px),
-        linear-gradient(180deg, #bfd8d6 0%, #d9cfb5 42%, #ebc37f 60%, #3a5c86 100%);
-    }
-
-    .art-1 .mountain1, .art-1 .mountain2, .art-1 .mountain3,
-    .art-1 .branch, .art-1 .bird { position: absolute; }
-
-    .art-1 .mountain1 {
-      inset: auto -10% 0 -10%;
-      height: 38%;
-      background: #0f2747;
-      clip-path: polygon(0 100%, 16% 54%, 26% 67%, 36% 43%, 48% 67%, 60% 40%, 71% 63%, 84% 47%, 100% 72%, 100% 100%);
-    }
-
-    .art-1 .mountain2 {
-      inset: auto -8% 11% -8%;
-      height: 24%;
-      background: #476b8f;
-      opacity: 0.68;
-      clip-path: polygon(0 100%, 18% 52%, 35% 74%, 55% 42%, 71% 66%, 100% 34%, 100% 100%);
-    }
-
-    .art-1 .mountain3 {
-      inset: auto -10% 18% -10%;
-      height: 18%;
-      background: #7191ad;
-      opacity: 0.58;
-      clip-path: polygon(0 100%, 14% 56%, 29% 76%, 45% 42%, 61% 72%, 76% 50%, 100% 78%, 100% 100%);
-    }
-
-    .art-1 .branch {
-      left: -2%; top: 14%;
-      width: 46%; height: 22%;
-      border-top: 5px solid rgba(91,56,23,0.85);
-      transform: rotate(16deg);
-    }
-
-    .art-1 .branch::before, .art-1 .branch::after {
-      content: "";
-      position: absolute;
-      border-top: 4px solid rgba(91,56,23,0.85);
-      width: 34%;
-    }
-
-    .art-1 .branch::before { top: 20px; left: 20%; transform: rotate(23deg); }
-    .art-1 .branch::after { top: 42px; left: 44%; transform: rotate(-12deg); }
-
-    .art-1 .bird {
-      right: 16%; top: 31%;
-      width: 18px; height: 10px;
-      border-top: 2px solid rgba(30,39,66,0.9);
-      border-radius: 50%;
-      transform: rotate(-8deg);
-    }
-
-    .art-2 {
-      background:
-        radial-gradient(circle at 50% 25%, rgba(255,255,255,0.18), transparent 20%),
-        linear-gradient(180deg, #7c70d7 0%, #9b86f0 38%, #1a2564 100%);
-    }
-
-    .art-2 .map-silhouette, .art-2 .line, .art-2 .star { position: absolute; }
-
-    .art-2 .map-silhouette {
-      left: 8%; right: 8%; top: 18%; bottom: 12%;
-      background: rgba(205,226,255,0.08);
-      border: 1px solid rgba(255,255,255,0.12);
-      clip-path: polygon(14% 30%, 22% 11%, 40% 7%, 54% 14%, 68% 10%, 84% 19%, 90% 39%, 86% 63%, 72% 80%, 48% 88%, 32% 84%, 17% 87%, 6% 72%, 7% 49%);
-    }
-
-    .art-2 .line {
-      height: 2px;
-      background: rgba(171,232,255,0.65);
-      transform-origin: left center;
-      box-shadow: 0 0 14px rgba(171,232,255,0.18);
-    }
-
-    .art-2 .line.l1 { left: 24%; top: 62%; width: 22%; transform: rotate(-14deg); }
-    .art-2 .line.l2 { left: 44%; top: 57%; width: 18%; transform: rotate(18deg); }
-    .art-2 .line.l3 { left: 59%; top: 52%; width: 16%; transform: rotate(-28deg); }
-    .art-2 .line.l4 { left: 42%; top: 57%; width: 7%; transform: rotate(-62deg); }
-
-    .art-2 .star {
-      width: 12px; height: 12px; border-radius: 50%;
-      background: #fff2b8;
-      box-shadow:
-        0 0 0 8px rgba(255,201,107,0.08),
-        0 0 16px rgba(255,201,107,0.32);
-    }
-
-    .art-2 .s1 { left: 21%; top: 60%; }
-    .art-2 .s2 { left: 43%; top: 55%; }
-    .art-2 .s3 { left: 60%; top: 60%; }
-    .art-2 .s4 { left: 74%; top: 47%; }
-    .art-2 .s5 { left: 49%; top: 40%; }
-
-    .art-3 {
-      background:
-        radial-gradient(circle at 75% 18%, rgba(255,246,196,0.2), transparent 18%),
-        linear-gradient(180deg, #d4e2d8 0%, #cfc79f 34%, #7f9f85 62%, #1a2b63 100%);
-    }
-
-    .art-3 .path, .art-3 .hill1, .art-3 .hill2, .art-3 .moon { position: absolute; }
-
-    .art-3 .hill1 {
-      inset: auto -10% 0 -10%;
-      height: 42%;
-      background: #305c52;
-      clip-path: polygon(0 100%, 0 55%, 14% 62%, 26% 48%, 43% 68%, 56% 44%, 73% 70%, 87% 52%, 100% 66%, 100% 100%);
-    }
-
-    .art-3 .hill2 {
-      inset: auto -10% 18% -10%;
-      height: 24%;
-      background: #679780;
-      opacity: 0.9;
-      clip-path: polygon(0 100%, 18% 58%, 32% 70%, 48% 42%, 63% 60%, 79% 47%, 100% 72%, 100% 100%);
-    }
-
-    .art-3 .path {
-      left: 50%; bottom: 0;
-      width: 44%; height: 45%;
-      transform: translateX(-50%);
-      background: linear-gradient(180deg, rgba(240,226,182,0.15), rgba(246,223,162,0.95));
-      clip-path: polygon(36% 0, 61% 0, 80% 100%, 18% 100%);
-    }
-
-    .art-3 .moon {
-      top: 12%; right: 12%;
-      width: 44px; height: 44px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(255,243,189,1) 0%, rgba(255,243,189,0.12) 60%, transparent 75%);
-    }
-
-    .cta-btn, .sub-btn, .social-btn, .tab-button, .icon-btn, .node-button {
-      min-height: 44px;
-      min-width: 44px;
-      cursor: pointer;
-    }
-
-    .cta-btn {
-      width: 100%; border: 0; color: #fff;
-      border-radius: 18px;
-      padding: 16px 18px;
-      font-weight: 800;
-      font-size: 15px;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-2) 100%);
-      box-shadow: 0 16px 26px rgba(159,141,255,0.24);
-    }
-
-    .sub-btn {
-      width: 100%;
-      margin-top: 10px;
-      border-radius: 18px;
-      padding: 15px 18px;
-      background: rgba(255,255,255,0.06);
-      color: var(--text-soft);
-      border: 1px solid rgba(255,255,255,0.08);
-      font-weight: 600;
-      font-size: 14px;
-    }
-
-    .info-note {
-      text-align: center;
-      margin-top: 14px;
-      color: var(--text-faint);
-      font-size: 12px;
-    }
-
-    .login-panel {
-      padding: 22px 18px 18px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .login-panel::before {
-      content: "";
-      position: absolute;
-      inset: 0 0 auto 0;
-      height: 160px;
-      background:
-        radial-gradient(circle at 80% 20%, rgba(159,141,255,0.22), transparent 28%),
-        radial-gradient(circle at 18% 18%, rgba(255,255,255,0.08), transparent 18%);
-      pointer-events: none;
-    }
-
-    .login-logo {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      position: relative;
-      z-index: 1;
-      margin-bottom: 18px;
-    }
-
-    .mini-mark {
-      width: 58px; height: 58px; border-radius: 18px;
-      display: grid; place-items: center;
-      background: rgba(159,141,255,0.12);
-      border: 1px solid rgba(255,255,255,0.08);
-      flex: 0 0 auto;
-    }
-
-    .mini-brand {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 34px;
-      line-height: 1;
-      letter-spacing: 0.08em;
-      font-weight: 600;
-      margin: 0;
-    }
-
-    .mini-copy {
-      margin: 4px 0 0;
-      color: var(--text-soft);
-      font-size: 13px;
-      line-height: 1.55;
-    }
-
-    .login-title {
-      margin: 18px 0 8px;
-      font-size: clamp(26px, 7vw, 30px);
-      line-height: 1.3;
-      letter-spacing: -0.04em;
-      font-weight: 800;
-      position: relative;
-      z-index: 1;
-    }
-
-    .login-desc {
-      margin: 0 0 22px;
-      color: var(--text-soft);
-      font-size: 14px;
-      line-height: 1.7;
-      position: relative;
-      z-index: 1;
-      max-width: 26ch;
-    }
-
-    .social-stack {
-      display: grid;
-      gap: 10px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .social-btn {
-      width: 100%;
-      border: 0;
-      padding: 15px 16px;
-      border-radius: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      font-weight: 800;
-      font-size: 15px;
-    }
-
-    .social-btn.kakao { background: var(--kakao); color: #191600; }
-    .social-btn.naver { background: var(--naver); color: #fff; }
-    .social-btn.apple { background: rgba(255,255,255,0.92); color: #111; }
-
-    .divider {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--text-faint);
-      font-size: 12px;
-      margin: 18px 0 14px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .divider::before, .divider::after {
-      content: "";
-      flex: 1;
-      height: 1px;
-      background: rgba(255,255,255,0.08);
-    }
-
-    .guest-btn {
-      width: 100%;
-      border-radius: 18px;
-      padding: 15px 16px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
-      font-size: 14px;
-      font-weight: 700;
-      position: relative;
-      z-index: 1;
-    }
-
-    .login-footnote {
-      margin: 8px 0 0;
-      color: var(--text-faint);
-      font-size: 11px;
-      line-height: 1.6;
-      text-align: center;
-    }
-
-    .page-section { display: none; }
-    .page-section.active { display: block; }
-
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 0 14px;
-      margin-bottom: 10px;
-      backdrop-filter: blur(14px);
-      background: linear-gradient(180deg, rgba(4,20,75,0.96) 0%, rgba(4,20,75,0.78) 72%, rgba(4,20,75,0) 100%);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .brand-mark {
-      width: 38px; height: 38px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, rgba(159,141,255,0.35), rgba(255,255,255,0.08));
-      border: 1px solid rgba(255,255,255,0.08);
-      display: grid; place-items: center;
-    }
-
-    .brand-copy-home small {
-      display: block;
-      color: var(--text-faint);
-      font-size: 11px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      margin-bottom: 3px;
-    }
-
-    .brand-copy-home strong {
-      display: block;
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 24px;
-      line-height: 1;
-      letter-spacing: 0.08em;
-      font-weight: 600;
-    }
-
-    .top-actions { display: flex; gap: 8px; }
-
-    .icon-btn {
-      width: 42px; height: 42px;
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 999px;
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
-      display: grid; place-items: center;
-      font-size: 18px;
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: rgba(159,141,255,0.12);
-      color: #dcd6ff;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      margin-bottom: 14px;
-    }
-
-    .page-hero h1 {
-      margin: 0;
-      font-size: clamp(28px, 8vw, 36px);
-      line-height: 1.24;
-      letter-spacing: -0.04em;
-      font-weight: 800;
-      max-width: 12ch;
-    }
-
-    .page-hero p {
-      margin: 12px 0 0;
-      color: var(--text-soft);
-      font-size: 15px;
-      line-height: 1.72;
-      max-width: 34ch;
-    }
-
-    .section { margin-top: 18px; }
-
-    .section-header {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    .section-header h3 {
-      margin: 0;
-      font-size: 24px;
-      letter-spacing: -0.03em;
-      font-weight: 800;
-    }
-
-    .section-header p {
-      margin: 6px 0 0;
-      color: var(--text-soft);
-      font-size: 13px;
-      line-height: 1.55;
-      max-width: 26ch;
-    }
-
-    .linkish {
-      color: #d9d3ff;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .map-card {
-      padding: 18px;
-      background:
-        linear-gradient(180deg, rgba(157,139,255,0.18) 0%, rgba(255,255,255,0.03) 100%),
-        rgba(255,255,255,0.04);
-    }
-
-    .map-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-
-    .map-top h2 {
-      margin: 0;
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.35;
-    }
-
-    .map-top p {
-      margin: 6px 0 0;
-      color: var(--text-soft);
-      font-size: 13px;
-      line-height: 1.6;
-      max-width: 26ch;
-    }
-
-    .progress-chip {
-      min-width: 88px;
-      padding: 10px 12px;
-      border-radius: 18px;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.08);
-      text-align: right;
-    }
-
-    .progress-chip small {
-      display: block;
-      color: var(--text-faint);
-      font-size: 11px;
-      margin-bottom: 4px;
-    }
-
-    .progress-chip strong {
-      font-size: 20px;
-      font-weight: 800;
-    }
-
-    .map-visual {
-      position: relative;
-      height: clamp(250px, 42vh, 320px);
-      border-radius: 24px;
-      overflow: hidden;
-      background:
-        radial-gradient(circle at 50% 0%, rgba(255,255,255,0.12), transparent 28%),
-        linear-gradient(180deg, rgba(16,28,83,0.96) 0%, rgba(9,21,63,0.96) 100%);
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .map-title {
-      position: absolute;
-      top: 16px;
-      left: 16px;
-      z-index: 2;
-      color: var(--text-soft);
-      font-size: 12px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .yeongwol-shape {
-      position: absolute;
-      inset: 42px 18px 22px 18px;
-      z-index: 1;
-    }
-
-    .route-line {
-      fill: none;
-      stroke: rgba(168,223,255,0.42);
-      stroke-width: 3;
-      stroke-dasharray: 6 8;
-      stroke-linecap: round;
-    }
-
-    .node-button {
-      position: absolute;
-      transform: translate(-50%, -50%);
-      width: 26px; height: 26px;
-      border: 0; background: transparent; padding: 0;
-      z-index: 4;
-    }
-
-    .node-button .glow {
-      position: absolute; inset: 0; border-radius: 999px;
-      background: radial-gradient(circle, rgba(255,216,107,0.85) 0%, rgba(255,216,107,0.1) 60%, transparent 70%);
-      transform: scale(1.8); opacity: 0.65;
-    }
-
-    .node-button .dot {
-      position: absolute; inset: 5px; border-radius: 999px;
-      background: var(--gold); box-shadow: 0 0 0 5px rgba(255,201,107,0.12);
-    }
-
-    .node-button.future .dot {
-      background: var(--mint);
-      box-shadow: 0 0 0 5px rgba(133,228,209,0.12);
-    }
-
-    .node-button .label {
-      position: absolute;
-      left: 50%; top: 100%; transform: translate(-50%, 10px);
-      white-space: nowrap; color: var(--text); font-size: 11px; font-weight: 700;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.36);
-    }
-
-    .legend {
-      margin-top: 14px;
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 9px 12px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.06);
-      font-size: 12px;
-      color: var(--text-soft);
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .pill i {
-      display: inline-block;
-      width: 8px; height: 8px;
-      border-radius: 999px;
-    }
-
-    .recommend-grid, .info-grid, .record-list, .quick-grid {
-      display: grid;
-      gap: 12px;
-    }
-
-    .quick-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .recommend-card {
-      position: relative;
-      min-height: 168px;
-      padding: 16px;
-      overflow: hidden;
-      border-radius: 26px;
-      border: 1px solid rgba(255,255,255,0.08);
-      box-shadow: var(--shadow);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .recommend-card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      opacity: 0.96;
-    }
-
-    .recommend-card .content,
-    .recommend-card .footer {
-      position: relative;
-      z-index: 1;
-    }
-
-    .recommend-card.forest::before {
-      background: linear-gradient(180deg, #bfdac6 0%, #9ebc8c 38%, #3b6a4d 100%);
-    }
-
-    .recommend-card.stars::before {
-      background: linear-gradient(180deg, #7f72d6 0%, #3f3a8f 34%, #07144d 100%);
-    }
-
-    .recommend-card.river::before {
-      background: linear-gradient(180deg, #d8e8de 0%, #b9d8cb 28%, #7db8bf 65%, #3a678b 100%);
-    }
-
-    .tag {
-      display: inline-flex;
-      width: fit-content;
-      padding: 7px 10px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 800;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.18);
-    }
-
-    .tag.new { background: var(--pink); }
-    .tag.best { background: #2fd7c4; }
-    .tag.night { background: rgba(255,255,255,0.18); }
-
-    .recommend-card h4 {
-      margin: 0;
-      font-size: 24px;
-      line-height: 1.28;
-      letter-spacing: -0.04em;
-      font-weight: 800;
-      max-width: 11ch;
-    }
-
-    .recommend-card p {
-      margin: 8px 0 0;
-      font-size: 13px;
-      line-height: 1.58;
-      color: rgba(255,255,255,0.86);
-      max-width: 28ch;
-    }
-
-    .footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding-top: 14px;
-    }
-
-    .meta {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .meta span {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      color: rgba(255,255,255,0.92);
-      background: rgba(5,15,54,0.26);
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .round-play {
-      width: 46px; height: 46px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.18);
-      border: 1px solid rgba(255,255,255,0.12);
-      display: grid; place-items: center;
-      font-size: 18px;
-    }
-
-    .stat-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .stat-card, .quick-card, .list-card, .plain-card {
-      padding: 16px;
-      border-radius: var(--radius-lg);
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.04);
-      backdrop-filter: blur(12px);
-    }
-
-    .stat-card small {
-      display: block;
-      color: var(--text-faint);
-      font-size: 11px;
-      margin-bottom: 8px;
-      line-height: 1.45;
-    }
-
-    .stat-card strong {
-      display: block;
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-    }
-
-    .quick-card {
-      min-height: 116px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .quick-card .ico {
-      width: 42px; height: 42px;
-      border-radius: 14px;
-      display: grid; place-items: center;
-      background: rgba(159,141,255,0.18);
-      font-size: 18px;
-    }
-
-    .quick-card h5 {
-      margin: 18px 0 4px;
-      font-size: 16px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      line-height: 1.35;
-    }
-
-    .quick-card p {
-      margin: 0;
-      font-size: 12px;
-      color: var(--text-soft);
-      line-height: 1.55;
-    }
-
-    .list-card h4, .plain-card h4 {
-      margin: 0;
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-    }
-
-    .list-card p, .plain-card p {
-      margin: 8px 0 0;
-      font-size: 13px;
-      color: var(--text-soft);
-      line-height: 1.62;
-    }
-
-    .trail-list {
-      margin-top: 14px;
-      display: grid;
-      gap: 10px;
-    }
-
-    .trail-step {
-      display: grid;
-      grid-template-columns: 28px 1fr;
-      gap: 10px;
-      align-items: start;
-    }
-
-    .trail-step .step-dot {
-      width: 18px; height: 18px;
-      border-radius: 999px;
-      margin-top: 4px;
-      background: var(--gold);
-      box-shadow: 0 0 0 5px rgba(255,201,107,0.12);
-    }
-
-    .trail-step .step-copy strong {
-      display: block;
-      font-size: 14px;
-      font-weight: 800;
-      margin-bottom: 4px;
-    }
-
-    .trail-step .step-copy span {
-      display: block;
-      color: var(--text-soft);
-      font-size: 12px;
-      line-height: 1.55;
-    }
-
-    .record-card {
-      background: linear-gradient(180deg, rgba(159,141,255,0.18), rgba(255,255,255,0.04));
-    }
-
-    .record-summary {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      margin-top: 16px;
-      align-items: center;
-    }
-
-    .record-summary .big {
-      font-size: 34px;
-      font-weight: 800;
-      letter-spacing: -0.04em;
-      line-height: 1;
-    }
-
-    .record-summary small {
-      display: block;
-      color: var(--text-faint);
-      font-size: 12px;
-      margin-bottom: 6px;
-    }
-
-    .record-stars {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-    .record-stars span {
-      width: 16px; height: 16px;
-      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-      background: linear-gradient(180deg, #fff3b2, #ffc96b);
-      box-shadow: 0 0 10px rgba(255,201,107,0.3);
-    }
-
-    .record-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 14px;
-      border-radius: 18px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .record-item strong {
-      display: block;
-      font-size: 14px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-
-    .record-item span {
-      display: block;
-      color: var(--text-soft);
-      font-size: 12px;
-      line-height: 1.45;
-    }
-
-    .record-item b {
-      font-size: 12px;
-      color: #fff;
-      padding: 8px 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.08);
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .bottom-nav {
-      position: fixed;
-      left: 0; right: 0; bottom: 0;
-      z-index: 30;
-      background: linear-gradient(180deg, rgba(9,20,69,0.24), rgba(45,59,109,0.97));
-      backdrop-filter: blur(18px);
-      border-top: 1px solid rgba(255,255,255,0.08);
-      padding: 10px max(12px, env(safe-area-inset-right)) calc(14px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
-      display: none; /* 기본은 숨김, 홈에서만 보이게 */
-    }
-
-    .bottom-nav-inner {
-      width: min(100%, var(--content-max));
-      margin: 0 auto;
-    }
-
-    .nav-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 4px;
-    }
-
-    .tab-button {
-      border: 0;
-      background: transparent;
-      color: #8f97d6;
-      display: grid;
-      justify-items: center;
-      gap: 6px;
-      padding: 8px 4px;
-      border-radius: 14px;
-      font-size: 11px;
-      font-weight: 700;
-    }
-
-    .tab-button .ico {
-      font-size: 20px;
-      line-height: 1;
-    }
-
-    .tab-button.active {
-      color: #d8ceff;
-      background: rgba(255,255,255,0.06);
-    }
-
-    .home-indicator {
-      width: 126px;
-      height: 5px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.92);
-      margin: 10px auto 0;
-    }
-
-    .modal {
-      position: fixed;
-      inset: 0;
-      display: none;
-      z-index: 40;
-    }
-
-    .modal.open { display: block; }
-
-    .modal-scrim {
-      position: absolute; inset: 0;
-      background: rgba(2, 8, 28, 0.58);
-      backdrop-filter: blur(6px);
-    }
-
-    .sheet {
-      position: absolute;
-      left: 0; right: 0; bottom: 0;
-      width: min(100%, var(--content-max));
-      margin: 0 auto;
-      border-radius: 28px 28px 0 0;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: linear-gradient(180deg, rgba(24,34,89,0.98), rgba(9,18,58,0.98));
-      box-shadow: 0 -10px 40px rgba(0,0,0,0.35);
-      padding: 12px 16px calc(22px + env(safe-area-inset-bottom));
-      transform: translateY(100%);
-      transition: transform 260ms ease;
-      max-height: min(76vh, 640px);
-      overflow-y: auto;
-    }
-
-    .modal.open .sheet {
-      transform: translateY(0);
-    }
-
-    .sheet-handle {
-      width: 52px;
-      height: 5px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.2);
-      margin: 0 auto 14px;
-    }
-
-    .sheet-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 14px;
-      margin-bottom: 14px;
-    }
-
-    .sheet-title h3 {
-      margin: 0;
-      font-size: 24px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-    }
-
-    .sheet-title p {
-      margin: 6px 0 0;
-      color: var(--text-soft);
-      font-size: 13px;
-      line-height: 1.58;
-    }
-
-    .close-btn {
-      width: 42px; height: 42px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.06);
-      color: #fff;
-    }
-
-    .sheet-grid {
-      display: grid;
-      gap: 10px;
-    }
-
-    .sheet-card {
-      padding: 14px;
-      border-radius: 18px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .sheet-card strong {
-      display: block;
-      font-size: 13px;
-      margin-bottom: 6px;
-    }
-
-    .sheet-card span {
-      display: block;
-      color: var(--text-soft);
-      font-size: 12px;
-      line-height: 1.55;
-    }
-
-    .sheet-actions {
-      display: grid;
-      gap: 10px;
-      margin-top: 16px;
-    }
-
-    @media (max-width: 380px) {
-      .stat-grid { grid-template-columns: 1fr; }
-      .quick-grid { grid-template-columns: 1fr; }
-      .map-top { flex-direction: column; }
-      .progress-chip { text-align: left; }
-      .sheet { max-height: 82vh; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      * {
-        transition: none !important;
-        animation: none !important;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="app-shell">
-    <!-- SPLASH -->
     <section class="screen active" id="splash-screen">
       <div class="center-screen">
         <div class="soft-orb"></div>
@@ -1320,7 +35,6 @@
       </div>
     </section>
 
-    <!-- ONBOARDING -->
     <section class="screen" id="onboarding-screen">
       <div class="screen-inner">
         <div class="top-row">
@@ -1362,7 +76,6 @@
       </div>
     </section>
 
-    <!-- LOGIN -->
     <section class="screen" id="login-screen">
       <div class="screen-inner">
         <div class="top-row">
@@ -1402,7 +115,6 @@
       </div>
     </section>
 
-    <!-- HOME + TABS -->
     <section class="screen" id="home-screen">
       <div class="screen-inner">
         <div class="topbar">
@@ -1423,7 +135,6 @@
           </div>
         </div>
 
-        <!-- HOME PAGE -->
         <section class="page-section active" data-page="home">
           <div class="page-hero">
             <div class="eyebrow">영월 숙면 관광 · 별자리 지도</div>
@@ -1440,32 +151,17 @@
               <div class="progress-chip"><small>완성도</small><strong>4 / 7</strong></div>
             </div>
 
-            <div class="map-visual">
-              <div class="map-title">Yeongwol Recovery Route</div>
-              <svg class="yeongwol-shape" viewBox="0 0 340 220" preserveAspectRatio="none" aria-label="영월 숙면 관광 별자리 지도">
-                <path d="M39 95 C60 46, 124 19, 175 30 C219 40, 249 27, 299 54 C328 70, 320 123, 293 151 C267 177, 214 196, 165 190 C120 184, 66 194, 40 157 C20 129, 21 123, 39 95 Z"
-                      fill="rgba(193,214,255,0.09)"
-                      stroke="rgba(255,255,255,0.12)"
-                      stroke-width="2"/>
-                <path class="route-line" d="M72 150 C92 133, 118 122, 144 130 C173 139, 194 154, 214 136 C231 121, 243 96, 267 84" />
-                <path class="route-line" d="M144 130 C139 110, 128 90, 132 71 C136 55, 150 49, 171 54 C186 58, 194 66, 205 78" />
-              </svg>
+            <div class="map-visual" id="map-viewport">
+              <div class="map-scroll-area" id="map-scroll-area">
+                <img src="map.jpg" class="real-map-img" id="real-map-img" alt="영월 지도">
+                
+                <div id="star-layer" style="position: absolute; top:0; left:0; width:100%; height:100%;"></div>
+              </div>
 
-              <button class="node-button" style="left:18%; top:62%;" data-node="cheongnyeongpo" aria-label="청령포 상세 보기">
-                <span class="glow"></span><span class="dot"></span><span class="label">청령포</span>
-              </button>
-              <button class="node-button" style="left:35%; top:54%;" data-node="donggang" aria-label="동강 전망 포인트 상세 보기">
-                <span class="glow"></span><span class="dot"></span><span class="label">동강 전망</span>
-              </button>
-              <button class="node-button" style="left:49%; top:58%;" data-node="forest" aria-label="숲 산책 루트 상세 보기">
-                <span class="glow"></span><span class="dot"></span><span class="label">숲 산책</span>
-              </button>
-              <button class="node-button future" style="left:63%; top:46%;" data-node="byeolmaro" aria-label="별마로천문대 상세 보기">
-                <span class="glow"></span><span class="dot"></span><span class="label">별마로천문대</span>
-              </button>
-              <button class="node-button future" style="left:75%; top:34%;" data-node="stay" aria-label="숙소 체크인 상세 보기">
-                <span class="glow"></span><span class="dot"></span><span class="label">숙소 체크인</span>
-              </button>
+              <div class="map-controls">
+                <button id="map-zoom-in" aria-label="지도 확대">＋</button>
+                <button id="map-zoom-out" aria-label="지도 축소">－</button>
+              </div>
             </div>
 
             <div class="legend">
@@ -1536,226 +232,248 @@
           </section>
         </section>
 
-        <!-- DIAGNOSIS -->
-      <!-- DIAGNOSIS -->
-<section class="page-section" data-page="diagnosis">
-  <div class="page-hero" style="text-align:center; align-items:center; display:flex; flex-direction:column;">
-    <div class="eyebrow" style="margin:0 auto 14px;">진단 · 사전 설문</div>
-    <h1 style="max-width:100%; text-align:center;">오늘의 회복 여행을 설계하기 위한 3가지 진단</h1>
-    <p style="text-align:center; margin:12px auto 0;">여행 성향 · 수면 습관 · 환경 민감도를 차례대로 체크하면, 홈에서 맞춤 회복 코스를 보여드립니다.</p>
-  </div>
+        <section class="page-section" data-page="diagnosis">
+          <div class="page-hero" style="text-align:center; align-items:center; display:flex; flex-direction:column;">
+            <div class="eyebrow" style="margin:0 auto 14px;">진단 · 사전 설문</div>
+            <h1 style="max-width:100%; text-align:center;">오늘의 회복 여행을 설계하기 위한 3가지 진단</h1>
+            <p style="text-align:center; margin:12px auto 0;">여행 성향 · 수면 습관 · 환경 민감도를 차례대로 체크하면, 홈에서 맞춤 회복 코스를 보여드립니다.</p>
+          </div>
 
-  <!-- 카드형 진단 탭 3개 -->
-  <section class="section">
-    <div style="display:flex; flex-direction:column; gap:14px;" id="survey-card-list">
+          <section class="section">
+            <div style="display:flex; flex-direction:column; gap:14px;" id="survey-card-list">
+              <button class="survey-entry-card" data-survey="travel" style="
+                display:flex; align-items:center; gap:16px;
+                padding:18px 20px;
+                border-radius:24px;
+                border:1px solid rgba(255,255,255,0.1);
+                background:linear-gradient(135deg, rgba(159,141,255,0.18), rgba(255,255,255,0.04));
+                cursor:pointer; text-align:left; width:100%;
+              ">
+                <div style="
+                  width:52px; height:52px; flex:0 0 52px;
+                  border-radius:18px;
+                  background:rgba(159,141,255,0.22);
+                  display:grid; place-items:center;
+                  font-size:24px;
+                ">✦</div>
+                <div style="flex:1;">
+                  <div style="font-size:11px; color:var(--text-faint); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:4px;">진단 01</div>
+                  <div style="font-size:17px; font-weight:800; color:var(--text); margin-bottom:4px;">여행 성향</div>
+                  <div style="font-size:12px; color:var(--text-soft); line-height:1.55;">나는 어떤 스타일의 여행자인가요?</div>
+                </div>
+                <div id="travel-status" style="
+                  font-size:11px; font-weight:700;
+                  padding:6px 10px; border-radius:999px;
+                  background:rgba(255,255,255,0.06);
+                  color:var(--text-faint);
+                  white-space:nowrap;
+                ">미완료</div>
+              </button>
 
-      <!-- 카드 1: 여행 성향 -->
-      <button class="survey-entry-card" data-survey="travel" style="
-        display:flex; align-items:center; gap:16px;
-        padding:18px 20px;
-        border-radius:24px;
-        border:1px solid rgba(255,255,255,0.1);
-        background:linear-gradient(135deg, rgba(159,141,255,0.18), rgba(255,255,255,0.04));
-        cursor:pointer; text-align:left; width:100%;
-      ">
-        <div style="
-          width:52px; height:52px; flex:0 0 52px;
-          border-radius:18px;
-          background:rgba(159,141,255,0.22);
-          display:grid; place-items:center;
-          font-size:24px;
-        ">✦</div>
-        <div style="flex:1;">
-          <div style="font-size:11px; color:var(--text-faint); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:4px;">진단 01</div>
-          <div style="font-size:17px; font-weight:800; color:var(--text); margin-bottom:4px;">여행 성향</div>
-          <div style="font-size:12px; color:var(--text-soft); line-height:1.55;">나는 어떤 스타일의 여행자인가요?</div>
-        </div>
-        <div id="travel-status" style="
-          font-size:11px; font-weight:700;
-          padding:6px 10px; border-radius:999px;
-          background:rgba(255,255,255,0.06);
-          color:var(--text-faint);
-          white-space:nowrap;
-        ">미완료</div>
-      </button>
+              <button class="survey-entry-card" data-survey="sleep" style="
+                display:flex; align-items:center; gap:16px;
+                padding:18px 20px;
+                border-radius:24px;
+                border:1px solid rgba(255,255,255,0.1);
+                background:linear-gradient(135deg, rgba(133,228,209,0.14), rgba(255,255,255,0.04));
+                cursor:pointer; text-align:left; width:100%;
+              ">
+                <div style="
+                  width:52px; height:52px; flex:0 0 52px;
+                  border-radius:18px;
+                  background:rgba(133,228,209,0.18);
+                  display:grid; place-items:center;
+                  font-size:24px;
+                ">☾</div>
+                <div style="flex:1;">
+                  <div style="font-size:11px; color:var(--text-faint); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:4px;">진단 02</div>
+                  <div style="font-size:17px; font-weight:800; color:var(--text); margin-bottom:4px;">수면 습관</div>
+                  <div style="font-size:12px; color:var(--text-soft); line-height:1.55;">요즘 충분히 자고 있나요?</div>
+                </div>
+                <div id="sleep-status" style="
+                  font-size:11px; font-weight:700;
+                  padding:6px 10px; border-radius:999px;
+                  background:rgba(255,255,255,0.06);
+                  color:var(--text-faint);
+                  white-space:nowrap;
+                ">미완료</div>
+              </button>
 
-      <!-- 카드 2: 수면 습관 -->
-      <button class="survey-entry-card" data-survey="sleep" style="
-        display:flex; align-items:center; gap:16px;
-        padding:18px 20px;
-        border-radius:24px;
-        border:1px solid rgba(255,255,255,0.1);
-        background:linear-gradient(135deg, rgba(133,228,209,0.14), rgba(255,255,255,0.04));
-        cursor:pointer; text-align:left; width:100%;
-      ">
-        <div style="
-          width:52px; height:52px; flex:0 0 52px;
-          border-radius:18px;
-          background:rgba(133,228,209,0.18);
-          display:grid; place-items:center;
-          font-size:24px;
-        ">☾</div>
-        <div style="flex:1;">
-          <div style="font-size:11px; color:var(--text-faint); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:4px;">진단 02</div>
-          <div style="font-size:17px; font-weight:800; color:var(--text); margin-bottom:4px;">수면 습관</div>
-          <div style="font-size:12px; color:var(--text-soft); line-height:1.55;">요즘 충분히 자고 있나요?</div>
-        </div>
-        <div id="sleep-status" style="
-          font-size:11px; font-weight:700;
-          padding:6px 10px; border-radius:999px;
-          background:rgba(255,255,255,0.06);
-          color:var(--text-faint);
-          white-space:nowrap;
-        ">미완료</div>
-      </button>
+              <button class="survey-entry-card" data-survey="sensitivity" style="
+                display:flex; align-items:center; gap:16px;
+                padding:18px 20px;
+                border-radius:24px;
+                border:1px solid rgba(255,255,255,0.1);
+                background:linear-gradient(135deg, rgba(255,201,107,0.14), rgba(255,255,255,0.04));
+                cursor:pointer; text-align:left; width:100%;
+              ">
+                <div style="
+                  width:52px; height:52px; flex:0 0 52px;
+                  border-radius:18px;
+                  background:rgba(255,201,107,0.18);
+                  display:grid; place-items:center;
+                  font-size:24px;
+                ">◎</div>
+                <div style="flex:1;">
+                  <div style="font-size:11px; color:var(--text-faint); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:4px;">진단 03</div>
+                  <div style="font-size:17px; font-weight:800; color:var(--text); margin-bottom:4px;">환경 민감도</div>
+                  <div style="font-size:12px; color:var(--text-soft); line-height:1.55;">빛·소리·온도에 얼마나 민감한가요?</div>
+                </div>
+                <div id="sensitivity-status" style="
+                  font-size:11px; font-weight:700;
+                  padding:6px 10px; border-radius:999px;
+                  background:rgba(255,255,255,0.06);
+                  color:var(--text-faint);
+                  white-space:nowrap;
+                ">미완료</div>
+              </button>
+            </div>
+          </section>
+        </section>
 
-      <!-- 카드 3: 환경 민감도 -->
-      <button class="survey-entry-card" data-survey="sensitivity" style="
-        display:flex; align-items:center; gap:16px;
-        padding:18px 20px;
-        border-radius:24px;
-        border:1px solid rgba(255,255,255,0.1);
-        background:linear-gradient(135deg, rgba(255,201,107,0.14), rgba(255,255,255,0.04));
-        cursor:pointer; text-align:left; width:100%;
-      ">
-        <div style="
-          width:52px; height:52px; flex:0 0 52px;
-          border-radius:18px;
-          background:rgba(255,201,107,0.18);
-          display:grid; place-items:center;
-          font-size:24px;
-        ">◎</div>
-        <div style="flex:1;">
-          <div style="font-size:11px; color:var(--text-faint); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:4px;">진단 03</div>
-          <div style="font-size:17px; font-weight:800; color:var(--text); margin-bottom:4px;">환경 민감도</div>
-          <div style="font-size:12px; color:var(--text-soft); line-height:1.55;">빛·소리·온도에 얼마나 민감한가요?</div>
-        </div>
-        <div id="sensitivity-status" style="
-          font-size:11px; font-weight:700;
-          padding:6px 10px; border-radius:999px;
-          background:rgba(255,255,255,0.06);
-          color:var(--text-faint);
-          white-space:nowrap;
-        ">미완료</div>
-      </button>
-
-    </div>
-  </section>
-
-  <!-- 설문 진행 화면 (카드 클릭 시 등장) -->
-  <section class="section card" id="survey-container" style="display:none; margin-top:4px;">
-    <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
-      <button id="survey-back" style="
-        border:0; background:rgba(255,255,255,0.06);
-        color:var(--text); border-radius:999px;
-        width:36px; height:36px; font-size:16px;
-        cursor:pointer; flex:0 0 36px;
-      ">←</button>
-      <div style="flex:1;">
-        <div id="survey-progress" style="font-size:12px; color:var(--text-faint); margin-bottom:4px;">여행 성향 1 / 5</div>
-        <div style="height:4px; border-radius:999px; background:rgba(255,255,255,0.08); overflow:hidden;">
-          <div id="survey-progress-bar" style="height:100%; border-radius:999px; background:var(--primary); width:20%; transition:width 260ms ease;"></div>
-        </div>
-      </div>
-    </div>
-
-    <div id="survey-question-block" style="min-height:180px;"></div>
-
-    <div style="display:flex; gap:8px; margin-top:18px;">
-      <button class="cta-btn" id="survey-next">다음</button>
-    </div>
-  </section>
-
-  <!-- 결과 요약 카드 -->
-  <section class="section card" id="survey-summary" style="display:none; margin-top:4px;">
-    <div style="text-align:center; padding:8px 0 14px;">
-      <div style="font-size:28px; margin-bottom:8px;">✦</div>
-      <small style="color:var(--text-faint); font-size:11px; letter-spacing:0.1em; text-transform:uppercase;">오늘의 회복 프로파일</small>
-      <h4 id="survey-summary-title" style="margin:8px 0 0; font-size:20px; font-weight:800; letter-spacing:-0.02em;"></h4>
-    </div>
-    <p id="survey-summary-desc" style="margin:0; color:var(--text-soft); font-size:13px; line-height:1.72; border-top:1px solid rgba(255,255,255,0.08); padding-top:14px;"></p>
-    <button class="cta-btn" id="go-home-btn" style="margin-top:16px;">홈에서 맞춤 코스 보기</button>
-  </section>
-
-</section>
-
-        <!-- COURSE -->
         <section class="page-section" data-page="course">
           <div class="page-hero">
-            <div class="eyebrow">코스 · 맞춤 동선</div>
-            <h1>낮에서 밤까지 이어지는 회복 동선을 확인하세요</h1>
-            <p>낮의 관광, 저녁의 전환, 밤의 숙소 루틴을 하나의 흐름으로 연결한 1박 2일 프리뷰입니다.</p>
+            <div class="eyebrow" id="course-eyebrow">코스 · 맞춤 동선</div>
+            <h1 id="course-hero-title">낮에서 밤까지 이어지는 회복 동선을 확인하세요</h1>
+            <p id="course-hero-desc">진단을 완료하면 나의 수면 성향과 환경 민감도에 맞춘 1박 2일 회복 타임라인이 이곳에 생성됩니다.</p>
           </div>
 
-          <section class="section card list-card">
-            <h4>오늘의 회복 동선</h4>
-            <p>숙소에 바로 들어가기보다, 수면에 도움이 되는 자원을 따라 천천히 이동하며 각성을 낮추는 구조입니다.</p>
-            <div class="trail-list">
-              <div class="trail-step">
-                <div class="step-dot"></div>
-                <div class="step-copy">
-                  <strong>Day 1 · 오후 / 숲 산책과 동강 조망</strong>
-                  <span>햇빛 노출과 저강도 이동으로 생체리듬을 안정시키고 감각 자극을 정돈합니다.</span>
+          <div id="course-empty-state" class="center-screen" style="padding-top: 40px; display: block;">
+            <div style="font-size: 32px; color: var(--text-faint); margin-bottom: 12px;">✦</div>
+            <p style="color: var(--text-soft); font-size: 14px; line-height:1.6;">아직 분석된 회복 프로파일이 없습니다.<br>진단 탭에서 3가지 설문을 먼저 완료해 주세요.</p>
+          </div>
+
+          <div id="course-timeline-state" style="display: none;">
+            
+            <div class="prescription-card">
+              <div class="rx-header">
+                <span class="rx-logo">Rx</span>
+                <span class="rx-title">Sleep Prescription</span>
+              </div>
+              <div class="rx-tags">
+                <span class="rx-tag" id="rx-match">AI 매칭률 분석 중...</span>
+                <span class="rx-tag" id="rx-pressure">권장 수면 압력 분석 중...</span>
+                <span class="rx-tag" id="rx-env">환경 제어 솔루션 대기 중</span>
+              </div>
+            </div>
+
+            <div class="timeline-container">
+              <div class="timeline-item">
+                <div class="timeline-marker step-1"></div>
+                <div class="timeline-content card plain-card">
+                  <div class="timeline-time">Day 1 · 14:00 PM</div>
+                  <h4 id="course-step1-title">맞춤형 오후 활동</h4>
+                  <p id="course-step1-desc">생체 리듬을 깨우는 활동 구간입니다.</p>
+                  <div class="meta" style="margin-top: 10px;">
+                    <span id="course-step1-tag">활동형</span>
+                  </div>
                 </div>
               </div>
-              <div class="trail-step">
-                <div class="step-dot"></div>
-                <div class="step-copy">
-                  <strong>Day 1 · 해질 무렵 / 별 보기 전환 포인트</strong>
-                  <span>낮에서 밤으로 넘어가는 시간을 천천히 느끼며 마음의 속도를 낮춥니다.</span>
+
+              <div class="timeline-item">
+                <div class="timeline-marker step-2"></div>
+                <div class="timeline-content card plain-card">
+                  <div class="timeline-time">Day 1 · 18:00 PM</div>
+                  <h4>수면 다이닝 & 감각 전환</h4>
+                  <p>트립토판/멜라토닌 생성을 돕는 영월 지역 식재료 기반의 저녁 식사 후, 교감신경을 안정시키는 고요한 장소(별마로천문대 등)에서 밤을 준비합니다.</p>
                 </div>
               </div>
-              <div class="trail-step">
-                <div class="step-dot"></div>
-                <div class="step-copy">
-                  <strong>Day 1 · 밤 / 숙소 체크인과 수면 리추얼</strong>
-                  <span>조명, 온도, 디지털 자극을 정리하고 수면 친화적인 객실 루틴으로 연결합니다.</span>
+
+              <div class="timeline-item">
+                <div class="timeline-marker step-3"></div>
+                <div class="timeline-content card plain-card">
+                  <div class="timeline-time">Day 1 · 21:00 PM</div>
+                  <h4 id="course-step3-title">환경 맞춤형 객실 세팅</h4>
+                  <p id="course-step3-desc">체크인 시 사전에 분석된 환경 민감도 프로파일이 숙소 시스템에 연동되어 조도, 온도, 백색소음이 자동 제어됩니다.</p>
+                </div>
+              </div>
+
+              <div class="timeline-item">
+                <div class="timeline-marker step-4"></div>
+                <div class="timeline-content card plain-card">
+                  <div class="timeline-time">Day 2 · 08:00 AM</div>
+                  <h4>수면 데이터 축적 (Documentation)</h4>
+                  <p>수면 센서 데이터와 아침 자기보고(Evaluation)가 결합되어 어젯밤의 회복 지수가 '별자리'로 영구 저장됩니다.</p>
                 </div>
               </div>
             </div>
-          </section>
+
+            <button class="cta-btn" id="start-journey-btn" style="margin-top: 24px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+              <span>✦ 이 맞춤 처방으로 별자리 여정 시작하기</span>
+            </button>
+            <div style="text-align: center; margin-top: 12px; color: var(--text-faint); font-size: 12px;">
+              버튼을 누르면 홈 지도의 별자리 기록이 활성화됩니다.
+            </div>
+
+          </div>
         </section>
 
-        <!-- RECORD -->
         <section class="page-section" data-page="record">
           <div class="page-hero">
-            <div class="eyebrow">기록 · 회복 별자리</div>
-            <h1>방문한 장소를 모아 나만의 회복 별자리를 남겨보세요</h1>
-            <p>방문한 관광 자원이 별로 저장되고, 나에게 맞는 회복 경로가 하나의 별자리처럼 기록됩니다.</p>
+            <div class="eyebrow">기록 · 수면 데이터 & 별자리</div>
+            <h1>수집된 데이터로 최적의 수면 환경을 찾아갑니다</h1>
+            <p>스마트링 센서 데이터와 낮의 관광 동선이 결합되어, 나에게 가장 잘 맞는 치유 프로파일을 완성합니다.</p>
           </div>
 
-          <section class="section card plain-card record-card">
-            <h4>영월의 고요한 강변자리</h4>
-            <p>최근 3회의 방문 중, 숲길 산책 · 강변 체류 · 야간 별 보기 루트를 연결해 하나의 개인 회복 별자리를 완성했어요.</p>
-            <div class="record-summary">
-              <div>
-                <small>완성한 별자리</small>
-                <div class="big">1개</div>
-              </div>
-              <div class="record-stars">
-                <span></span><span></span><span></span><span></span><span></span>
-              </div>
-            </div>
-            <div class="record-list">
-              <div class="record-item">
+          <div id="record-empty-state" class="center-screen" style="padding-top: 40px; display: block;">
+            <div style="font-size: 32px; color: var(--text-faint); margin-bottom: 12px;">☾</div>
+            <p style="color: var(--text-soft); font-size: 14px; line-height: 1.6;">아직 기록된 수면 데이터가 없습니다.<br>영월의 숙소를 방문하여 첫 번째 별자리를 완성해 보세요.</p>
+          </div>
+
+          <div id="record-data-state" style="display: none;">
+            
+            <section class="section card plain-card record-card">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                 <div>
-                  <strong>최근 방문 자원</strong>
-                  <span>청령포 · 동강 전망 포인트 · 숲 산책 루트</span>
+                  <h4 id="record-constellation-name" style="color: var(--gold); margin-bottom: 4px;">영월의 치유 별자리</h4>
+                  <p style="margin: 0; font-size: 13px; color: var(--text-soft);">1회차 방문 수면 분석 리포트</p>
                 </div>
-                <b>3개의 별</b>
-              </div>
-              <div class="record-item">
-                <div>
-                  <strong>가장 잘 맞았던 회복 방식</strong>
-                  <span>조용한 자연 체류 + 숙소 전 감각 전환 루틴</span>
+                <div class="record-stars" style="margin-top: 0;">
+                  <span></span><span></span><span></span><span></span><span></span>
                 </div>
-                <b>환경 민감형</b>
               </div>
-            </div>
-          </section>
+
+              <div class="data-dashboard" style="margin-top: 20px; padding: 16px; background: rgba(0,0,0,0.2); border-radius: 16px;">
+                <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 12px;">
+                  <span style="font-size: 12px; color: var(--text-faint);">종합 수면 효율</span>
+                  <strong style="font-size: 28px; color: var(--mint);">88%</strong>
+                  <span style="font-size: 11px; color: var(--text-soft);">↑ 평소 대비 15% 상승</span>
+                </div>
+                
+                <div class="stat-bar-container">
+                  <div class="stat-bar-label">
+                    <span style="color: #9f8dff;">얕은 잠 2h</span>
+                    <span style="color: var(--mint);">깊은 잠 3h 20m</span>
+                    <span style="color: var(--gold);">렘수면 1h 40m</span>
+                  </div>
+                  <div class="stat-bar" style="height: 8px; border-radius: 4px; display: flex; overflow: hidden; margin-top: 6px;">
+                    <div style="width: 25%; background: #9f8dff;"></div>
+                    <div style="width: 50%; background: var(--mint);"></div>
+                    <div style="width: 25%; background: var(--gold);"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="record-list" style="margin-top: 16px;">
+                <div class="record-item" style="background: rgba(133,228,209,0.1); border-color: rgba(133,228,209,0.2);">
+                  <div>
+                    <strong style="color: var(--mint);">최적의 수면 연계 발견!</strong>
+                    <span style="margin-top: 6px;">낮 시간의 <b id="record-day-activity" style="color:#fff; padding:2px 6px; border-radius:4px; background:rgba(255,255,255,0.1);">활동</b>과 숙소의 <b id="record-night-env" style="color:#fff; padding:2px 6px; border-radius:4px; background:rgba(255,255,255,0.1);">환경 제어</b>가 결합되었을 때 깊은 수면 비율이 가장 높았습니다.</span>
+                  </div>
+                </div>
+              </div>
+
+              <div style="margin-top: 20px; padding-top: 16px; border-top: 1px dashed rgba(255,255,255,0.1); text-align: center;">
+                <p style="font-size: 12px; color: var(--text-soft); line-height: 1.5; margin-bottom: 12px;">
+                  치유는 한 번으로 끝나지 않습니다.<br>다음 방문 시 다른 코스와 환경을 테스트하여<br>나에게 가장 완벽한 수면 프로파일을 완성해 보세요.
+                </p>
+                <button class="ghost-btn" style="width: 100%; font-size: 13px;">다음 회차 치유 코스 예약하기</button>
+              </div>
+
+            </section>
+          </div>
         </section>
 
-        <!-- MYPAGE -->
         <section class="page-section" data-page="mypage">
           <div class="page-hero">
             <div class="eyebrow">마이 · 계정과 설정</div>
@@ -1778,7 +496,6 @@
     </section>
   </div>
 
-  <!-- BOTTOM NAV -->
   <nav class="bottom-nav" aria-label="하단 탭 내비게이션" id="bottom-nav">
     <div class="bottom-nav-inner">
       <div class="nav-grid">
@@ -1792,7 +509,6 @@
     </div>
   </nav>
 
-  <!-- MODAL SHEET -->
   <div class="modal" id="sheet-modal" aria-hidden="true">
     <div class="modal-scrim" id="modal-scrim"></div>
     <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
@@ -1812,535 +528,73 @@
     </div>
   </div>
 
- <script>
-  const screens = {
-    splash: document.getElementById('splash-screen'),
-    onboarding: document.getElementById('onboarding-screen'),
-    login: document.getElementById('login-screen'),
-    home: document.getElementById('home-screen')
-  };
-
-  function showScreen(name) {
-    Object.values(screens).forEach(screen => screen.classList.remove('active'));
-    screens[name].classList.add('active');
-
-    const bottomNav = document.getElementById('bottom-nav');
-    if (name === 'home') {
-      bottomNav.style.display = 'block';
-    } else {
-      bottomNav.style.display = 'none';
-    }
-
-    if (name === 'home') {
-      const homeInner = screens.home.querySelector('.screen-inner');
-      if (homeInner) { homeInner.scrollTop = 0; }
-    }
-  }
-
-  setTimeout(() => showScreen('onboarding'), 1600);
-
-  const slides = document.querySelectorAll('.slide-art');
-  const dots = document.querySelectorAll('[data-dot]');
-  const nextBtn = document.getElementById('next-onboarding');
-  let currentSlide = 0;
-
-  function renderSlide(index) {
-    slides.forEach((slide, i) => {
-      slide.style.display = i === index ? 'block' : 'none';
-    });
-    dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
-    nextBtn.textContent = index === slides.length - 1 ? '로그인 화면으로' : '다음';
-  }
-
-  nextBtn.addEventListener('click', () => {
-    if (currentSlide < slides.length - 1) {
-      currentSlide += 1;
-      renderSlide(currentSlide);
-    } else {
-      showScreen('login');
-    }
-  });
-
-  dots.forEach((dot, index) => {
-    dot.addEventListener('click', () => {
-      currentSlide = index;
-      renderSlide(currentSlide);
-    });
-  });
-
-  document.getElementById('skip-onboarding').addEventListener('click', () => showScreen('login'));
-  document.getElementById('to-login').addEventListener('click', () => showScreen('login'));
-  document.getElementById('back-to-onboarding').addEventListener('click', () => showScreen('onboarding'));
-  document.getElementById('skip-to-home').addEventListener('click', () => showScreen('home'));
-  document.getElementById('skip-to-home-top').addEventListener('click', () => showScreen('home'));
-
-  renderSlide(currentSlide);
-
-  const modal = document.getElementById('sheet-modal');
-  const modalTitle = document.getElementById('sheet-title');
-  const modalSubtitle = document.getElementById('sheet-subtitle');
-  const modalGrid = document.getElementById('sheet-grid');
-  const modalScrim = document.getElementById('modal-scrim');
-  const closeModalBtn = document.getElementById('close-modal');
-  const secondaryCloseBtn = document.getElementById('sheet-secondary');
-  const primaryBtn = document.getElementById('sheet-primary');
-
-  const sheetContent = {
-    social: provider => ({
-      title: provider + ' 로그인 준비 중',
-      subtitle: '현재는 프로토타입 단계라 실제 인증 대신 안내 모달로 연결돼요. 지금은 비로그인 체험으로 전체 흐름을 살펴볼 수 있습니다.',
-      items: [
-        ['현재 상태', '소셜 로그인 화면만 먼저 구현되어 있고 실제 OAuth 연동은 다음 단계에서 붙일 수 있어요.'],
-        ['추천 액션', '우선 비로그인으로 입장해서 홈, 코스, 기록, 마이 탭의 흐름을 확인해보세요.'],
-        ['다음 개발 단계', '카카오 · 네이버 · Apple 로그인 SDK를 붙이고 계정 상태를 저장하도록 확장할 수 있습니다.']
-      ],
-      primary: '비로그인으로 계속 보기'
-    }),
-    record: {
-      title: '회복 기록 기능 안내',
-      subtitle: '방문 장소, 숙면 반응, 나만의 별자리 완성도를 한 화면에서 모아보는 기능입니다.',
-      items: [
-        ['기록 단위', '장소 방문, 체류 시간, 감정 변화, 수면 만족도를 별 단위로 기록합니다.'],
-        ['가치', '단순 체크인이 아니라 나에게 잘 맞는 회복 패턴을 찾는 데 목적이 있습니다.'],
-        ['확장 가능성', '나중에는 여행 후 리포트와 추천 코스 업데이트까지 연결할 수 있어요.']
-      ],
-      primary: '확인했어요'
-    },
-    profile: {
-      title: '프로필 섹션 안내',
-      subtitle: '로그인 전에는 체험용 화면만 보여주고, 로그인 후에는 개인 취향과 기록 저장이 가능하도록 설계할 수 있습니다.',
-      items: [
-        ['현재 모드', '비로그인 체험 모드'],
-        ['저장 예정 정보', '선호 코스, 환경 민감도, 별자리 기록, 최근 숙면 반응'],
-        ['다음 단계', '마이페이지에서 설정 편집과 알림 루틴까지 확장 가능합니다.']
-      ],
-      primary: '닫기'
-    },
-    cheongnyeongpo: {
-      title: '청령포',
-      subtitle: '고요한 강변과 천천히 걷는 동선이 어우러진 낮 시간 회복 포인트입니다.',
-      items: [
-        ['추천 시간', '오후 2시 ~ 4시'],
-        ['수면 도움 포인트', '저강도 보행, 시야 확장, 정서적 안정'],
-        ['권장 체류', '30분 내외로 가볍게 머물기']
-      ],
-      primary: '이 장소 저장'
-    },
-    donggang: {
-      title: '동강 전망 포인트',
-      subtitle: '강과 산이 동시에 열리는 시야 덕분에 답답함을 줄이고 호흡을 정리하기 좋은 포인트입니다.',
-      items: [
-        ['추천 시간', '오후 늦은 시간'],
-        ['수면 도움 포인트', '시각적 개방감, 낮은 소음 자극'],
-        ['다음 동선', '숲 산책 루트와 연결 추천']
-      ],
-      primary: '이 장소 저장'
-    },
-    forest: {
-      title: '숲 산책 루트',
-      subtitle: '햇빛과 저자극 보행을 통해 생체리듬을 정돈하는 대표적인 낮 코스입니다.',
-      items: [
-        ['추천 시간', '오전 ~ 오후 초반'],
-        ['수면 도움 포인트', '저강도 움직임, 자연 체류, 각성 완화'],
-        ['권장 대상', '환경 민감형, 걷기 선호형']
-      ],
-      primary: '이 장소 저장'
-    },
-    byeolmaro: {
-      title: '별마로천문대',
-      subtitle: '낮에서 밤으로 넘어가는 감각 전환을 돕는 SLEEPERS의 상징적인 별자리 포인트입니다.',
-      items: [
-        ['추천 시간', '해질 무렵 ~ 초저녁'],
-        ['수면 도움 포인트', '밤 감각 전환, 정서적 몰입, 별자리 경험'],
-        ['연결 효과', '숙소 체크인 전 리추얼 시작 지점']
-      ],
-      primary: '이 장소 저장'
-    },
-    stay: {
-      title: '숙소 체크인',
-      subtitle: '하루의 회복 동선을 마무리하고 실제 수면 리추얼을 시작하는 전환 지점입니다.',
-      items: [
-        ['권장 루틴', '조명 낮추기, 디지털 자극 줄이기, 온도 정리'],
-        ['기록 항목', '입실 시간, 숙면 환경 만족도, 취침 전 기분'],
-        ['다음 단계', '아침 회복 체크와 연결']
-      ],
-      primary: '루틴 보기'
-    }
-  };
-
-  function openSheet(data) {
-    modalTitle.textContent = data.title;
-    modalSubtitle.textContent = data.subtitle;
-    modalGrid.innerHTML = data.items.map(item => `
-      <div class="sheet-card">
-        <strong>${item[0]}</strong>
-        <span>${item[1]}</span>
+  <div class="survey-modal" id="survey-modal">
+    <div class="survey-modal-inner">
+      <div class="survey-modal-header">
+        <button class="survey-modal-close" id="survey-modal-close">✕</button>
+        <span class="survey-modal-label" id="survey-modal-label">여행 성향</span>
       </div>
-    `).join('');
-    primaryBtn.textContent = data.primary || '확인';
-    modal.classList.add('open');
-    modal.setAttribute('aria-hidden', 'false');
-  }
-
-  function closeSheet() {
-    modal.classList.remove('open');
-    modal.setAttribute('aria-hidden', 'true');
-  }
-
-  document.querySelectorAll('.social-trigger').forEach(button => {
-    button.addEventListener('click', () => {
-      openSheet(sheetContent.social(button.dataset.provider));
-    });
-  });
-
-  document.querySelectorAll('.node-button').forEach(node => {
-    node.addEventListener('click', () => {
-      openSheet(sheetContent[node.dataset.node]);
-    });
-  });
-
-  document.getElementById('open-record-modal').addEventListener('click', () => openSheet(sheetContent.record));
-  document.getElementById('open-profile-modal').addEventListener('click', () => openSheet(sheetContent.profile));
-  closeModalBtn.addEventListener('click', closeSheet);
-  secondaryCloseBtn.addEventListener('click', closeSheet);
-  modalScrim.addEventListener('click', closeSheet);
-  primaryBtn.addEventListener('click', () => {
-    if (modalTitle.textContent.includes('로그인 준비 중')) {
-      showScreen('home');
-    }
-    closeSheet();
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeSheet();
-  });
-
-  const tabButtons = document.querySelectorAll('.tab-button');
-  const pageSections = document.querySelectorAll('.page-section');
-
-  function switchTab(tab) {
-    tabButtons.forEach(button => button.classList.toggle('active', button.dataset.tab === tab));
-    pageSections.forEach(section => section.classList.toggle('active', section.dataset.page === tab));
-    if (!screens.home.classList.contains('active')) showScreen('home');
-
-    const homeInner = screens.home.querySelector('.screen-inner');
-    if (homeInner) {
-      homeInner.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }
-
-  tabButtons.forEach(button => {
-    button.addEventListener('click', () => switchTab(button.dataset.tab));
-  });
-
-  // === 다중 설문: 카드형 진단 탭 ===
-  const surveyDefinitions = {
-    travel: {
-      label: '여행 성향',
-      statusId: 'travel-status',
-      color: 'var(--primary)',
-      questions: [
-        { id:'t1', text:'Q1. 여행 첫날 오후, 가장 끌리는 일정은?', options:[
-          { value:'calm', label:'사람 적은 숲이나 강변을 천천히 걷는다' },
-          { value:'active', label:'걷기 루트나 가벼운 체험 프로그램을 즐긴다' },
-          { value:'night', label:'해질 무렵 야경이 좋은 장소를 미리 찾아둔다' }
-        ]},
-        { id:'t2', text:'Q2. 여행지 카페/식당 고를 때 더 신경 쓰는 것은?', options:[
-          { value:'calm', label:'조용함, 사람 수, 소음 정도' },
-          { value:'active', label:'메뉴 다양성, 체험이 함께 있는지' },
-          { value:'night', label:'야외석·뷰, 밤 분위기' }
-        ]},
-        { id:'t3', text:'Q3. 여행 후 가장 기억에 남는 순간은?', options:[
-          { value:'calm', label:'숲·강·마을에서 조용히 머물렀던 시간' },
-          { value:'active', label:'곳곳을 활발히 돌아다녔던 시간' },
-          { value:'night', label:'별, 야경, 밤 공기를 느끼던 순간' }
-        ]},
-        { id:'t4', text:'Q4. 동행과의 여행에서 나의 역할은?', options:[
-          { value:'calm', label:'느긋하게 쉬자고 제안하는 사람' },
-          { value:'active', label:'이곳저곳 일정과 동선을 짜는 사람' },
-          { value:'night', label:'밤 일정을 조율하는 사람' }
-        ]},
-        { id:'t5', text:'Q5. "잘 쉬고 왔다"고 느낄 때의 조건은?', options:[
-          { value:'calm', label:'조용한 곳에서 충분히 머무르고 왔을 때' },
-          { value:'active', label:'해보고 싶은 체험을 몸으로 해봤을 때' },
-          { value:'night', label:'밤 시간까지 편안하게 보내고 숙면했을 때' }
-        ]}
-      ]
-    },
-    sleep: {
-      label: '수면 습관',
-      statusId: 'sleep-status',
-      color: 'var(--mint)',
-      questions: [
-        { id:'s1', text:'Q1. 최근 2주 평균 수면 시간은?', options:[
-          { value:'lack', label:'5시간 이하' },
-          { value:'mid', label:'5~7시간' },
-          { value:'enough', label:'7시간 이상' }
-        ]},
-        { id:'s2', text:'Q2. 잠들기까지 걸리는 시간은?', options:[
-          { value:'lack', label:'30분 이상, 자주 뒤척인다' },
-          { value:'mid', label:'15~30분 정도' },
-          { value:'enough', label:'15분 이내로 금방 잠든다' }
-        ]},
-        { id:'s3', text:'Q3. 밤중에 깨는 일이 얼마나 자주 있나요?', options:[
-          { value:'lack', label:'자주 깨고 다시 잠들기 어렵다' },
-          { value:'mid', label:'가끔 깨지만 다시 잠들 수 있다' },
-          { value:'enough', label:'거의 깨지 않는다' }
-        ]},
-        { id:'s4', text:'Q4. 아침에 일어났을 때 컨디션은?', options:[
-          { value:'lack', label:'몽롱하고 피곤함이 남아 있다' },
-          { value:'mid', label:'그럭저럭 버틸 수 있는 정도' },
-          { value:'enough', label:'개운하고 가벼운 편이다' }
-        ]},
-        { id:'s5', text:'Q5. 지금 본인의 "수면 위기감"은?', options:[
-          { value:'lack', label:'지금 수면 패턴을 꼭 바꿔야 한다' },
-          { value:'mid', label:'좀 더 잘 자면 좋겠다고 느낀다' },
-          { value:'enough', label:'큰 위기감은 없다' }
-        ]}
-      ]
-    },
-    sensitivity: {
-      label: '환경 민감도',
-      statusId: 'sensitivity-status',
-      color: 'var(--gold)',
-      questions: [
-        { id:'e1', text:'Q1. 잠들 때 빛(조명·창밖)에 얼마나 민감한가요?', options:[
-          { value:'high', label:'아주 민감하다, 조금만 밝아도 불편하다' },
-          { value:'mid', label:'어느 정도 신경 쓰이지만 적응한다' },
-          { value:'low', label:'거의 신경 쓰이지 않는다' }
-        ]},
-        { id:'e2', text:'Q2. 주변 소음에 대한 반응은?', options:[
-          { value:'high', label:'작은 소리에도 쉽게 잠에서 깬다' },
-          { value:'mid', label:'큰 소리면 깨지만 대부분은 버틴다' },
-          { value:'low', label:'웬만한 소리는 못 듣고 자는 편이다' }
-        ]},
-        { id:'e3', text:'Q3. 침구(매트리스·베개) 재질에 대한 민감도는?', options:[
-          { value:'high', label:'조금만 달라져도 잘 못 자는 편이다' },
-          { value:'mid', label:'맞으면 좋고 아니어도 적응은 한다' },
-          { value:'low', label:'어디서든 잘 자는 편이다' }
-        ]},
-        { id:'e4', text:'Q4. 잠들기 전 디지털 기기 사용은?', options:[
-          { value:'high', label:'잠들기 직전까지 자주 본다' },
-          { value:'mid', label:'30분 전에는 끄려고 노력한다' },
-          { value:'low', label:'잠들기 전에는 거의 사용하지 않는다' }
-        ]},
-        { id:'e5', text:'Q5. 낯선 숙소 첫날 밤, 잠드는 편인가요?', options:[
-          { value:'high', label:'첫날은 거의 항상 잠이 잘 안 온다' },
-          { value:'mid', label:'조금 뒤척이다가 결국은 잔다' },
-          { value:'low', label:'집이든 숙소든 바로 자는 편이다' }
-        ]}
-      ]
-    }
-  };
-
-  const surveyAnswers = { travel:{}, sleep:{}, sensitivity:{} };
-  let currentSurveyKey = 'travel';
-  let currentStepIndex = 0;
-
-  const surveyContainer = document.getElementById('survey-container');
-  const surveyProgress = document.getElementById('survey-progress');
-  const surveyProgressBar = document.getElementById('survey-progress-bar');
-  const surveyQuestionBlock = document.getElementById('survey-question-block');
-  const surveyNextBtn = document.getElementById('survey-next');
-  const surveyBackBtn = document.getElementById('survey-back');
-  const surveySummary = document.getElementById('survey-summary');
-  const surveySummaryTitle = document.getElementById('survey-summary-title');
-  const surveySummaryDesc = document.getElementById('survey-summary-desc');
-  const goHomeBtn = document.getElementById('go-home-btn');
-
-  function renderSurveyStep() {
-    const def = surveyDefinitions[currentSurveyKey];
-    const q = def.questions[currentStepIndex];
-    const total = def.questions.length;
-    const saved = surveyAnswers[currentSurveyKey][q.id] || null;
-
-    surveyProgress.textContent = `${def.label} ${currentStepIndex + 1} / ${total}`;
-    surveyProgressBar.style.width = `${((currentStepIndex + 1) / total) * 100}%`;
-    surveyProgressBar.style.background = def.color;
-
-    surveyQuestionBlock.innerHTML = `
-      <h5 style="margin:0 0 16px; font-size:16px; font-weight:800; line-height:1.5;">${q.text}</h5>
-      ${q.options.map(opt => `
-        <label style="
-          display:flex; align-items:center; gap:12px;
-          padding:14px 16px; margin-bottom:8px;
-          border-radius:18px; cursor:pointer;
-          border:1px solid ${saved === opt.value ? 'rgba(159,141,255,0.5)' : 'rgba(255,255,255,0.08)'};
-          background:${saved === opt.value ? 'rgba(159,141,255,0.14)' : 'rgba(255,255,255,0.04)'};
-          font-size:14px; line-height:1.55; color:var(--text);
-        ">
-          <input type="radio" name="survey-q" value="${opt.value}"
-            ${saved === opt.value ? 'checked' : ''}
-            style="accent-color:var(--primary); width:16px; height:16px; flex:0 0 16px;">
-          ${opt.label}
-        </label>
-      `).join('')}
-    `;
-
-    surveyQuestionBlock.querySelectorAll('input[type=radio]').forEach(input => {
-      input.addEventListener('change', () => {
-        surveyQuestionBlock.querySelectorAll('label').forEach(label => {
-          const isChecked = label.querySelector('input').checked;
-          label.style.border = isChecked
-            ? '1px solid rgba(159,141,255,0.5)'
-            : '1px solid rgba(255,255,255,0.08)';
-          label.style.background = isChecked
-            ? 'rgba(159,141,255,0.14)'
-            : 'rgba(255,255,255,0.04)';
-        });
-      });
-    });
-
-    surveyNextBtn.textContent = currentStepIndex === total - 1 ? '이 설문 완료하기' : '다음';
-  }
-
-  function getCurrentAnswer() {
-    const checked = surveyQuestionBlock.querySelector('input[name="survey-q"]:checked');
-    return checked ? checked.value : null;
-  }
-
-  function updateCardStatus(key) {
-    const def = surveyDefinitions[key];
-    const statusEl = document.getElementById(def.statusId);
-    if (!statusEl) return;
-    const answered = Object.keys(surveyAnswers[key]).length;
-    const total = def.questions.length;
-    if (answered >= total) {
-      statusEl.textContent = '완료 ✓';
-      statusEl.style.background = 'rgba(159,141,255,0.2)';
-      statusEl.style.color = '#d8ceff';
-    } else if (answered > 0) {
-      statusEl.textContent = `${answered}/${total}`;
-      statusEl.style.background = 'rgba(255,255,255,0.06)';
-      statusEl.style.color = 'var(--text-soft)';
-    }
-  }
-
-  function showSurveySummary() {
-    const tScore = { calm:0, active:0, night:0 };
-    Object.values(surveyAnswers.travel).forEach(v => { if (tScore[v] !== undefined) tScore[v]++; });
-    const tWinner = Object.entries(tScore).sort((a,b) => b[1]-a[1])[0][0];
-
-    const sScore = { lack:0, mid:0, enough:0 };
-    Object.values(surveyAnswers.sleep).forEach(v => { if (sScore[v] !== undefined) sScore[v]++; });
-    const sWinner = Object.entries(sScore).sort((a,b) => b[1]-a[1])[0][0];
-
-    const eScore = { high:0, mid:0, low:0 };
-    Object.values(surveyAnswers.sensitivity).forEach(v => { if (eScore[v] !== undefined) eScore[v]++; });
-    const eWinner = Object.entries(eScore).sort((a,b) => b[1]-a[1])[0][0];
-
-    const travelMap = {
-      calm: '저자극 자연 체류형 회복 관광자',
-      active: '리듬 회복 활동형 회복 관광자',
-      night: '야간 감각 전환형 회복 관광자'
-    };
-    const sleepMap = {
-      lack: '지속적인 수면 부족 상태로, 이번 여행에서 수면 회복에 특히 집중이 필요합니다.',
-      mid: '어느 정도 버티고 있지만, 수면의 질을 한 단계 끌어올릴 여지가 있습니다.',
-      enough: '상대적으로 수면 상태는 양호하지만, 여행을 통해 더 좋은 패턴을 유지할 수 있습니다.'
-    };
-    const sensMap = {
-      high: '빛·소리·침구·환경 변화에 매우 민감한 편이라, 숙소와 루트 설계 시 환경 조정이 필수입니다.',
-      mid: '환경에 어느 정도 영향은 받지만, 적절한 가이드만으로도 충분히 조정 가능합니다.',
-      low: '환경 변화에 비교적 둔감한 편이라, 다양한 숙소와 루트를 폭넓게 실험해볼 수 있습니다.'
-    };
-
-    surveySummaryTitle.textContent = travelMap[tWinner];
-    surveySummaryDesc.innerHTML = `
-      <div style="margin-bottom:12px;">
-        <strong style="font-size:12px; color:var(--primary);">✦ 여행 성향</strong><br>
-        <span style="font-size:13px; color:var(--text-soft); line-height:1.7;">${travelMap[tWinner]}로 분류되었습니다.</span>
+      <div class="survey-modal-progress">
+        <div class="survey-modal-progress-text" id="survey-modal-progress-text">1 / 5</div>
+        <div class="survey-modal-progress-bar-wrap">
+          <div class="survey-modal-progress-bar" id="survey-modal-progress-bar" style="width:20%;"></div>
+        </div>
       </div>
-      <div style="margin-bottom:12px;">
-        <strong style="font-size:12px; color:var(--mint);">☾ 수면 습관</strong><br>
-        <span style="font-size:13px; color:var(--text-soft); line-height:1.7;">${sleepMap[sWinner]}</span>
+      <div class="survey-modal-question" id="survey-modal-question"></div>
+      <div class="survey-modal-footer">
+        <button class="cta-btn" id="survey-modal-next">다음</button>
       </div>
-      <div>
-        <strong style="font-size:12px; color:var(--gold);">◎ 환경 민감도</strong><br>
-        <span style="font-size:13px; color:var(--text-soft); line-height:1.7;">${sensMap[eWinner]}</span>
+    </div>
+  </div>
+
+  <div class="survey-modal" id="survey-result-modal">
+    <div class="survey-modal-inner">
+      <div class="survey-modal-header">
+        <button class="survey-modal-close" id="survey-result-close">✕</button>
+        <span class="survey-modal-label">진단 완료</span>
       </div>
-    `;
+      <div style="flex:1; overflow-y:auto;">
+        <div style="text-align:center; padding:24px 0 20px;">
+          <div style="font-size:48px; margin-bottom:12px;">✦</div>
+          <small style="color:var(--text-faint); font-size:11px; letter-spacing:0.12em; text-transform:uppercase;">오늘의 회복 프로파일</small>
+          <h3 id="result-modal-title" style="margin:10px 0 0; font-size:22px; font-weight:800; letter-spacing:-0.02em; line-height:1.4;"></h3>
+        </div>
+        <div id="result-modal-desc" style="margin:0; border-top:1px solid rgba(255,255,255,0.08); padding-top:18px; display:flex; flex-direction:column; gap:14px;"></div>
+      </div>
+      <div class="survey-modal-footer">
+        <button class="cta-btn" id="result-go-course">코스 탭에서 맞춤 코스 확인하기</button>
+        <button class="sub-btn" id="result-close-btn" style="margin-top:10px;">닫기</button>
+      </div>
+    </div>
+  </div>
+<div class="survey-modal" id="reward-modal">
+    <div class="survey-modal-inner" style="justify-content: center; align-items: center; text-align: center;">
+      <div class="reward-glow-effect"></div>
+      
+      <div class="reward-content">
+        <div class="reward-icon">✦</div>
+        <h2 style="font-size: 28px; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.02em;">별자리가 완성되었습니다!</h2>
+        <p style="color: var(--text-soft); font-size: 15px; line-height: 1.6; margin-bottom: 24px;">
+          영월의 밤을 따라 5개의 회복 별을 모두 모으셨네요.<br>당신만을 위한 숙면 선물이 도착했습니다.
+        </p>
 
-    const homeSubtitle = document.querySelector('section[data-page="home"] .page-hero p');
-    if (homeSubtitle) {
-      if (tWinner === 'calm') {
-        homeSubtitle.textContent = '조용한 자연 체류와 낮은 자극의 장소를 중심으로, 오늘 당신의 속도를 천천히 낮출 수 있는 회복 여행 동선을 보여드려요.';
-      } else if (tWinner === 'active') {
-        homeSubtitle.textContent = '걷고 둘러볼 수 있는 회복 코스를 중심으로, 낮과 저녁의 리듬을 다시 맞출 수 있도록 돕습니다.';
-      } else {
-        homeSubtitle.textContent = '해질 무렵부터 밤까지 이어지는 감각 전환 루트를 중심으로, 숙면을 준비하는 밤길을 안내해드려요.';
-      }
-    }
+        <div class="reward-coupon">
+          <div class="coupon-left">
+            <small>GIFT</small>
+            <strong>SLEEP KIT</strong>
+          </div>
+          <div class="coupon-right">
+            <div class="coupon-title">영월 수면 리추얼 키트</div>
+            <div class="coupon-desc">지역 약초 베개 & 멜라토닌 티 세트</div>
+            <div class="coupon-code">CODE: STAR-Y0524</div>
+          </div>
+        </div>
 
-    surveyContainer.style.display = 'none';
-    surveySummary.style.display = 'block';
-  }
-
-  // 카드 클릭 → 설문 시작
-  document.querySelectorAll('.survey-entry-card').forEach(card => {
-    card.addEventListener('click', () => {
-      currentSurveyKey = card.dataset.survey;
-      currentStepIndex = 0;
-      surveySummary.style.display = 'none';
-      surveyContainer.style.display = 'block';
-      renderSurveyStep();
-      surveyContainer.scrollIntoView({ behavior:'smooth', block:'start' });
-    });
-  });
-
-  // 뒤로 버튼 → 카드 목록으로
-  if (surveyBackBtn) {
-    surveyBackBtn.addEventListener('click', () => {
-      surveyContainer.style.display = 'none';
-      surveySummary.style.display = 'none';
-    });
-  }
-
-  // 다음/완료 버튼
-  if (surveyNextBtn) {
-    surveyNextBtn.addEventListener('click', () => {
-      const def = surveyDefinitions[currentSurveyKey];
-      const answer = getCurrentAnswer();
-
-      if (!answer) {
-        alert('하나를 선택해 주세요.');
-        return;
-      }
-
-      const qId = def.questions[currentStepIndex].id;
-      surveyAnswers[currentSurveyKey][qId] = answer;
-      updateCardStatus(currentSurveyKey);
-
-      if (currentStepIndex < def.questions.length - 1) {
-        currentStepIndex++;
-        renderSurveyStep();
-      } else {
-        surveyContainer.style.display = 'none';
-
-        const allDone =
-          Object.keys(surveyAnswers.travel).length === surveyDefinitions.travel.questions.length &&
-          Object.keys(surveyAnswers.sleep).length === surveyDefinitions.sleep.questions.length &&
-          Object.keys(surveyAnswers.sensitivity).length === surveyDefinitions.sensitivity.questions.length;
-
-        if (allDone) {
-          showSurveySummary();
-        } else {
-          const remaining = [];
-          if (Object.keys(surveyAnswers.travel).length < surveyDefinitions.travel.questions.length) remaining.push('여행 성향');
-          if (Object.keys(surveyAnswers.sleep).length < surveyDefinitions.sleep.questions.length) remaining.push('수면 습관');
-          if (Object.keys(surveyAnswers.sensitivity).length < surveyDefinitions.sensitivity.questions.length) remaining.push('환경 민감도');
-          alert(`"${remaining.join(', ')}" 설문도 완료해 주세요.`);
-        }
-      }
-    });
-  }
-
-  // 홈으로 이동 버튼
-  if (goHomeBtn) {
-    goHomeBtn.addEventListener('click', () => {
-      switchTab('home');
-    });
-  }
-</script>
+        <button class="cta-btn" id="reward-confirm-btn" style="margin-top: 30px;">기록 탭에서 내 별자리 확인하기</button>
+        <button class="sub-btn" id="reward-close-btn">나중에 받기</button>
+      </div>
+    </div>
+  </div>
+  <script src="script.js"></script>
 </body>
 </html>
