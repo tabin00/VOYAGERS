@@ -735,31 +735,65 @@ button { font: inherit; }
 /* --- 지도 뷰어 전체 틀 --- */
 .map-visual {
   position: relative;
-  height: clamp(300px, 46vh, 400px); /* 지도를 보기 편하게 세로 크기를 살짝 키웠습니다 */
+  height: clamp(300px, 50vh, 500px); /* 화면의 절반 정도를 지도가 차지하도록 설정 */
   border-radius: 24px;
-  overflow: hidden; /* 틀 밖으로 삐져나가는 지도는 숨김 */
+  overflow: hidden;
   border: 1px solid rgba(255,255,255,0.08);
   background: #020a26;
 }
+/* 🌟 1. 가로 스크롤 유도 그림자 */
+.map-visual::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40px;
+  height: 100%;
+  background: linear-gradient(to left, rgba(2, 10, 38, 0.8), transparent);
+  pointer-events: none; /* 클릭 방해 금지 */
+  z-index: 2;
+}
 
-/* --- 손가락으로 밀어서 스크롤하는 영역 --- */
+/* 🌟 3. 스크롤 인디케이터 (하단 바) */
+.map-indicator-container {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  z-index: 10;
+  overflow: hidden;
+}
+
+.map-indicator-bar {
+  width: 30%; /* 지도의 가로 길이에 비례해 움직임 */
+  height: 100%;
+  background: var(--mint);
+  border-radius: 2px;
+  transition: transform 0.1s linear;
+}
+/* --- 드래그 영역: 세로 고정, 가로 스크롤 --- */
 .map-scroll-area {
   width: 100%;
   height: 100%;
-  overflow: auto; /* 상하좌우 스크롤 허용 */
-  -webkit-overflow-scrolling: touch; /* 모바일에서 부드러운 스와이프 지원 */
+  overflow-x: auto; /* 가로 스크롤 */
+  overflow-y: auto; /* 🌟 확대 시 세로 스크롤 허용으로 변경 */
+  -webkit-overflow-scrolling: touch;
   position: relative;
 }
 
-/* --- 실제 영월 지도 이미지 --- */
+/* --- 실제 영월 지도 이미지: 세로 100% 고정 --- */
 .real-map-img {
-  width: 1200px; /* 지도의 기본 가로 길이를 1200px로 아주 크게 고정 (드래그 가능하게 만듦) */
-  max-width: none;
+  height: 100%;    /* 세로 높이를 부모 컨테이너에 100% 맞춤 */
+  width: auto;      /* 가로 길이는 원본 비율에 맞춰서 길게 늘어남 */
   display: block;
-  /* 우리가 원하는 몽환적인 밤하늘 톤으로 반전! */
+  max-width: none;  /* 가로가 잘리지 않도록 제한 해제 */
   filter: invert(100%) hue-rotate(180deg) brightness(85%) contrast(110%);
-  transform-origin: top left;
-  transition: transform 0.25s ease-out; /* 확대/축소 시 부드러운 애니메이션 */
+  transform-origin: center left; /* 왼쪽 기준으로 확대되게 하여 가로 탐색 용이하게 설정 */
+  transition: transform 0.2s ease-out;
 }
 
 /* --- 확대/축소 버튼 디자인 --- */
@@ -811,43 +845,149 @@ button { font: inherit; }
   z-index: 1;
 }
 
-.route-line {
-  fill: none;
-  stroke: rgba(168,223,255,0.42);
-  stroke-width: 3;
-  stroke-dasharray: 6 8;
-  stroke-linecap: round;
-}
 
-.node-button {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  width: 26px; height: 26px;
-  border: 0; background: transparent; padding: 0;
-  z-index: 4;
-}
 
-.node-button .glow {
-  position: absolute; inset: 0; border-radius: 999px;
-  background: radial-gradient(circle, rgba(255,216,107,0.85) 0%, rgba(255,216,107,0.1) 60%, transparent 70%);
-  transform: scale(1.8); opacity: 0.65;
-}
+/* --- 🌟 [수정] 고대비 고채도 테마 색상 (시인성 극대화) --- */
+.theme-calm   { --node-color: #00FBFF; } /* 선명한 사이언 */
+.theme-active { --node-color: #FF2E63; } /* 강렬한 핑크/레드 */
+.theme-forest { --node-color: #00FF85; } /* 네온 그린 */
+.theme-night  { --node-color: #BF95FF; } /* 밝은 바이올렛 */
+.theme-stay   { --node-color: #FFD700; } /* 황금빛 옐로우 */
 
-.node-button .dot {
-  position: absolute; inset: 5px; border-radius: 999px;
-  background: var(--gold); box-shadow: 0 0 0 5px rgba(255,201,107,0.12);
-}
-
-.node-button.future .dot {
-  background: var(--mint);
-  box-shadow: 0 0 0 5px rgba(133,228,209,0.12);
-}
-
+/* --- 🌟 [수정] 글씨 시인성 보강 --- */
 .node-button .label {
   position: absolute;
-  left: 50%; top: 100%; transform: translate(-50%, 10px);
-  white-space: nowrap; color: var(--text); font-size: 11px; font-weight: 700;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.36);
+  top: 50%;
+  margin-top: 5px; 
+  left: 50%;
+  transform: translateX(-50%) scale(0.6); /* 크기 살짝 키움 */
+  transform-origin: top center;
+  font-size: 10px;
+  font-weight: 800; /* 더 두껍게 */
+  color: #FFFFFF; /* 완전한 흰색 */
+  white-space: nowrap;
+  pointer-events: none;
+  text-shadow: 0 0 4px rgba(0,0,0,1), 0 0 2px rgba(0,0,0,1); /* 그림자 강화 */
+}
+
+.node-button.state-default {
+  opacity: 0.8; /* 기본 투명도 상향 */
+  filter: saturate(1.2) brightness(1.1);
+}
+
+/* --- 별 버튼 전체 영역 (중심축 미세 조정으로 쏠림 현상 방지) --- */
+.node-button {
+  position: absolute;
+  /* 🌟 왼쪽 쏠림 교정: -50% 대신 -46%를 사용하여 전체적으로 약간 오른쪽으로 이동 */
+  transform: translate(-46%, -50%);
+  width: 32px; height: 32px;
+  border: 0; background: transparent; padding: 0;
+  z-index: 4;
+  transition: all 0.5s ease;
+  display: flex; /* 별을 정중앙에 배치하기 위해 플렉스 사용 */
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- 🌟 진짜 별 모양 (더 작게 8px로 조정) --- */
+.node-button .dot {
+  display: block;
+  width: 8px; height: 8px; /* 10px에서 8px로 더 축소 */
+  background: var(--node-color);
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  transition: all 0.3s ease;
+}
+
+/* --- 🌟 관광지 글씨(라벨): 강제 압축 축소 및 빛 번짐 최소화 --- */
+.node-button .label {
+  position: absolute;
+  top: 50%;
+  margin-top: 4px; 
+  left: 50%;
+  /* 🌟 브라우저 한계를 무시하고 크기를 강제로 딱 절반(0.5배)으로 압축! */
+  transform: translateX(-50%) scale(0.5);
+  transform-origin: top center; /* 위쪽을 기준으로 작아지게 설정 */
+  font-size: 10px; /* 기본 크기 */
+  font-weight: 500; 
+  color: rgba(255, 255, 255, 0.4); /* 흰색 빛도 확 줄여서 연하게 */
+  white-space: nowrap;
+  pointer-events: none;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.6); /* 글씨 그림자도 최소화 */
+}
+
+/* --- 🌟 [1단계] 진단 전: 눈에 띄도록 진하고 선명한 상태로 변경 --- */
+.node-button.state-default {
+  opacity: 0.70; /* 기존에 반투명하던 것을 거의 불투명(0.95)하게 올려서 꽉 찬 색으로 만듭니다 */
+  filter: saturate(1.2) brightness(1.2); /* 채도와 밝기를 강제로 더 끌어올려 배경과 대비시킵니다 */
+}
+.node-button.state-default .label {
+  display: none; /* 글씨는 여전히 진단 후에 나오도록 숨김 유지 */
+}
+/* --- [2단계] 진단 후 추천: 네온 1/3로 축소 --- */
+.node-button.state-recommended {
+  opacity: 0.9;
+  /* drop-shadow를 2px -> 1px로 줄이고 밝기도 낮춤 */
+  filter: saturate(1) brightness(1.05) drop-shadow(0 0 1px var(--node-color));
+}
+.node-button.state-recommended .label {
+  display: block;
+}
+
+/* --- [3단계] 방문 완료: 선명하지만 눈 안 부시게 --- */
+.node-button.state-visited {
+  opacity: 1;
+  /* drop-shadow를 5px -> 2px로 대폭 축소 (1/3 수준) */
+  filter: saturate(1.2) brightness(1.1) drop-shadow(0 0 2px var(--node-color));
+  z-index: 5;
+}
+
+.node-button.state-visited .dot {
+  transform: scale(1.15);
+  background: var(--node-color);
+  animation: starBlink 2s infinite ease-in-out;
+}
+
+/* 🌟 별 테두리 깜빡임도 1/3 수준으로 은은하게 축소 */
+@keyframes starBlink {
+  0%, 100% { 
+    filter: drop-shadow(0 0 0px var(--node-color)); 
+    opacity: 1; 
+  }
+  50% { 
+    /* 기존 6px에서 2px로 껌뻑임 범위 대폭 축소 */
+    filter: drop-shadow(0 0 2px var(--node-color)); 
+    opacity: 0.85; 
+  }
+}
+
+.node-button.state-visited .label {
+  display: block;
+  color: rgba(255, 255, 255, 0.7); /* 방문 시 글씨 색상도 톤 다운 */
+  font-weight: 600;
+  /* 방문한 곳의 글씨는 아주아주 미세하게만 큼 (0.55배) */
+  transform: translateX(-50%) scale(0.55);
+}
+.active-line {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: drawConstellation 2s forwards ease-out; /* 선이 스르륵 그려지는 애니메이션 */
+}
+
+@keyframes drawConstellation {
+  to { stroke-dashoffset: 0; }
+}
+/* --- 별자리 연결선 (최초 숨김) --- */
+.route-line {
+  stroke: rgba(168,223,255,0.6);
+  stroke-width: 2.5;
+  stroke-dasharray: 6 8;
+  stroke-linecap: round;
+  opacity: 0; /* 🌟 초기에는 투명 */
+  transition: opacity 0.8s ease;
+}
+
+.route-line.active {
+  opacity: 1; /* 방문 시 나타남 */
 }
 /* --- 새로 추가할 별자리 애니메이션 효과 --- */
 .node-button.current .dot {
@@ -873,15 +1013,6 @@ button { font: inherit; }
   100% { transform: scale(2.8); opacity: 0; }
 }
 
-.active-line {
-  stroke-dasharray: 1000;
-  stroke-dashoffset: 1000;
-  animation: drawConstellation 2.5s forwards ease-out;
-}
-
-@keyframes drawConstellation {
-  to { stroke-dashoffset: 0; }
-}
 /* -------------------------------------- */
 
 .legend {
@@ -1280,12 +1411,14 @@ button { font: inherit; }
   margin: 0 auto;
   border-radius: 28px 28px 0 0;
   border: 1px solid rgba(255,255,255,0.08);
-  background: linear-gradient(180deg, rgba(24,34,89,0.98), rgba(9,18,58,0.98));
+  /* 🌟 3번 기능: 모달 상단을 살짝 반투명하게 하고 블러 처리하여 뒤쪽 지도가 은은하게 보이도록 함 */
+  background: linear-gradient(180deg, rgba(24,34,89,0.85), rgba(9,18,58,0.98));
+  backdrop-filter: blur(12px);
   box-shadow: 0 -10px 40px rgba(0,0,0,0.35);
   padding: 12px 16px calc(22px + env(safe-area-inset-bottom));
   transform: translateY(100%);
-  transition: transform 260ms ease;
-  max-height: min(76vh, 640px);
+  transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1); /* 더 부드러운 팝업 모션 */
+  max-height: 48vh; /* 🌟 3번 기능: 모달이 화면의 절반(48%) 이상 올라오지 못하게 높이 제한 */
   overflow-y: auto;
 }
 

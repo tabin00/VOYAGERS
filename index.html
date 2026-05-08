@@ -151,25 +151,73 @@
               <div class="progress-chip"><small>완성도</small><strong>4 / 7</strong></div>
             </div>
 
-            <div class="map-visual" id="map-viewport">
-              <div class="map-scroll-area" id="map-scroll-area">
+            <div class="map-visual">
+            <div class="map-scroll-area" id="map-scroll-area">
+              <div id="map-wrapper" style="position: relative; display: inline-flex; height: 100%; transform-origin: top left; transition: transform 0.2s ease-out;">
+                
                 <img src="map.jpg" class="real-map-img" id="real-map-img" alt="영월 지도">
                 
-                <div id="star-layer" style="position: absolute; top:0; left:0; width:100%; height:100%;"></div>
-              </div>
+                <div id="star-layer" style="position: absolute; top:0; left:0; width:100%; height:100%;">
+                  
+                  <svg id="constellation-svg" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1; pointer-events:none;"></svg>
 
-              <div class="map-controls">
-                <button id="map-zoom-in" aria-label="지도 확대">＋</button>
-                <button id="map-zoom-out" aria-label="지도 축소">－</button>
-              </div>
+                  <button class="node-button state-default theme-calm" style="left: 40.5%; top: 66%;" data-node="cheongnyeongpo" data-theme="calm">
+                    <span class="glow"></span><span class="dot"></span><span class="label">청령포</span>
+                  </button>
+                  <button class="node-button state-default theme-calm" style="left: 42.1%; top: 53.2%;" data-node="jangneung" data-theme="calm">
+                    <span class="glow"></span><span class="dot"></span><span class="label">장릉</span>
+                  </button>
+                  <button class="node-button state-default theme-calm" style="left: 64.5%; top: 87.3%;" data-node="saggat" data-theme="calm">
+                    <span class="glow"></span><span class="dot"></span><span class="label">김삿갓문학관</span>
+                  </button>
+
+                  <button class="node-button state-default theme-active" style="left: 54.5%; top: 42%;" data-node="eorayeon" data-theme="active">
+                    <span class="glow"></span><span class="dot"></span><span class="label">동강 어라연</span>
+                  </button>
+                  <button class="node-button state-default theme-active" style="left: 28.3%; top: 49.6%;" data-node="hanbando" data-theme="active">
+                    <span class="glow"></span><span class="dot"></span><span class="label">한반도지형</span>
+                  </button>
+                  <button class="node-button state-default theme-active" style="left: 16.6%; top: 27.7%;" data-node="yoseonjeong" data-theme="active">
+                    <span class="glow"></span><span class="dot"></span><span class="label">요선정</span>
+                  </button>
+
+                  <button class="node-button state-default theme-forest" style="left: 64.5%; top: 58.8%;" data-node="manggyeong" data-theme="forest">
+                    <span class="glow"></span><span class="dot"></span><span class="label">망경대산 휴양림</span>
+                  </button>
+                  <button class="node-button state-default theme-forest" style="left: 92.4%; top: 76.2%;" data-node="moss" data-theme="forest">
+                    <span class="glow"></span><span class="dot"></span><span class="label">상동 이끼계곡</span>
+                  </button>
+                  <button class="node-button state-default theme-forest" style="left: 71.9%; top: 83.5%;" data-node="naeri" data-theme="forest">
+                    <span class="glow"></span><span class="dot"></span><span class="label">내리계곡</span>
+                  </button>
+
+                  <button class="node-button state-default theme-night" style="left: 47.7%; top: 54.7%;" data-node="byeolmaro" data-theme="night">
+                    <span class="glow"></span><span class="dot"></span><span class="label">별마로천문대</span>
+                  </button>
+                  <button class="node-button state-default theme-night" style="left: 39.4%; top: 52.4%;" data-node="seondol" data-theme="night">
+                    <span class="glow"></span><span class="dot"></span><span class="label">선돌 (일몰)</span>
+                  </button>
+                  <button class="node-button state-default theme-night" style="left: 49.6%; top: 59%;" data-node="yeongwolbridge" data-theme="night">
+                    <span class="glow"></span><span class="dot"></span><span class="label">영월대교 야경</span>
+                  </button>
+
+                  <button class="node-button state-default theme-stay" style="left: 27%; top: 47.9%;" id="dynamic-stay-node" data-node="room_pending" data-theme="stay">
+                    <span class="glow"></span><span class="dot"></span><span class="label">전용 치유 숙소</span>
+                  </button>
+                  
+                </div> </div> </div> <div class="map-controls">
+              <span id="zoom-level-text" style="color:var(--mint); font-size:11px; text-align:center; font-weight:800; background:rgba(0,0,0,0.6); padding:4px 0; border-radius:12px; margin-bottom:4px; border:1px solid rgba(255,255,255,0.1);">1.0x</span>
+              <button id="map-zoom-in" aria-label="지도 확대">＋</button>
+              <button id="map-zoom-out" aria-label="지도 축소">－</button>
             </div>
-
-            <div class="legend">
+            <div class="map-indicator-container">
+              <div class="map-indicator-bar" id="map-indicator-bar"></div>
+            </div>
+            </div> <div class="legend">
               <span class="pill"><i style="background:#fff3b0"></i> 이미 방문한 회복 자원</span>
               <span class="pill"><i style="background:var(--mint)"></i> 오늘 방문 추천 자원</span>
               <span class="pill">✦ 점을 눌러 장소 상세 보기</span>
             </div>
-          </div>
 
           <section class="section">
             <div class="section-header">
