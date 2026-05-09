@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>SLEEPERS - Mobile Prototype</title>
+  <title>VOYAGERS - Mobile Prototype</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -12,67 +12,28 @@
 <body>
   <div class="app-shell">
     <section class="screen active" id="splash-screen">
-      <div class="center-screen">
-        <div class="soft-orb"></div>
-        <div class="logo-lockup">
-          <div class="constellation-wrap" aria-hidden="true">
-            <svg viewBox="0 0 180 180" width="150" height="150" fill="none">
-              <path d="M38 109 L58 93 L80 100 L100 78 L120 85 L140 63 L154 69" stroke="rgba(182,230,255,0.66)" stroke-width="2.6" stroke-linecap="round"/>
-              <circle cx="38" cy="109" r="5" fill="#fff1ad"/>
-              <circle cx="58" cy="93" r="5.5" fill="#fff1ad"/>
-              <circle cx="80" cy="100" r="4.5" fill="#fff1ad"/>
-              <circle cx="100" cy="78" r="6" fill="#fff1ad"/>
-              <circle cx="120" cy="85" r="5" fill="#fff1ad"/>
-              <circle cx="140" cy="63" r="6.5" fill="#fff1ad"/>
-              <circle cx="154" cy="69" r="4.5" fill="#fff1ad"/>
-            </svg>
-          </div>
-          <h1 class="brand-name">SLEEPERS</h1>
-          <div class="brand-sub">Starry Sleep Tourism</div>
-          <div class="brand-copy">여행하며 쉬고, 별자리처럼 회복을 기록하다.</div>
+      <div class="center-screen" id="splash-bg">
         </div>
-        <div class="splash-footer">별자리 · 영월 · 숙면</div>
-      </div>
     </section>
 
     <section class="screen" id="onboarding-screen">
-      <div class="screen-inner">
-        <div class="top-row">
-          <button class="ghost-btn" id="skip-onboarding">건너뛰기</button>
-          <div class="progress-dots" aria-label="온보딩 진행도">
+      <div class="screen-inner" style="padding: 0; position: relative; height: 100vh;">
+        
+        <div class="hero-card" style="border: none; box-shadow: none; border-radius: 0; height: 100%; margin: 0; background: #03103d;">
+          <div class="hero-slide slide-art" data-slide="0" id="ob-bg-1"></div>
+          <div class="hero-slide slide-art" data-slide="1" id="ob-bg-2"></div>
+          <div class="hero-slide slide-art" data-slide="2" id="ob-bg-3"></div>
+        </div>
+
+        <div style="position: absolute; bottom: calc(50px + env(safe-area-inset-bottom)); left: 24px; right: 24px; z-index: 10;">
+          <div class="progress-dots" style="margin-bottom: 32px; justify-content: center;">
             <span class="active" data-dot="0"></span>
             <span data-dot="1"></span>
             <span data-dot="2"></span>
           </div>
+          <button class="cta-btn" id="next-onboarding" style="background: #fff; color: #03103d; font-weight: 800; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">다음 항해로</button>
+          <button class="sub-btn" id="to-login" style="background: rgba(0,0,0,0.3); border: none; margin-top: 12px;">건너뛰기</button>
         </div>
-
-        <div class="hero-card">
-          <div class="hero-slide art-1 slide-art" data-slide="0">
-            <div class="mountain1"></div><div class="mountain2"></div><div class="mountain3"></div><div class="branch"></div><div class="bird"></div>
-            <div class="hero-copy">
-              <h2>숙면을 위한 여행이 시작됩니다</h2>
-              <p>영월의 수면 친화 관광지를 따라 이동하며 몸과 마음의 속도를 천천히 낮춰보세요.</p>
-            </div>
-          </div>
-          <div class="hero-slide art-2 slide-art" data-slide="1" style="display:none;">
-            <div class="map-silhouette"></div><div class="line l1"></div><div class="line l2"></div><div class="line l3"></div><div class="line l4"></div><div class="star s1"></div><div class="star s2"></div><div class="star s3"></div><div class="star s4"></div><div class="star s5"></div>
-            <div class="hero-copy">
-              <h2>방문한 장소가 나만의 별자리가 됩니다</h2>
-              <p>수면에 도움이 되는 관광 자원을 방문하면 지도 위에 별이 기록되고, 당신만의 회복 궤적이 완성됩니다.</p>
-            </div>
-          </div>
-          <div class="hero-slide art-3 slide-art" data-slide="2" style="display:none;">
-            <div class="hill2"></div><div class="hill1"></div><div class="path"></div><div class="moon"></div>
-            <div class="hero-copy">
-              <h2>오늘의 회복 동선을 추천해드려요</h2>
-              <p>사전 진단을 통해 현재 상태를 확인하고, 낮-저녁-밤에 맞는 영월 숙면 관광 코스를 받아보세요.</p>
-            </div>
-          </div>
-        </div>
-
-        <button class="cta-btn" id="next-onboarding">다음</button>
-        <button class="sub-btn" id="to-login">로그인 화면 보기</button>
-        <div class="info-note">대표 키워드 · 별자리 · 영월 · 숙면</div>
       </div>
     </section>
 
@@ -92,7 +53,7 @@
               </svg>
             </div>
             <div>
-              <h2 class="mini-brand">SLEEPERS</h2>
+              <h2 class="mini-brand">VOYAGERS</h2>
               <p class="mini-copy">영월의 고요한 밤을 따라, 수면을 위한 여행을 시작해보세요.</p>
             </div>
           </div>
@@ -126,7 +87,7 @@
             </div>
             <div class="brand-copy-home">
               <small>Starry Sleep Tourism</small>
-              <strong>SLEEPERS</strong>
+              <strong>VOYAGERS</strong>
             </div>
           </div>
           <div class="top-actions">
@@ -684,8 +645,9 @@
         </div>
       </div>
       <div class="survey-modal-question" id="survey-modal-question"></div>
-      <div class="survey-modal-footer">
-        <button class="cta-btn" id="survey-modal-next">다음</button>
+      <div class="survey-modal-footer" style="display: flex; gap: 10px;">
+        <button class="sub-btn" id="survey-modal-prev" style="display: none; margin-top: 0; flex: 1;">이전</button>
+        <button class="cta-btn" id="survey-modal-next" style="flex: 2;">다음</button>
       </div>
     </div>
   </div>

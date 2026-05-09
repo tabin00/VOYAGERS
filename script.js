@@ -33,20 +33,28 @@ let currentSlide = 0;
 
 function renderSlide(index) {
   slides.forEach((slide, i) => {
-    slide.style.display = i === index ? 'block' : 'none';
+    slide.style.display = ''; 
+    slide.classList.toggle('active-slide', i === index);
   });
+
   dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
-  nextBtn.textContent = index === slides.length - 1 ? '로그인 화면으로' : '다음';
+  
+  if(nextBtn) {
+    nextBtn.textContent = index === slides.length - 1 ? '항해 시작하기' : '다음 항해로';
+  }
 }
 
-nextBtn.addEventListener('click', () => {
-  if (currentSlide < slides.length - 1) {
-    currentSlide += 1;
-    renderSlide(currentSlide);
-  } else {
-    showScreen('login');
-  }
-});
+// 🌟 에러 차단: 버튼이 있을 때만 이벤트 연결
+if (nextBtn) {
+  nextBtn.addEventListener('click', () => {
+    if (currentSlide < slides.length - 1) {
+      currentSlide += 1;
+      renderSlide(currentSlide);
+    } else {
+      showScreen('login');
+    }
+  });
+}
 
 dots.forEach((dot, index) => {
   dot.addEventListener('click', () => {
@@ -55,11 +63,20 @@ dots.forEach((dot, index) => {
   });
 });
 
-document.getElementById('skip-onboarding').addEventListener('click', () => showScreen('login'));
-document.getElementById('to-login').addEventListener('click', () => showScreen('login'));
-document.getElementById('back-to-onboarding').addEventListener('click', () => showScreen('onboarding'));
-document.getElementById('skip-to-home').addEventListener('click', () => showScreen('home'));
-document.getElementById('skip-to-home-top').addEventListener('click', () => showScreen('home'));
+const btnSkipOnb = document.getElementById('skip-onboarding');
+if (btnSkipOnb) btnSkipOnb.addEventListener('click', () => showScreen('login'));
+
+const btnToLogin = document.getElementById('to-login');
+if (btnToLogin) btnToLogin.addEventListener('click', () => showScreen('login'));
+
+const btnBackOnb = document.getElementById('back-to-onboarding');
+if (btnBackOnb) btnBackOnb.addEventListener('click', () => showScreen('onboarding'));
+
+const btnSkipHome = document.getElementById('skip-to-home');
+if (btnSkipHome) btnSkipHome.addEventListener('click', () => switchTab('diagnosis'));
+
+const btnSkipHomeTop = document.getElementById('skip-to-home-top');
+if (btnSkipHomeTop) btnSkipHomeTop.addEventListener('click', () => switchTab('diagnosis'));
 
 renderSlide(currentSlide);
 
@@ -453,15 +470,22 @@ function renderModalStep() {
   const total = def.questions.length;
   const saved = surveyAnswers[currentSurveyKey][q.id] || null;
   
-  if(surveyModalLabel) surveyModalLabel.textContent = def.label;
-  if(surveyModalProgressText) surveyModalProgressText.textContent = `${currentStepIndex + 1} / ${total}`;
-  if(surveyModalProgressBar) {
-    surveyModalProgressBar.style.width = `${((currentStepIndex + 1) / total) * 100}%`;
-    surveyModalProgressBar.style.background = def.color;
+  const modalLabel = document.getElementById('survey-modal-label');
+  const progressText = document.getElementById('survey-modal-progress-text');
+  const progressBar = document.getElementById('survey-modal-progress-bar');
+  const modalQuestion = document.getElementById('survey-modal-question');
+  const btnPrev = document.getElementById('survey-modal-prev');
+  const btnNext = document.getElementById('survey-modal-next');
+
+  if(modalLabel) modalLabel.textContent = def.label;
+  if(progressText) progressText.textContent = `${currentStepIndex + 1} / ${total}`;
+  if(progressBar) {
+    progressBar.style.width = `${((currentStepIndex + 1) / total) * 100}%`;
+    progressBar.style.background = def.color;
   }
 
-  if(surveyModalQuestion) {
-    surveyModalQuestion.innerHTML = `
+  if(modalQuestion) {
+    modalQuestion.innerHTML = `
       <h4>${q.text}</h4>
       ${q.options.map(opt => `
         <label class="survey-option-label ${saved === opt.value ? 'selected' : ''}">
@@ -471,23 +495,39 @@ function renderModalStep() {
       `).join('')}
     `;
 
-    surveyModalQuestion.querySelectorAll('input[type=radio]').forEach(input => {
+    modalQuestion.querySelectorAll('input[type=radio]').forEach(input => {
       input.addEventListener('change', () => {
-        surveyModalQuestion.querySelectorAll('.survey-option-label').forEach(label => {
+        modalQuestion.querySelectorAll('.survey-option-label').forEach(label => {
           label.classList.toggle('selected', label.querySelector('input').checked);
         });
       });
     });
   }
 
-  if(surveyModalNext) surveyModalNext.textContent = currentStepIndex === total - 1 ? '완료' : '다음';
+  // 🌟 이전/다음 버튼 보이기 및 글씨 설정
+  if (btnPrev) btnPrev.style.display = currentStepIndex === 0 ? 'none' : 'block';
+  if (btnNext) btnNext.textContent = currentStepIndex === total - 1 ? '완료' : '다음';
 }
 
-if(surveyModalNext) {
-  surveyModalNext.addEventListener('click', () => {
+// 🌟 이전 버튼 클릭 이벤트
+const btnPrev = document.getElementById('survey-modal-prev');
+if (btnPrev) {
+  btnPrev.addEventListener('click', () => {
+    if (currentStepIndex > 0) {
+      currentStepIndex--;
+      renderModalStep();
+    }
+  });
+}
+
+// 🌟 다음 버튼 클릭 이벤트
+const btnNext = document.getElementById('survey-modal-next');
+if (btnNext) {
+  btnNext.addEventListener('click', () => {
     const def = surveyDefinitions[currentSurveyKey];
     const q = def.questions[currentStepIndex];
-    const checked = surveyModalQuestion.querySelector('input[name="survey-q"]:checked');
+    const modalQuestion = document.getElementById('survey-modal-question');
+    const checked = modalQuestion ? modalQuestion.querySelector('input[name="survey-q"]:checked') : null;
     
     if (!checked) {
       alert('하나를 선택해 주세요.');
@@ -506,6 +546,7 @@ if(surveyModalNext) {
     }
   });
 }
+  
 
 function updateCardStatus(key) {
   const def = surveyDefinitions[key];
@@ -551,9 +592,9 @@ function showSurveyResultModal() {
   const eWinner = Object.entries(eScore).sort((a,b) => b[1]-a[1])[0][0] || 'mid';
 
   const travelMap = {
-    calm: '저자극 자연 체류형 회복 관광자',
-    active: '리듬 회복 활동형 회복 관광자',
-    night: '야간 감각 전환형 회복 관광자'
+    calm: '정지된 수면의 고요한 항해자',
+    active: '파동을 만드는 활기찬 항해자',
+    night: '빛의 궤적을 쫓는 심야의 항해자'
   };
   const sleepMap = {
     lack: '지속적인 수면 부족 상태로, 이번 여행에서 수면 회복에 특히 집중이 필요합니다.',
@@ -927,33 +968,5 @@ if (mapScrollArea && indicatorBar) {
       const scrollPercentage = (scrollLeft / scrollWidth) * 100;
       indicatorBar.style.transform = `translateX(${scrollPercentage * 2.3}px)`;
     }
-  });
-}
-// --- 🌟 임시 좌표 추출기 (개발용: 클릭 시 좌표 복사창 띄움) ---
-const mapScrollContainer = document.getElementById('map-scroll-area');
-const baseMapImage = document.getElementById('real-map-img');
-
-if (mapScrollContainer && baseMapImage) {
-  mapScrollContainer.addEventListener('click', function(e) {
-    // 이미 있는 별 버튼이나 글씨를 눌렀을 때는 무시
-    if(e.target.closest('.node-button')) return;
-    
-    // 지도의 실제 위치와 크기를 가져와서 정확한 클릭 지점 계산
-    const rect = baseMapImage.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    // 지도 밖의 검은 여백을 눌렀을 때는 무시
-    if (x < 0 || y < 0 || x > rect.width || y > rect.height) return;
-    
-    // 퍼센트 계산
-    const leftPercent = ((x / rect.width) * 100).toFixed(1);
-    const topPercent = ((y / rect.height) * 100).toFixed(1);
-    
-    // 🌟 복사하기 쉽게 프롬프트 창으로 띄워줍니다!
-    prompt(
-      '📍 좌표가 추출되었습니다. 아래 텍스트를 복사(Ctrl+C)하세요!', 
-      `left: ${leftPercent}%; top: ${topPercent}%;`
-    );
   });
 }

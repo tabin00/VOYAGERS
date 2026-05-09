@@ -1,22 +1,23 @@
 :root {
+  /* 🌟 VOYAGERS 프리미엄 컬러 팔레트 */
   --bg: #04144b;
   --bg-deep: #03103d;
   --bg-mid: #0a1c62;
-  --surface: rgba(255,255,255,0.06);
-  --surface-2: rgba(255,255,255,0.1);
-  --surface-3: rgba(159,141,255,0.16);
+  --surface: rgba(255,255,255,0.04);
+  --surface-2: rgba(255,255,255,0.08);
+  --surface-3: rgba(159,141,255,0.12);
   --text: #f5f7ff;
   --text-soft: rgba(245,247,255,0.76);
   --text-faint: rgba(245,247,255,0.5);
   --line: rgba(255,255,255,0.1);
-  --primary: #9f8dff;
+  --primary: #9f8dff;   /* Soft Violet */
   --primary-2: #b7a7ff;
-  --mint: #85e4d1;
-  --gold: #ffc96b;
+  --mint: #85e4d1;      /* Healing Mint */
+  --gold: #ffc96b;      /* Starry Gold */
   --pink: #ff5ea8;
   --naver: #03c75a;
   --kakao: #fee500;
-  --shadow: 0 18px 40px rgba(0,0,0,0.24);
+  --shadow: 0 20px 40px rgba(0,0,0,0.4);
   --radius-2xl: 32px;
   --radius-xl: 28px;
   --radius-lg: 24px;
@@ -33,14 +34,15 @@ html, body {
   height: 100%;
 }
 
+/* 🌟 배경을 더 깊고 신비로운 밤하늘 톤으로 변경 */
 body {
   min-height: 100vh;
   font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   color: var(--text);
-  background:
-    radial-gradient(circle at 20% 0%, rgba(159,141,255,0.35), transparent 26%),
-    radial-gradient(circle at 90% 10%, rgba(113,158,255,0.18), transparent 18%),
-    linear-gradient(180deg, #0a1c62 0%, #04144b 30%, #03103d 100%);
+  background: 
+    radial-gradient(circle at 10% 10%, rgba(159,141,255,0.15), transparent 30%),
+    radial-gradient(circle at 90% 80%, rgba(133,228,209,0.1), transparent 30%),
+    linear-gradient(180deg, #04144b 0%, #03103d 100%);
   overflow: hidden;
 }
 
@@ -386,26 +388,42 @@ button { font: inherit; }
   cursor: pointer;
 }
 
+/* 🌟 SAILERS 메인 액션 버튼 */
 .cta-btn {
   width: 100%; border: 0; color: #fff;
   border-radius: 18px;
   padding: 16px 18px;
   font-weight: 800;
   font-size: 15px;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-2) 100%);
-  box-shadow: 0 16px 26px rgba(159,141,255,0.24);
+  letter-spacing: 0.02em;
+  background: linear-gradient(135deg, var(--primary) 0%, #684fff 100%);
+  box-shadow: 0 10px 24px rgba(159,141,255,0.35); /* 버튼 아래로 퍼지는 네온 그림자 */
+  border: 1px solid rgba(255,255,255,0.15); /* 유리 테두리 반사광 */
+  transition: all 0.2s ease;
 }
 
+.cta-btn:active {
+  transform: scale(0.97); /* 누를 때 쫀득하게 들어감 */
+  box-shadow: 0 4px 12px rgba(159,141,255,0.5);
+}
+
+/* 🌟 SAILERS 서브 버튼 (비활성/보조) */
 .sub-btn {
   width: 100%;
   margin-top: 10px;
   border-radius: 18px;
   padding: 15px 18px;
-  background: rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.04);
   color: var(--text-soft);
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
   font-weight: 600;
   font-size: 14px;
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+}
+
+.sub-btn:active {
+  background: rgba(255,255,255,0.08);
 }
 
 .info-note {
@@ -1357,15 +1375,15 @@ button { font: inherit; }
   white-space: nowrap;
 }
 
+/* 🌟 SAILERS 프리미엄 하단 탭바 */
 .bottom-nav {
   position: fixed;
   left: 0; right: 0; bottom: 0;
   z-index: 30;
-  background: linear-gradient(180deg, rgba(9,20,69,0.24), rgba(45,59,109,0.97));
-  backdrop-filter: blur(18px);
+  background: rgba(3, 16, 61, 0.55); /* 뒤가 더 잘 비치도록 투명도 조절 */
+  backdrop-filter: blur(24px) saturate(1.5); /* 유리 질감 극대화 */
   border-top: 1px solid rgba(255,255,255,0.08);
-  padding: 10px max(12px, env(safe-area-inset-right)) calc(14px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
-  display: none;
+  padding: 12px max(12px, env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
 }
 
 .bottom-nav-inner {
@@ -1382,7 +1400,7 @@ button { font: inherit; }
 .tab-button {
   border: 0;
   background: transparent;
-  color: #8f97d6;
+  color: rgba(255,255,255,0.35); /* 비활성 탭은 어둡게 */
   display: grid;
   justify-items: center;
   gap: 6px;
@@ -1390,16 +1408,19 @@ button { font: inherit; }
   border-radius: 14px;
   font-size: 11px;
   font-weight: 700;
+  transition: all 0.3s ease;
 }
 
 .tab-button .ico {
-  font-size: 20px;
+  font-size: 22px; /* 아이콘 크기 살짝 키움 */
   line-height: 1;
 }
 
 .tab-button.active {
-  color: #d8ceff;
-  background: rgba(255,255,255,0.06);
+  color: var(--mint); /* 활성 탭은 힐링 민트색으로 */
+  background: transparent;
+  text-shadow: 0 0 14px rgba(133,228,209,0.8); /* 민트색 네온 글로우 발사! */
+  transform: translateY(-2px); /* 살짝 위로 떠오르는 효과 */
 }
 
 .home-indicator {
@@ -1740,31 +1761,33 @@ button { font: inherit; }
 .coupon-title { font-size: 16px; font-weight: 800; margin-bottom: 4px; color: var(--bg-deep); }
 .coupon-desc { font-size: 12px; color: #666; margin-bottom: 10px; }
 .coupon-code { font-size: 10px; font-weight: 700; color: var(--primary); letter-spacing: 0.05em; }
-/* --- 🌟 별자리 연결선 스타일 --- */
+/* --- 🌟 SAILERS 별자리 연결선 스타일 --- */
 .constellation-line {
-  stroke: rgba(255, 255, 255, 0.4);
-  stroke-width: 1.5;
-  stroke-dasharray: 4 4; /* 점선 효과 */
+  stroke: rgba(255, 255, 255, 0.6);
+  stroke-width: 2;
+  stroke-dasharray: 5 6; /* 더 총총한 점선 효과 */
   stroke-linecap: round;
+  filter: drop-shadow(0 0 6px rgba(255,255,255,0.5)); /* 선 자체에서 뿜어지는 빛 */
   animation: lineGrow 1s ease-out forwards;
 }
 
 @keyframes lineGrow {
-  from { opacity: 0; stroke-dashoffset: 10; }
+  from { opacity: 0; stroke-dashoffset: 20; }
   to { opacity: 1; stroke-dashoffset: 0; }
 }
 
-/* --- 🌟 별자리 완성 시 전체 광채 효과 --- */
+/* --- 🌟 별자리 완성 시 전체 광채 극대화 --- */
 .constellation-complete .constellation-line {
-  stroke: #fff;
-  stroke-width: 2;
-  filter: drop-shadow(0 0 5px var(--mint));
-  stroke-dasharray: none; /* 실선으로 변경 */
+  stroke: var(--gold); /* 완성되면 선 전체가 황금빛으로 변함 */
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 8px var(--gold));
+  stroke-dasharray: none; /* 점선에서 실선으로 확 변함 */
+  transition: all 0.8s ease;
 }
 
 .constellation-complete .node-button.state-visited .dot {
   transform: scale(1.4);
-  filter: saturate(1.5) brightness(1.5) drop-shadow(0 0 10px #fff);
+  filter: saturate(1.5) brightness(1.5) drop-shadow(0 0 14px var(--gold)); /* 별들도 황금빛 글로우 폭발 */
 }
 
 /* --- 🌟 기록 탭: 다회차 아카이브 UI --- */
@@ -1884,4 +1907,38 @@ button { font: inherit; }
   width: 32px; height: 32px; border-radius: 10px;
   background: rgba(255,255,255,0.1); border: none; color: #fff; font-size: 18px;
   display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+/* --- 🌟 SAILERS 초고화질 배경 이미지 맵핑 (확장자 JPG) --- */
+
+/* 스플래시 배경 */
+#splash-bg {
+  width: 100%; height: 100vh;
+  background: url('bg-splash.jpg') no-repeat center / cover;
+}
+
+/* 온보딩 슬라이드들 */
+#ob-bg-1 { background: url('bg-onboarding-1.jpg') no-repeat center / cover; }
+#ob-bg-2 { background: url('bg-onboarding-2.jpg') no-repeat center / cover; }
+#ob-bg-3 { background: url('bg-onboarding-3.jpg') no-repeat center / cover; }
+
+/* 시네마틱 전환 효과 */
+.hero-slide {
+  position: absolute; inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s ease;
+  transform: scale(1.1); /* 대기 중일 땐 살짝 확대 */
+}
+
+.hero-slide.active-slide {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1); /* 나타나면서 부드럽게 줌아웃 */
+}
+
+/* 하단 가독성을 위한 그라데이션 오버레이 */
+.hero-slide::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(3,16,61,0) 0%, rgba(3,16,61,0.4) 60%, rgba(3,16,61,0.95) 100%);
 }
