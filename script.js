@@ -1,3 +1,5 @@
+let constellationArchive = []; // 🌟 완성된 별자리들을 담을 저장소
+let pathSequence = []; // 🌟 방문 순서를 저장할 배열 (파일 맨 위에 추가)
 const screens = {
   splash: document.getElementById('splash-screen'),
   onboarding: document.getElementById('onboarding-screen'),
@@ -190,43 +192,98 @@ if(startJourneyBtn) {
   });
 }
 
-// --- 🌟 별 점등 및 선 연결 로직 ---
+// --- 🌟 별자리 선 긋기 함수 ---
+function drawPathLine(node1, node2) {
+  const svg = document.getElementById('constellation-svg');
+  if (!svg) return;
+
+  const x1 = node1.style.left;
+  const y1 = node1.style.top;
+  const x2 = node2.style.left;
+  const y2 = node2.style.top;
+
+  const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  line.setAttribute("x1", x1);
+  line.setAttribute("y1", y1);
+  line.setAttribute("x2", x2);
+  line.setAttribute("y2", y2);
+  line.setAttribute("class", "constellation-line");
+  svg.appendChild(line);
+}
+
+// --- 🌟 별 클릭 이벤트 (순서대로 연결) ---
 document.querySelectorAll('.node-button').forEach(node => {
   node.addEventListener('click', () => {
-    // 🌟 클릭 시 무조건 가장 밝은 3단계 방문 상태(state-visited)로 변경
+    if (node.classList.contains('state-visited')) return; // 이미 누른 건 무시
+
+    // 🌟 [추가 1] 별자리가 이미 완성되었다면 더 이상 다른 별은 누를 수 없음 (여정 종료)
+    if (document.getElementById('star-layer').classList.contains('constellation-complete')) {
+      return;
+    }
+
+    // 🌟 [수정 2] 누른 별이 '숙소(Stay)'인 경우 검사를 먼저 진행!
+    if (node.id === 'dynamic-stay-node') {
+      if (pathSequence.length < 2) {
+        alert("숙소는 회복 여정의 마지막 목적지입니다.\n별자리를 완성하려면 최소 2곳 이상의 관광지를 먼저 방문해 주세요!");
+        // 🌟 핵심: 여기서 return으로 튕겨내서 숙소가 '방문 완료'로 색칠되는 것을 원천 차단함
+        return; 
+      } else {
+        // 조건 충족 시 숙소 방문 처리 및 별자리 완성 애니메이션 시작
+        node.classList.remove('state-default', 'state-recommended');
+        node.classList.add('state-visited');
+        
+        drawPathLine(pathSequence[pathSequence.length - 1], node);
+        pathSequence.push(node);
+
+        document.getElementById('star-layer').classList.add('constellation-complete');
+        setTimeout(() => {
+          const rewardModal = document.getElementById('reward-modal');
+          if(rewardModal) rewardModal.classList.add('open');
+          updateRecordTab(); 
+        }, 800);
+        return; // 완료했으므로 밑에 있는 일반 관광지 코드는 실행 안 함
+      }
+    }
+
+    // --- 여기부터는 누른 곳이 '일반 관광지'일 때만 실행됨 ---
     node.classList.remove('state-default', 'state-recommended');
     node.classList.add('state-visited');
 
-    checkAndDrawLines();
+    // 1. 선 긋기
+    if (pathSequence.length > 0) {
+      drawPathLine(pathSequence[pathSequence.length - 1], node);
+    }
+    pathSequence.push(node);
 
+    // 2. 화면 중앙 이동 로직
     const mapScrollArea = document.getElementById('map-scroll-area');
     if (mapScrollArea) {
       const nodeX = node.offsetLeft * currentScale;
       const nodeY = node.offsetTop * currentScale;
-      mapScrollArea.scrollTo({ left: nodeX - (mapScrollArea.clientWidth / 2), top: nodeY - (mapScrollArea.clientHeight / 2), behavior: 'smooth' });
+      mapScrollArea.scrollTo({ 
+        left: nodeX - (mapScrollArea.clientWidth / 2), 
+        top: nodeY - (mapScrollArea.clientHeight / 2), 
+        behavior: 'smooth' 
+      });
     }
 
-    if (node.dataset.node === 'stay') {
-      const rewardModal = document.getElementById('reward-modal');
-      if(rewardModal) rewardModal.classList.add('open');
-    } else {
-      openSheet(sheetContent[node.dataset.node]);
-    }
+    // 3. 해당 장소의 상세 정보 팝업 띄우기
+    openSheet(sheetContent[node.dataset.node]);
   });
 });
 
-function checkAndDrawLines() {
-  for (let i = 1; i <= 4; i++) {
-    const startNode = document.querySelector(`.node-button[data-index="${i}"]`);
-    const endNode = document.querySelector(`.node-button[data-index="${i+1}"]`);
-    const targetLine = document.getElementById(`line-${i}`);
+// --- 🌟 기록 탭 데이터 업데이트 함수 ---
+function updateRecordTab() {
+  const recordEmpty = document.getElementById('record-empty-state');
+  const recordData = document.getElementById('record-data-state');
+  if (recordEmpty) recordEmpty.style.display = 'none';
+  if (recordData) recordData.style.display = 'block';
 
-    if (startNode && endNode && targetLine) {
-      if (startNode.classList.contains('visited') && endNode.classList.contains('visited')) {
-        targetLine.classList.add('active'); 
-      }
-    }
-  }
+  const recordDayActivity = document.getElementById('record-day-activity');
+  const recordNightEnv = document.getElementById('record-night-env');
+  
+  if (recordDayActivity) recordDayActivity.textContent = "맞춤형 치유 코스";
+  if (recordNightEnv) recordNightEnv.textContent = "배정된 전용 객실";
 }
 
 document.getElementById('open-record-modal').addEventListener('click', () => openSheet(sheetContent.record));
@@ -477,26 +534,6 @@ function checkAllSurveysDone() {
   if (allDone) {
     showSurveyResultModal();
   }
-  // 🌟 숙소 별 이름 및 데이터 가변 처리
-  const stayNode = document.getElementById('dynamic-stay-node');
-  if (stayNode) {
-    const stayLabel = stayNode.querySelector('.label');
-    stayNode.classList.remove('state-default');
-    stayNode.classList.add('state-recommended');
-
-    if (eWinner === 'high') {
-      stayLabel.textContent = '추천: 딥 슬립 룸';
-      stayNode.dataset.node = 'room_high';
-    } else if (eWinner === 'mid') {
-      stayLabel.textContent = '추천: 스탠다드 룸';
-      stayNode.dataset.node = 'room_mid';
-    } else {
-      stayLabel.textContent = '추천: 별빛 캠핑존';
-      stayNode.dataset.node = 'room_low';
-    }
-  }
-
-  if(surveyResultModal) surveyResultModal.classList.add('open');
 }
 
 
@@ -580,26 +617,63 @@ function showSurveyResultModal() {
 
   if(courseEyebrow) courseEyebrow.textContent = `맞춤 동선 · ${travelMap[tWinner]}`;
   
-  if (courseHeroTitle && courseStep1Title) {
-    if (tWinner === 'calm') {
-      courseHeroTitle.textContent = '느린 호흡으로 자연에 머무는 회복 동선';
-      courseStep1Title.textContent = '느린 숲길 산책 & 동강 조망';
-      courseStep1Desc.textContent = '햇빛 노출과 저강도 이동으로 생체리듬을 안정시키고 감각 자극을 정돈하는 조용한 체류형 코스입니다.';
-      if(courseStep1Tag) courseStep1Tag.textContent = '저자극 힐링';
-      if(courseStep2Desc) courseStep2Desc.textContent = '소화 부담을 줄인 영월 산채 위주의 가벼운 다이닝 후, 고요한 강변에서 물소리를 들으며 교감신경을 안정시킵니다.';
-    } else if (tWinner === 'active') {
-      courseHeroTitle.textContent = '건강한 자극으로 리듬을 되찾는 활동 동선';
-      courseStep1Title.textContent = '영월 트레킹 & 가벼운 체험';
-      courseStep1Desc.textContent = '낮 시간대의 적절한 신체 활동과 걷기를 통해 수면 압력을 높여, 밤에 깊은 잠에 빠져들 수 있도록 유도합니다.';
-      if(courseStep1Tag) courseStep1Tag.textContent = '수면 압력 증가';
-      if(courseStep2Desc) courseStep2Desc.textContent = '트립토판이 풍부한 지역 단백질 다이닝 후, 가벼운 야간 산책으로 젖산을 분해하고 몸의 열을 서서히 낮춥니다.';
-    } else {
-      courseHeroTitle.textContent = '밤의 감각을 천 জ্ঞ깨우는 전환 동선';
-      courseStep1Title.textContent = '해질 무렵 강변 산책 & 야경 조망';
-      courseStep1Desc.textContent = '낮의 강한 햇빛보다는 늦은 오후부터 서서히 밤으로 전환되는 영월의 분위기를 느끼며 마음의 속도를 낮춥니다.';
-      if(courseStep1Tag) courseStep1Tag.textContent = '야간 감각 전환';
-      if(courseStep2Desc) courseStep2Desc.textContent = '수면 호르몬 분비를 돕는 따뜻한 티 코스와 함께, 별마로천문대에서 시각적 자극을 줄이고 밤의 감각에 몰입합니다.';
-    }
+  // --- 🌟 [강화] 모든 코스 요소를 진단 결과에 따라 실시간 생성 ---
+  const courseElements = {
+    hero: document.getElementById('course-hero-title'),
+    step1T: document.getElementById('course-step1-title'),
+    step1D: document.getElementById('course-step1-desc'),
+    step1Tag: document.getElementById('course-step1-tag'),
+    step2T: document.getElementById('course-step2-title'),
+    step2D: document.getElementById('course-step2-desc'),
+    step3T: document.getElementById('course-step3-title'),
+    step3D: document.getElementById('course-step3-desc'),
+    step4T: document.getElementById('course-step4-title'),
+    step4D: document.getElementById('course-step4-desc')
+  };
+
+  // 1. 여행 성향(tWinner)에 따른 1~2단계 가변화
+  if (tWinner === 'calm') {
+    courseElements.hero.textContent = '느린 호흡으로 자연에 머무는 회복 동선';
+    courseElements.step1T.textContent = '청령포 숲길 산책 & 물멍';
+    courseElements.step1D.textContent = '낮의 햇빛을 받으며 교감신경을 안정시키는 조용한 체류형 코스입니다.';
+    courseElements.step1Tag.textContent = '저자극 힐링';
+    courseElements.step2T.textContent = '수면 유도 티(Tea) 다이닝';
+    courseElements.step2D.textContent = '소화 부담이 적은 영월 나물 정식과 심신 안정을 돕는 약초 차 세션을 진행합니다.';
+  } else if (tWinner === 'active') {
+    courseElements.hero.textContent = '활발한 활동으로 리듬을 찾는 에너지 동선';
+    courseElements.step1T.textContent = '동강 트레킹 & 리버버깅';
+    courseElements.step1D.textContent = '강한 신체 활동으로 아데노신을 축적해 야간 수면 압력을 극대화합니다.';
+    courseElements.step1Tag.textContent = '수면 압력 증가';
+    courseElements.step2T.textContent = '고단백 회복 다이닝';
+    courseElements.step2D.textContent = '에너지 소모를 보충하고 멜라토닌 생성을 돕는 육류 위주의 식사와 야간 산책을 즐깁니다.';
+  } else {
+    courseElements.hero.textContent = '밤의 감각을 깨우는 심야 전환 동선';
+    courseElements.step1T.textContent = '강변 노을 감상 & 사진 기록';
+    courseElements.step1D.textContent = '저색온도의 노을빛을 통해 뇌에 밤의 시작을 알리고 각성도를 낮춥니다.';
+    courseElements.step1Tag.textContent = '야간 감각 전환';
+    courseElements.step2T.textContent = '별마로 천문대 별빛 투어';
+    courseElements.step2D.textContent = '인공 조명을 차단하고 별빛에 몰입하며 자연스러운 수면 유도를 준비합니다.';
+  }
+
+  // 2. 환경 민감도(eWinner)에 따른 3단계 가변화
+  if (eWinner === 'high') {
+    courseElements.step3T.textContent = '딥 슬립 차단 솔루션';
+    courseElements.step3D.textContent = '100% 암막, 특수 방음, 저자극 침구가 세팅된 고민감도 전용 객실로 배정됩니다.';
+  } else if (eWinner === 'mid') {
+    courseElements.step3T.textContent = '표준 수면 최적화 세팅';
+    courseElements.step3D.textContent = '적정 온습도 자동 제어와 함께 입면을 돕는 은은한 간접 조명이 세팅됩니다.';
+  } else {
+    courseElements.step3T.textContent = '자연 친화형 수면 환경';
+    courseElements.step3D.textContent = '영월의 시원한 밤바람을 활용한 자연 쿨링과 스마트링 트래킹이 시작됩니다.';
+  }
+
+  // 3. 수면 상태(sWinner)에 따른 4단계 가변화
+  if (sWinner === 'lack') {
+    courseElements.step4T.textContent = '집중 회복 지수 분석';
+    courseElements.step4D.textContent = '만성 피로 해소 정도를 측정하고, 부족한 잠을 채우기 위한 추가 휴식 플랜을 제공합니다.';
+  } else {
+    courseElements.step4T.textContent = '수면 효율 별자리 기록';
+    courseElements.step4D.textContent = '어젯밤의 양질의 수면 데이터를 확인하고, 나만의 회복 별자리를 영구 저장합니다.';
   }
 
   if (courseStep3Desc) {
@@ -612,18 +686,23 @@ function showSurveyResultModal() {
     }
   }
 
-  // 🌟 [추가 로직] 진단 결과에 따라 지도 위의 특정 테마 별들을 '추천 상태(2단계)'로 불 밝히기
+  // 🌟 [추가 로직] 진단 결과에 따라 특정 테마 별들 불 밝히기
   document.querySelectorAll('.node-button').forEach(node => {
     const nodeTheme = node.dataset.theme;
     
-    // 여행 성향에 맞는 테마이거나, 기본적으로 들러야 하는 숙소(stay), 숲(forest)인 경우 추천 상태로 변경
     if (nodeTheme === tWinner || nodeTheme === 'stay' || nodeTheme === 'forest') {
       node.classList.remove('state-default');
       node.classList.add('state-recommended');
-      // 🌟 [추가] 진단 결과(환경 민감도 eWinner)에 따라 숙소 별 이름과 데이터 변경
+    }
+  });
+
+  // 🌟 [수정 완료] 숙소 별 이름 및 데이터 가변 처리 (딱 한 번만 실행!)
   const stayNode = document.getElementById('dynamic-stay-node');
   if (stayNode) {
     const stayLabel = stayNode.querySelector('.label');
+    stayNode.classList.remove('state-default');
+    stayNode.classList.add('state-recommended');
+
     if (eWinner === 'high') {
       stayLabel.textContent = '추천: 딥 슬립 룸';
       stayNode.dataset.node = 'room_high';
@@ -635,10 +714,30 @@ function showSurveyResultModal() {
       stayNode.dataset.node = 'room_low';
     }
   }
-    }
-  });
 
   if(surveyResultModal) surveyResultModal.classList.add('open');
+  // 🌟 [추가] 진단 결과를 마이페이지 프로파일에 완벽 동기화
+  const mypageTitle = document.getElementById('mypage-profile-title');
+  const mypageDesc = document.getElementById('mypage-profile-desc');
+  const mypageAvatar = document.getElementById('mypage-avatar');
+
+  if (mypageTitle && mypageDesc && mypageAvatar) {
+    mypageTitle.textContent = `[${travelMap[tWinner]}]`;
+    
+    if (tWinner === 'calm') {
+      mypageDesc.textContent = '조용한 자연 속에서 교감신경을 안정시키는 것을 선호하며, 고도의 환경 제어가 필요한 타입입니다.';
+      mypageAvatar.textContent = '🍃'; 
+      mypageAvatar.style.borderColor = '#00FF85'; // 숲 치유 테마색
+    } else if (tWinner === 'active') {
+      mypageDesc.textContent = '낮 동안 에너지를 발산해 수면 압력을 극대화하여 깊은 수면을 유도하는 타입입니다.';
+      mypageAvatar.textContent = '🔥'; 
+      mypageAvatar.style.borderColor = '#FF2E63'; // 활동 테마색
+    } else {
+      mypageDesc.textContent = '해질녘부터 밤까지 이어지는 빛 조절과 감각 전환에 최적화된 올빼미형 타입입니다.';
+      mypageAvatar.textContent = '🌙'; 
+      mypageAvatar.style.borderColor = '#BF95FF'; // 야간 테마색
+    }
+  }
 }
 
 if(surveyModalClose) {
@@ -679,19 +778,106 @@ if(rewardCloseBtn) {
   });
 }
 
+// --- 🌟 별자리 완성 리워드 모달 '확인' 버튼 로직 ---
 const rewardConfirmBtn = document.getElementById('reward-confirm-btn');
 if(rewardConfirmBtn) {
   rewardConfirmBtn.addEventListener('click', () => {
+    // 1. 모달 닫기
     const rewardModal = document.getElementById('reward-modal');
     if(rewardModal) rewardModal.classList.remove('open');
     
+    // (이름 묻는 팝업 삭제!) 화면 강제 전환
     const emptyState = document.getElementById('record-empty-state');
     const dataState = document.getElementById('record-data-state');
     if (emptyState) emptyState.style.display = 'none';
     if (dataState) dataState.style.display = 'block';
 
+    const stayNode = document.getElementById('dynamic-stay-node');
+    const roomName = stayNode ? stayNode.querySelector('.label').textContent : '맞춤 치유 객실';
+
+    // 지도에 찍힌 별들의 좌표(%) 그대로 추출하기
+    const coords = pathSequence.map(node => ({
+      x: node.style.left,
+      y: node.style.top
+    }));
+
+    if (typeof window.constellationArchive === 'undefined') {
+      window.constellationArchive = [];
+    }
+
+    // 🌟 완성된 데이터 세팅 (기본 이름 자동 부여)
+    const newEntry = {
+      id: Date.now(),
+      date: new Date().toLocaleDateString(),
+      name: `${window.constellationArchive.length + 1}회차 치유 별자리`, // 기본 이름
+      coords: coords,
+      room: roomName
+    };
+    
+    window.constellationArchive.push(newEntry);
+    
+    // 화면에 그리고 탭 이동
+    renderArchive(); 
     switchTab('record'); 
   });
+}
+
+// --- 🌟 추출한 좌표를 바탕으로 미니 별자리 도화지(SVG) 그리기 ---
+function generateMiniSVG(coords) {
+  if (!coords || coords.length === 0) return '';
+  let lines = '';
+  for (let i = 0; i < coords.length - 1; i++) {
+    lines += `<line x1="${coords[i].x}" y1="${coords[i].y}" x2="${coords[i+1].x}" y2="${coords[i+1].y}" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-dasharray="3 3" />`;
+  }
+  let dots = coords.map((c, i) => {
+    let isLast = i === coords.length - 1;
+    let color = isLast ? '#FFD700' : '#fff'; 
+    let size = isLast ? '5' : '3';
+    return `<circle cx="${c.x}" cy="${c.y}" r="${size}" fill="${color}" filter="drop-shadow(0 0 3px ${color})" />`;
+  }).join('');
+
+  return `<svg width="100%" height="100%" style="overflow: visible; filter: drop-shadow(0 0 5px rgba(255,255,255,0.4));">
+            ${lines}
+            ${dots}
+          </svg>`;
+}
+
+// --- 🌟 [추가] 카드 클릭 시 이름 변경하는 함수 ---
+window.renameConstellation = function(id) {
+  const archive = window.constellationArchive;
+  const index = archive.findIndex(item => item.id === id);
+  if (index === -1) return;
+
+  const currentName = archive[index].name;
+  const newName = prompt('✨ 별자리의 새 이름을 지어주세요.', currentName);
+
+  // 취소하지 않고 새 이름을 입력했을 때만 변경
+  if (newName !== null && newName.trim() !== '') {
+    archive[index].name = newName.trim();
+    renderArchive(); // 화면 새로고침
+  }
+};
+
+// --- 🌟 아카이브 그리드에 카드를 그려주는 함수 ---
+function renderArchive() {
+  const archiveGrid = document.getElementById('constellation-archive-grid');
+  if (!archiveGrid) return;
+
+  archiveGrid.innerHTML = window.constellationArchive.map(item => `
+    <div class="archive-card" style="position: relative; overflow: hidden; height: 160px; padding: 0; cursor: pointer;" onclick="renameConstellation(${item.id})">
+      
+      <div style="position: absolute; top: 0; left: 0; right: 0; padding: 12px 10px 16px; background: linear-gradient(180deg, rgba(3,16,61,0.95) 0%, transparent 100%); z-index: 2; text-align: center;">
+        <strong style="font-size: 13px; font-weight: 800; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.9); display: block; margin-bottom: 4px;">${item.name} ✏️</strong>
+        <div style="font-size: 10px; color: var(--mint);">${item.room}</div>
+      </div>
+      
+      <div style="position: absolute; inset: 45px 15px 25px 15px; pointer-events: none; opacity: 0.9;">
+        ${generateMiniSVG(item.coords)}
+      </div>
+      
+      <span class="label" style="position:absolute; bottom:10px; left:0; width:100%; text-align:center; font-size:10px; color:rgba(255,255,255,0.6); z-index: 2;">${item.date}</span>
+    </div>
+  `).join('');
 }
 
 // --- 🌟 지도 확대/축소(Zoom) 기능 ---
@@ -741,5 +927,33 @@ if (mapScrollArea && indicatorBar) {
       const scrollPercentage = (scrollLeft / scrollWidth) * 100;
       indicatorBar.style.transform = `translateX(${scrollPercentage * 2.3}px)`;
     }
+  });
+}
+// --- 🌟 임시 좌표 추출기 (개발용: 클릭 시 좌표 복사창 띄움) ---
+const mapScrollContainer = document.getElementById('map-scroll-area');
+const baseMapImage = document.getElementById('real-map-img');
+
+if (mapScrollContainer && baseMapImage) {
+  mapScrollContainer.addEventListener('click', function(e) {
+    // 이미 있는 별 버튼이나 글씨를 눌렀을 때는 무시
+    if(e.target.closest('.node-button')) return;
+    
+    // 지도의 실제 위치와 크기를 가져와서 정확한 클릭 지점 계산
+    const rect = baseMapImage.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // 지도 밖의 검은 여백을 눌렀을 때는 무시
+    if (x < 0 || y < 0 || x > rect.width || y > rect.height) return;
+    
+    // 퍼센트 계산
+    const leftPercent = ((x / rect.width) * 100).toFixed(1);
+    const topPercent = ((y / rect.height) * 100).toFixed(1);
+    
+    // 🌟 복사하기 쉽게 프롬프트 창으로 띄워줍니다!
+    prompt(
+      '📍 좌표가 추출되었습니다. 아래 텍스트를 복사(Ctrl+C)하세요!', 
+      `left: ${leftPercent}%; top: ${topPercent}%;`
+    );
   });
 }
