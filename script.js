@@ -72,11 +72,30 @@ if (btnToLogin) btnToLogin.addEventListener('click', () => showScreen('login'));
 const btnBackOnb = document.getElementById('back-to-onboarding');
 if (btnBackOnb) btnBackOnb.addEventListener('click', () => showScreen('onboarding'));
 
+// 🌟 로그인 버튼 '가짜 로딩' 연출 및 화면 완벽 전환
 const btnSkipHome = document.getElementById('skip-to-home');
-if (btnSkipHome) btnSkipHome.addEventListener('click', () => switchTab('diagnosis'));
+if (btnSkipHome) {
+  btnSkipHome.addEventListener('click', (e) => {
+    e.target.textContent = '항해 준비 중...';
+    e.target.style.opacity = '0.7';
+    setTimeout(() => {
+      showScreen('home'); // 홈 화면 바탕을 먼저 켜고
+      switchTab('diagnosis'); // 진단 탭으로 이동!
+    }, 1000); // 1초 대기
+  });
+}
 
 const btnSkipHomeTop = document.getElementById('skip-to-home-top');
-if (btnSkipHomeTop) btnSkipHomeTop.addEventListener('click', () => switchTab('diagnosis'));
+if (btnSkipHomeTop) {
+  btnSkipHomeTop.addEventListener('click', (e) => {
+    e.target.textContent = '인증 진행 중...';
+    e.target.style.opacity = '0.7';
+    setTimeout(() => {
+      showScreen('home');
+      switchTab('diagnosis');
+    }, 1000);
+  });
+}
 
 renderSlide(currentSlide);
 
@@ -106,58 +125,90 @@ const sheetContent = {
   /* 1. Calm (정서 안정) */
   cheongnyeongpo: {
     title: '청령포', subtitle: '고요한 숲과 강변이 어우러진 정서 안정 포인트입니다.',
-    items: [['수면 도움', '시야 확장과 저강도 보행을 통해 교감신경을 부드럽게 안정시킵니다.'], ['추천 대상', '사람이 적고 조용한 곳을 선호하는 여행자']], primary: '방문 체크인'
+    items: [['수면 도움', '시야 확장과 저강도 보행을 통해 교감신경을 부드럽게 안정시킵니다.']]
   },
   jangneung: {
     title: '장릉', subtitle: '울창한 소나무 숲길을 천천히 걷는 저자극 코스입니다.',
-    items: [['수면 도움', '피톤치드와 고요함으로 스트레스 호르몬(코르티솔) 수치를 낮춥니다.'], ['추천 대상', '시각적 피로를 풀고 마음을 정리하고 싶은 분']], primary: '방문 체크인'
+    items: [['수면 도움', '피톤치드와 고요함으로 스트레스 호르몬(코르티솔) 수치를 낮춥니다.']]
   },
   saggat: {
     title: '김삿갓문학관', subtitle: '조용한 이야기와 함께 마음의 템포를 늦추는 거점입니다.',
-    items: [['수면 도움', '인지행동치료(CBT-I) 관점에서 자기 전 불안감을 낮추는 정서 정리 시간을 제공합니다.']], primary: '방문 체크인'
+    items: [['수면 도움', '자기 전 불안감을 낮추는 정서 정리 시간을 제공합니다.']]
+  },
+  yemilfootbath: {
+    title: '와인족욕체험', subtitle: '따뜻한 족욕으로 혈액순환을 돕는 이완 코스입니다.',
+    items: [['수면 도움', '심부 체온을 부드럽게 조절하여 깊은 수면을 유도합니다.']]
+  },
+  bodeoksa: {
+    title: '보덕사', subtitle: '사찰의 고요함 속에서 마음을 비우는 시간입니다.',
+    items: [['수면 도움', '시각 및 청각 자극을 줄여 과각성된 뇌파를 안정시킵니다.']]
   },
 
   /* 2. Active (수면 압력) */
   eorayeon: {
     title: '동강 어라연', subtitle: '햇빛 노출과 걷기를 통해 생체 리듬을 깨우는 코스입니다.',
-    items: [['수면 도움', '풍부한 햇빛이 멜라토닌 합성을 돕고, 적절한 피로도가 야간 수면 압력을 극대화합니다.'], ['추천 대상', '활동적인 체험으로 깊은 잠을 원하는 여행자']], primary: '방문 체크인'
+    items: [['수면 도움', '풍부한 햇빛이 멜라토닌 합성을 돕고 야간 수면 압력을 극대화합니다.']]
   },
   hanbando: {
     title: '한반도지형', subtitle: '탁 트인 시야와 함께 가벼운 트레킹을 즐기는 포인트입니다.',
-    items: [['수면 도움', '오전~낮 시간의 신체 활동으로 몸에 건강한 젖산을 쌓아 기절하듯 잠들게 유도합니다.']], primary: '방문 체크인'
+    items: [['수면 도움', '낮 시간의 신체 활동으로 몸에 건강한 피로도를 쌓아줍니다.']]
   },
   yoseonjeong: {
     title: '요선정', subtitle: '암반과 계곡을 오르내리며 자연의 활력을 얻는 코스입니다.',
-    items: [['수면 도움', '자연 속 동적 활동을 통해 우울감을 덜고 일주기 리듬을 정상화합니다.']], primary: '방문 체크인'
+    items: [['수면 도움', '동적 활동을 통해 무기력감을 덜고 일주기 리듬을 정상화합니다.']]
+  },
+  riverbugging: {
+    title: '리버버깅', subtitle: '동강의 시원한 물살을 가르는 액티비티입니다.',
+    items: [['수면 도움', '강도 높은 신체 활동으로 야간 수면 요구량을 최대치로 끌어올립니다.']]
+  },
+  sankkoradeyi: {
+    title: '산꼬라데이길', subtitle: '굽이진 산길을 걷는 상쾌한 트레킹 코스입니다.',
+    items: [['수면 도움', '유산소 운동 효과로 스트레스를 발산하고 입면 시간을 단축합니다.']]
   },
 
   /* 3. Forest (숲 치유) */
   manggyeong: {
     title: '망경대산 휴양림', subtitle: '본격적인 치유와 이완이 일어나는 숲 치유 인프라입니다.',
-    items: [['수면 도움', '자연의 백색소음(바람, 새소리)이 과각성 상태의 뇌파를 안정화합니다.'], ['추천 시간', '오후 늦게부터 해질녘 사이']], primary: '방문 체크인'
+    items: [['수면 도움', '자연의 백색소음이 과각성 상태의 뇌파를 진정시킵니다.']]
   },
   moss: {
     title: '상동 이끼계곡', subtitle: '초록색 이끼와 계곡만 존재하는 극도의 저자극 환경입니다.',
-    items: [['수면 도움', '시각 및 청각적 자극을 철저히 통제하여 환경 변화에 예민한 분들의 불안을 낮춥니다.']], primary: '방문 체크인'
+    items: [['수면 도움', '시청각적 자극을 철저히 통제하여 예민도를 대폭 낮춥니다.']]
   },
   naeri: {
     title: '내리계곡', subtitle: '인적이 드물고 물소리가 일정한 계곡 산책로입니다.',
-    items: [['수면 도움', '일정한 주파수의 물소리가 뇌를 이완시키고 잡념을 없애줍니다.']], primary: '방문 체크인'
+    items: [['수면 도움', '일정한 주파수의 물소리가 뇌를 이완시키고 잡념을 없애줍니다.']]
+  },
+  yeonhavalley: {
+    title: '연하계곡', subtitle: '청량한 물소리가 가득한 시원한 숲속 쉼터입니다.',
+    items: [['수면 도움', '자연의 청각적 리듬이 심장 박동수를 편안하게 안정시킵니다.']]
+  },
+  danpungsan: {
+    title: '단풍산', subtitle: '계절의 변화를 느끼며 천천히 걷는 힐링 산책로입니다.',
+    items: [['수면 도움', '숲에서 뿜어져 나오는 피톤치드로 심신의 긴장을 완화합니다.']]
   },
 
   /* 4. Night (야간 전환) */
   byeolmaro: {
     title: '별마로천문대', subtitle: '낮에서 밤으로 넘어가는 감각 전환의 핵심 포인트입니다.',
-    items: [['수면 도움', '디지털 화면에서 벗어나 실제 어둠과 별빛에 노출되며 수면 호르몬 분비를 촉진합니다.'], ['추천 대상', '밤의 분위기를 즐기며 천천히 잠들 준비를 하는 분']], primary: '방문 체크인'
+    items: [['수면 도움', '인공 조명을 피하고 실제 어둠에 노출되어 수면 호르몬 분비를 촉진합니다.']]
   },
   seondol: {
     title: '선돌 (일몰)', subtitle: '영월 최고의 일몰을 보며 생체 리듬에 밤을 알리는 곳입니다.',
-    items: [['수면 도움', '태양이 넘어가는 것을 시각적으로 체감하여 뇌에 입면 신호를 확실하게 전달합니다.']], primary: '방문 체크인'
+    items: [['수면 도움', '태양이 넘어가는 것을 시각적으로 체감하여 입면 신호를 전달합니다.']]
   },
   yeongwolbridge: {
-    title: '영월대교 야경', subtitle: '잔잔한 강물에 비친 조명을 보며 걷는 야간 수변 산책로입니다.',
-    items: [['수면 도움', '수면 직전 체온을 서서히 떨어뜨리기 위한 아주 가벼운 야간 걷기에 최적화되어 있습니다.']], primary: '방문 체크인'
-  }, /* <--- 쉼표 꼭 확인! */
+    title: '영월대교 야경', subtitle: '잔잔한 강물에 비친 조명을 보며 걷는 야간 산책로입니다.',
+    items: [['수면 도움', '수면 직전 심부 체온을 서서히 떨어뜨리기 위한 가벼운 걷기에 최적입니다.']]
+  },
+  riversidedetention: {
+    title: '강변저류지', subtitle: '탁 트인 수변 공간에서 즐기는 조용한 저녁 산책입니다.',
+    items: [['수면 도움', '넓은 시야와 차분한 공기로 하루 동안 누적된 시각적 피로를 해소합니다.']]
+  },
+  radiostar: {
+    title: '라디오스타박물관', subtitle: '따뜻한 아날로그 감성으로 마음을 달래는 공간입니다.',
+    items: [['수면 도움', '따뜻한 감성과 향수로 심리적 안정감을 주어 수면 전 불안을 덜어줍니다.']]
+  },
   
   /* 5. Stay (가변 데이터) */
   room_high: {
@@ -230,22 +281,33 @@ function drawPathLine(node1, node2) {
 
 // --- 🌟 별 클릭 이벤트 (순서대로 연결) ---
 document.querySelectorAll('.node-button').forEach(node => {
-  node.addEventListener('click', () => {
-    if (node.classList.contains('state-visited')) return; // 이미 누른 건 무시
+  node.addEventListener('click', (e) => {
+    // 1. 🌟 파동(Ripple) 효과는 클릭할 때마다 무조건 띄워줍니다!
+    const ripple = document.createElement('div');
+    ripple.className = 'touch-ripple';
+    node.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 600); 
+    if (navigator.vibrate) navigator.vibrate(50);
 
-    // 🌟 [추가 1] 별자리가 이미 완성되었다면 더 이상 다른 별은 누를 수 없음 (여정 종료)
+    // 2. 🌟 이미 방문한 곳이라면? 선 긋기는 무시하고 '정보 창'만 약간 지연해서 띄워줍니다!
+    if (node.classList.contains('state-visited')) {
+      if (node.id !== 'dynamic-stay-node') { // (숙소는 완료 모달이 따로 뜨므로 제외)
+        setTimeout(() => {
+          openSheet(sheetContent[node.dataset.node]);
+        }, 300); // 0.3초 지연
+      }
+      return; 
+    }
+
     if (document.getElementById('star-layer').classList.contains('constellation-complete')) {
       return;
     }
 
-    // 🌟 [수정 2] 누른 별이 '숙소(Stay)'인 경우 검사를 먼저 진행!
     if (node.id === 'dynamic-stay-node') {
       if (pathSequence.length < 2) {
         alert("숙소는 회복 여정의 마지막 목적지입니다.\n별자리를 완성하려면 최소 2곳 이상의 관광지를 먼저 방문해 주세요!");
-        // 🌟 핵심: 여기서 return으로 튕겨내서 숙소가 '방문 완료'로 색칠되는 것을 원천 차단함
         return; 
       } else {
-        // 조건 충족 시 숙소 방문 처리 및 별자리 완성 애니메이션 시작
         node.classList.remove('state-default', 'state-recommended');
         node.classList.add('state-visited');
         
@@ -258,21 +320,19 @@ document.querySelectorAll('.node-button').forEach(node => {
           if(rewardModal) rewardModal.classList.add('open');
           updateRecordTab(); 
         }, 800);
-        return; // 완료했으므로 밑에 있는 일반 관광지 코드는 실행 안 함
+        return; 
       }
     }
 
-    // --- 여기부터는 누른 곳이 '일반 관광지'일 때만 실행됨 ---
+    // --- 여기부터는 처음 누르는 '일반 관광지'일 때만 실행됨 ---
     node.classList.remove('state-default', 'state-recommended');
     node.classList.add('state-visited');
 
-    // 1. 선 긋기
     if (pathSequence.length > 0) {
       drawPathLine(pathSequence[pathSequence.length - 1], node);
     }
     pathSequence.push(node);
 
-    // 2. 화면 중앙 이동 로직
     const mapScrollArea = document.getElementById('map-scroll-area');
     if (mapScrollArea) {
       const nodeX = node.offsetLeft * currentScale;
@@ -284,8 +344,10 @@ document.querySelectorAll('.node-button').forEach(node => {
       });
     }
 
-    // 3. 해당 장소의 상세 정보 팝업 띄우기
-    openSheet(sheetContent[node.dataset.node]);
+    // 3. 🌟 창이 바로 뜨지 않고 파동을 0.35초 감상한 뒤에 스르륵 띄웁니다!
+    setTimeout(() => {
+      openSheet(sheetContent[node.dataset.node]);
+    }, 350);
   });
 });
 
@@ -310,7 +372,8 @@ secondaryCloseBtn.addEventListener('click', closeSheet);
 modalScrim.addEventListener('click', closeSheet);
 primaryBtn.addEventListener('click', () => {
   if (modalTitle.textContent.includes('로그인 준비 중')) {
-    showScreen('home');
+    showScreen('home'); // 홈 화면을 띄우고
+    switchTab('diagnosis'); // 🌟 [추가] 진단 탭을 바로 활성화합니다!
   }
   closeSheet();
 });
@@ -970,3 +1033,74 @@ if (mapScrollArea && indicatorBar) {
     }
   });
 }
+// --- 🌟 마이페이지 객실 수면 온도 조절 로직 ---
+const tempBtns = document.querySelectorAll('.temp-btn');
+if (tempBtns.length >= 2) {
+  const btnMinus = tempBtns[0]; // 첫 번째 버튼 (-)
+  const btnPlus = tempBtns[1];  // 두 번째 버튼 (+)
+  const tempDisplay = btnMinus.nextElementSibling; // 가운데 있는 온도 숫자
+
+  let currentTemp = 21; // 기본 온도
+
+  btnMinus.addEventListener('click', () => {
+    if (currentTemp > 18) {
+      currentTemp--;
+      tempDisplay.textContent = currentTemp + '°';
+      if (navigator.vibrate) navigator.vibrate(20); // '띡' 하는 짧은 진동 손맛
+    }
+  });
+
+  btnPlus.addEventListener('click', () => {
+    if (currentTemp < 30) {
+      currentTemp++;
+      tempDisplay.textContent = currentTemp + '°';
+      if (navigator.vibrate) navigator.vibrate(20); // '띡' 하는 짧은 진동 손맛
+    }
+  });
+}
+// --- 🌟 2&3단계: 토스트 알림 및 코스 체크오프 기능 로직 ---
+
+// 1. 공통 토스트 알림 함수
+function showToast(message) {
+  let container = document.querySelector('.toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+  }
+  
+  const toast = document.createElement('div');
+  toast.className = 'toast-message';
+  toast.textContent = message;
+  container.appendChild(toast);
+  
+  // 애니메이션 종료 후 요소 삭제
+  setTimeout(() => toast.remove(), 2500);
+}
+
+// 2. 토글 스위치 시각적 피드백 (마이페이지 등)
+document.querySelectorAll('.toggle-switch input').forEach(toggle => {
+  toggle.addEventListener('change', (e) => {
+    const row = e.target.closest('.setting-row');
+    const label = row ? row.querySelector('strong').textContent : '설정';
+    const status = e.target.checked ? '활성화되었습니다' : '비활성화되었습니다';
+    
+    showToast(`${label} 모드가 ${status}`);
+    if (navigator.vibrate) navigator.vibrate(30);
+  });
+});
+
+// 3. 코스 타임라인 카드 체크오프 기능 (🌟 한 번만 눌리도록 수정!)
+document.querySelectorAll('.timeline-content').forEach(card => {
+  card.addEventListener('click', function() {
+    // 🌟 카드가 이미 '완료(completed)' 상태라면? 아무것도 하지 않고 그냥 튕겨냅니다!
+    if (this.classList.contains('completed')) {
+      return; 
+    }
+
+    // 처음 누르는 거라면 완료 처리하고 알림 띄우기
+    this.classList.add('completed');
+    showToast('일정을 완료했습니다! 별자리에 기록됩니다.');
+    if (navigator.vibrate) navigator.vibrate([40, 30, 40]); // '뚜둑' 하는 완료 진동
+  });
+});

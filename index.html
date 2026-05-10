@@ -19,6 +19,21 @@
     <section class="screen" id="onboarding-screen">
       <div class="screen-inner" style="padding: 0; position: relative; height: 100vh;">
         
+        <button id="to-login" style="
+          position: absolute; 
+          top: 0; right: 0; 
+          width: 100px; height: 60px; 
+          z-index: 20; 
+          background: transparent; 
+          border: none; 
+          color: transparent; 
+          cursor: pointer;
+          outline: none;
+          -webkit-tap-highlight-color: transparent; /* 터치 시 생기는 하이라이트 박스 제거 */
+        ">
+          건너뛰기
+        </button>
+
         <div class="hero-card" style="border: none; box-shadow: none; border-radius: 0; height: 100%; margin: 0; background: #03103d;">
           <div class="hero-slide slide-art" data-slide="0" id="ob-bg-1"></div>
           <div class="hero-slide slide-art" data-slide="1" id="ob-bg-2"></div>
@@ -32,7 +47,6 @@
             <span data-dot="2"></span>
           </div>
           <button class="cta-btn" id="next-onboarding" style="background: #fff; color: #03103d; font-weight: 800; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">다음 항해로</button>
-          <button class="sub-btn" id="to-login" style="background: rgba(0,0,0,0.3); border: none; margin-top: 12px;">건너뛰기</button>
         </div>
       </div>
     </section>
@@ -260,7 +274,7 @@
               </article>
             </div>
           </section>
-        </section> <section class="page-section" data-page="diagnosis"></section>
+        </section> 
 
         <section class="page-section" data-page="diagnosis">
           <div class="page-hero" style="text-align:center; align-items:center; display:flex; flex-direction:column;">
@@ -609,8 +623,7 @@
           <button class="tab-button" data-tab="record" aria-label="기록"><span class="ico">☾</span><span>기록</span></button>
           <button class="tab-button" data-tab="mypage" aria-label="마이"><span class="ico">☻</span><span>마이</span></button>
         </div>
-        <div class="home-indicator"></div>
-      </div>
+             </div>
     </nav>
 
     </section> <div class="modal" id="sheet-modal" aria-hidden="true">

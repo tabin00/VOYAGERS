@@ -1937,3 +1937,163 @@ button { font: inherit; }
   position: absolute; inset: 0;
   background: linear-gradient(180deg, rgba(3,16,61,0) 0%, rgba(3,16,61,0.4) 60%, rgba(3,16,61,0.95) 100%);
 }
+/* --- 🌟 2단계: 터치 파동(Ripple) & 극적인 모달 등장 애니메이션 --- */
+
+/* 1. 지도 별 터치 파동(물결) 효과 */
+.touch-ripple {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 40px; height: 40px;
+  margin-top: -20px; margin-left: -20px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: touchRippleAnim 0.6s ease-out forwards;
+  z-index: 10;
+}
+
+@keyframes touchRippleAnim {
+  0% { transform: scale(0.3); opacity: 0.8; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+/* 2. 모든 모달창(진단 결과, 보상 등) 스르륵 팝업 효과 */
+.survey-modal.open .survey-modal-inner {
+  animation: modalPopUp 0.65s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes modalPopUp {
+  0% { 
+    opacity: 0; 
+    transform: translateY(30px) scale(0.95); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+  }
+}
+/* --- 🌟 3단계: 프리미엄 타이포그래피 & 바텀 시트 고도화 --- */
+
+/* 1. 명품 앱의 비밀: 쫀쫀한 텍스트 자간(Letter Spacing) 튜닝 */
+h1, h2, h3, h4, h5, strong, .cta-btn, .sub-btn, .brand-name {
+  letter-spacing: -0.025em !important; /* 제목과 버튼은 촘촘하고 묵직하게 */
+}
+
+p, span, div, button {
+  letter-spacing: -0.01em; /* 본문은 읽기 편하면서도 밀도 있게 */
+}
+
+/* 2. 보상 팝업을 화면 정중앙 팝업에서 트렌디한 '바텀 시트'로 변경 */
+#reward-modal {
+  background: rgba(2, 8, 28, 0.7) !important;
+  backdrop-filter: blur(10px);
+  justify-content: flex-end !important; /* 창을 화면 맨 아래로 밀어냄 */
+}
+
+#reward-modal .survey-modal-inner {
+  position: relative;
+  height: auto !important;
+  margin: 0 !important;
+  width: 100%;
+  border-radius: 32px 32px 0 0 !important; /* 위쪽 모서리만 둥글게 */
+  background: linear-gradient(180deg, rgba(24,34,89,0.95), rgba(9,18,58,1)) !important;
+  border-top: 1px solid rgba(255,255,255,0.15) !important;
+  border-bottom: none !important;
+  padding: 40px 24px calc(24px + env(safe-area-inset-bottom)) !important;
+  animation: sheetSlideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards !important;
+}
+
+/* 바텀 시트 상단의 둥근 손잡이(Handle) UI 추가 */
+#reward-modal .survey-modal-inner::before {
+  content: '';
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 48px;
+  height: 5px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 999px;
+}
+
+@keyframes sheetSlideUp {
+  0% { transform: translateY(100%); }
+  100% { transform: translateY(0); }
+}
+/* --- 🌟 4단계: 탭 전환 스무스 페이드인(Fade-in) 애니메이션 --- */
+
+/* 탭이 활성화될 때 딱딱하게 나타나는 대신 애니메이션을 실행하도록 덮어쓰기 */
+.page-section.active {
+  display: block;
+  animation: fadeInTab 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) forwards !important;
+}
+
+/* 아래에서 위로 살짝 올라오며 선명해지는 효과 */
+@keyframes fadeInTab {
+  0% {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* --- 🌟 2&3단계: 토스트 알림 & 코스 체크오프 디자인 --- */
+
+/* 1. 토스트 알림창 스타일 */
+.toast-container {
+  position: fixed;
+  bottom: 100px; /* 탭바 위쪽 */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.toast-message {
+  background: rgba(159, 141, 255, 0.9);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 700;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  animation: toastFadeInOut 2.5s ease forwards;
+}
+
+@keyframes toastFadeInOut {
+  0% { opacity: 0; transform: translateY(10px); }
+  15% { opacity: 1; transform: translateY(0); }
+  85% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-10px); }
+}
+
+/* 2. 코스 타임라인 체크오프 스타일 */
+.timeline-content {
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.timeline-content.completed {
+  opacity: 0.5;
+  transform: scale(0.98);
+  background: rgba(255,255,255,0.02) !important;
+}
+
+.timeline-content.completed::after {
+  content: '✓ 완료';
+  position: absolute;
+  top: 16px; right: 16px;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--mint);
+  background: rgba(133,228,209,0.15);
+  padding: 4px 8px;
+  border-radius: 8px;
+}
