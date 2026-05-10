@@ -98,7 +98,8 @@ button { font: inherit; }
   min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: calc(140px + env(safe-area-inset-bottom));
+  /* 🌟 기존 140px 이었던 하단 잉여 여백을 90px로 줄여서 더 꽉 찬 느낌을 줍니다 */
+  padding-bottom: calc(90px + env(safe-area-inset-bottom));
 }
 
 .center-screen {
@@ -1375,15 +1376,16 @@ button { font: inherit; }
   white-space: nowrap;
 }
 
-/* 🌟 SAILERS 프리미엄 하단 탭바 */
+/* 🌟 VOYAGERS 프리미엄 하단 탭바 */
 .bottom-nav {
   position: fixed;
   left: 0; right: 0; bottom: 0;
   z-index: 30;
-  background: rgba(3, 16, 61, 0.55); /* 뒤가 더 잘 비치도록 투명도 조절 */
-  backdrop-filter: blur(24px) saturate(1.5); /* 유리 질감 극대화 */
+  background: rgba(3, 16, 61, 0.55);
+  backdrop-filter: blur(24px) saturate(1.5);
   border-top: 1px solid rgba(255,255,255,0.08);
-  padding: 12px max(12px, env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  /* 🌟 하단 바(인디케이터)가 사라졌으므로 아래쪽 패딩을 16px에서 8px로 대폭 줄여 화면을 넓게 씁니다 */
+  padding: 12px max(12px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
 }
 
 .bottom-nav-inner {
@@ -1400,7 +1402,7 @@ button { font: inherit; }
 .tab-button {
   border: 0;
   background: transparent;
-  color: rgba(255,255,255,0.35); /* 비활성 탭은 어둡게 */
+  color: rgba(255,255,255,0.35);
   display: grid;
   justify-items: center;
   gap: 6px;
@@ -1412,24 +1414,17 @@ button { font: inherit; }
 }
 
 .tab-button .ico {
-  font-size: 22px; /* 아이콘 크기 살짝 키움 */
+  font-size: 22px;
   line-height: 1;
 }
 
 .tab-button.active {
-  color: var(--mint); /* 활성 탭은 힐링 민트색으로 */
+  color: var(--mint);
   background: transparent;
-  text-shadow: 0 0 14px rgba(133,228,209,0.8); /* 민트색 네온 글로우 발사! */
-  transform: translateY(-2px); /* 살짝 위로 떠오르는 효과 */
+  text-shadow: 0 0 14px rgba(133,228,209,0.8);
+  transform: translateY(-2px);
 }
-
-.home-indicator {
-  width: 126px;
-  height: 5px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.92);
-  margin: 10px auto 0;
-}
+/* 불필요한 .home-indicator CSS는 완전히 삭제했습니다! */
 
 .modal {
   position: fixed;
