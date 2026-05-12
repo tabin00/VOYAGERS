@@ -98,8 +98,8 @@ button { font: inherit; }
   min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  /* 🌟 기존 140px 이었던 하단 잉여 여백을 90px로 줄여서 더 꽉 찬 느낌을 줍니다 */
-  padding-bottom: calc(90px + env(safe-area-inset-bottom));
+  /* 🌟 하단 여백을 90px에서 120px로 늘려 마지막 콘텐츠까지 잘 보이게 합니다. */
+  padding-bottom: calc(120px + env(safe-area-inset-bottom));
 }
 
 .center-screen {
@@ -1376,16 +1376,18 @@ button { font: inherit; }
   white-space: nowrap;
 }
 
-/* 🌟 VOYAGERS 프리미엄 하단 탭바 */
+/* --- 🌟 하단 탭 바 짤림 방지 및 위치 상향 조정 --- */
 .bottom-nav {
   position: fixed;
   left: 0; right: 0; bottom: 0;
   z-index: 30;
-  background: rgba(3, 16, 61, 0.55);
+  background: rgba(3, 16, 61, 0.75); /* 가독성을 위해 배경 불투명도 살짝 상향 */
   backdrop-filter: blur(24px) saturate(1.5);
   border-top: 1px solid rgba(255,255,255,0.08);
-  /* 🌟 하단 바(인디케이터)가 사라졌으므로 아래쪽 패딩을 16px에서 8px로 대폭 줄여 화면을 넓게 씁니다 */
-  padding: 12px max(12px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  
+  /* 🌟 하단 여백(Padding-Bottom)을 8px에서 24px로 늘려 탭을 위로 올립니다. */
+  /* env(safe-area-inset-bottom)은 아이폰의 홈 바 영역을 자동으로 계산해줍니다. */
+  padding: 12px max(16px, env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
 }
 
 .bottom-nav-inner {
