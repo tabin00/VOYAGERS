@@ -98,8 +98,8 @@ button { font: inherit; }
   min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  /* 🌟 하단 여백을 180px로 수정하여 탭 바와의 간섭을 완전히 없앱니다. */
-  padding-bottom: calc(180px + env(safe-area-inset-bottom));
+  /* 🌟 탭 바가 위로 올라온 만큼 본문 여백도 220px로 넉넉하게 밀어줍니다. */
+  padding-bottom: calc(220px + env(safe-area-inset-bottom));
 }
 
 .center-screen {
@@ -1376,18 +1376,16 @@ button { font: inherit; }
   white-space: nowrap;
 }
 
-/* --- 🌟 하단 탭 바 짤림 방지 및 위치 상향 조정 --- */
 .bottom-nav {
   position: fixed;
   left: 0; right: 0; bottom: 0;
   z-index: 30;
   background: rgba(3, 16, 61, 0.7); 
-  /* 🌟 블러 수치를 34px로 높여 배경이 더 부드럽게 투명해집니다. */
   backdrop-filter: blur(34px) saturate(1.5);
   border-top: 1px solid rgba(255,255,255,0.08);
   
-  /* 🌟 하단 여백을 충분히 주어 탭 버튼들을 위로 더 끌어올립니다. */
-  padding: 12px max(16px, env(safe-area-inset-right)) calc(32px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  /* 🌟 하단 여백을 50px로 확 늘려서 아이콘들을 안전지대 위로 쑥 올립니다. */
+  padding: 12px max(16px, env(safe-area-inset-right)) calc(50px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
 }
 
 .bottom-nav-inner {
