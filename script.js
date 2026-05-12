@@ -113,13 +113,16 @@ const sheetContent = {
     title: provider + ' 로그인 준비 중', subtitle: '현재는 프로토타입 단계라 실제 인증 대신 안내 모달로 연결돼요.',
     items: [['안내', '비로그인 체험으로 홈, 코스, 기록 탭의 흐름을 확인해보세요.']], primary: '비로그인으로 계속 보기'
   }),
+  // 🌟 버튼 글씨를 실제 기능에 맞게 수정합니다.
   record: {
     title: '회복 기록 기능 안내', subtitle: '방문 장소와 나만의 별자리 완성도를 모아보는 기능입니다.',
-    items: [['기록 단위', '체류 시간, 감정 변화, 수면 만족도를 별 단위로 기록합니다.']], primary: '확인했어요'
+    items: [['기록 단위', '체류 시간, 감정 변화, 수면 만족도를 별 단위로 기록합니다.']], 
+    primary: '기록 탭으로 이동' 
   },
   profile: {
     title: '프로필 섹션 안내', subtitle: '개인 취향과 기록 저장이 가능하도록 설계할 수 있습니다.',
-    items: [['저장 예정 정보', '선호 코스, 환경 민감도, 별자리 기록']], primary: '닫기'
+    items: [['저장 예정 정보', '선호 코스, 환경 민감도, 별자리 기록']], 
+    primary: '마이 탭으로 이동' 
   },
   
   /* 1. Calm (정서 안정) */
@@ -434,11 +437,22 @@ closeModalBtn.addEventListener('click', closeSheet);
 secondaryCloseBtn.addEventListener('click', closeSheet);
 modalScrim.addEventListener('click', closeSheet);
 primaryBtn.addEventListener('click', () => {
-  if (modalTitle.textContent.includes('로그인 준비 중')) {
+  const title = modalTitle.textContent;
+  
+  if (title.includes('로그인 준비 중')) {
     showScreen('home'); // 홈 화면을 띄우고
-    switchTab('diagnosis'); // 🌟 [추가] 진단 탭을 바로 활성화합니다!
+    switchTab('diagnosis'); // 진단 탭을 바로 활성화합니다!
+  } 
+  // 🌟 [기능 추가] 기록 안내 모달에서 버튼 누르면 기록 탭으로 즉시 이동!
+  else if (title.includes('회복 기록')) {
+    switchTab('record');
+  } 
+  // 🌟 [기능 추가] 프로필 안내 모달에서 버튼 누르면 마이 탭으로 즉시 이동!
+  else if (title.includes('프로필')) {
+    switchTab('mypage');
   }
-  closeSheet();
+  
+  closeSheet(); // 이동 후 모달창은 자연스럽게 닫아줍니다.
 });
 
 document.addEventListener('keydown', (e) => {
@@ -944,8 +958,43 @@ document.querySelectorAll('.survey-entry-card').forEach(card => {
 const rewardCloseBtn = document.getElementById('reward-close-btn');
 if(rewardCloseBtn) {
   rewardCloseBtn.addEventListener('click', () => {
+    // 1. 모달 창 닫기
     const rewardModal = document.getElementById('reward-modal');
     if(rewardModal) rewardModal.classList.remove('open');
+    
+    // 🌟 [버그 픽스] 나중에 받기를 눌러도 별자리 데이터를 백그라운드에 저장합니다!
+    const emptyState = document.getElementById('record-empty-state');
+    const dataState = document.getElementById('record-data-state');
+    if (emptyState) emptyState.style.display = 'none';
+    if (dataState) dataState.style.display = 'block';
+
+    const stayNode = document.getElementById('dynamic-stay-node');
+    const roomName = stayNode ? stayNode.querySelector('.label').textContent : '맞춤 치유 객실';
+
+    // 지도 좌표 추출
+    const coords = pathSequence.map(node => ({
+      x: node.style.left,
+      y: node.style.top
+    }));
+
+    if (typeof window.constellationArchive === 'undefined') {
+      window.constellationArchive = [];
+    }
+
+    // 새로운 별자리 데이터 생성
+    const newEntry = {
+      id: Date.now(),
+      date: new Date().toLocaleDateString(),
+      name: `${window.constellationArchive.length + 1}회차 치유 별자리`,
+      coords: coords,
+      room: roomName
+    };
+    
+    window.constellationArchive.push(newEntry);
+    
+    // 데이터만 업데이트해두고 탭 이동은 하지 않음
+    if (typeof renderArchive === 'function') renderArchive(); 
+    if (typeof updateRecordTab === 'function') updateRecordTab(); 
   });
 }
 
@@ -1170,4 +1219,26 @@ document.querySelectorAll('.timeline-content').forEach(card => {
     showToast('일정을 완료했습니다! 별자리에 기록됩니다.');
     if (navigator.vibrate) navigator.vibrate([40, 30, 40]); // '뚜둑' 하는 완료 진동
   });
+});
+// --- 🌟 [안전한 버그 픽스] 보상 모달 버튼 이벤트 (충돌 방지) ---
+document.addEventListener('click', function(e) {
+  // 1. '나중에 받기' 버튼을 눌렀을 때
+  if (e.target.id === 'reward-close-btn') {
+    const rewardModal = document.getElementById('reward-modal');
+    if (rewardModal) rewardModal.classList.remove('open');
+    
+    // 🌟 핵심: 창만 닫고, 뒤에서는 기록 탭을 확실하게 업데이트해 둡니다.
+    if (typeof updateRecordTab === 'function') updateRecordTab(); 
+  }
+  
+  // 2. '기록 탭에서 확인하기' 버튼을 눌렀을 때
+  if (e.target.id === 'reward-confirm-btn') {
+    const rewardModal = document.getElementById('reward-modal');
+    if (rewardModal) rewardModal.classList.remove('open');
+    
+    // 🌟 핵심: 기록 탭 업데이트 후, 화면을 기록 탭으로 아예 넘겨버립니다.
+    if (typeof updateRecordTab === 'function') updateRecordTab(); 
+    if (typeof switchTab === 'function') switchTab('record');
+    window.scrollTo(0, 0);
+  }
 });
