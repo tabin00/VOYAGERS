@@ -224,7 +224,25 @@ const sheetContent = {
     items: [['환경제어', '개방형 쿨링, 야외 수면 트래킹']], primary: '객실 확인'
   }
 };
+const placeImages = {
+    cheongnyeongpo: 'images/cheongnyeongpo.jpg', jangneung: 'images/jangneung.jpg',
+    saggat: 'images/saggat.jpg', yemilfootbath: 'images/footbath.jpg', bodeoksa: 'images/bodeoksa.jpg',
+    eorayeon: 'images/eorayeon.jpg', hanbando: 'images/hanbando.jpg', yoseonjeong: 'images/yoseonjeong.jpg',
+    riverbugging: 'images/riverbugging.jpg', sankkoradeyi: 'images/trekking.jpg',
+    manggyeong: 'images/manggyeong.jpg', moss: 'images/moss.jpg', naeri: 'images/naeri.jpg',
+    yeonhavalley: 'images/yeonhavalley.jpg', danpungsan: 'images/danpungsan.jpg',
+    byeolmaro: 'images/byeolmaro.jpg', seondol: 'images/seondol.jpg', yeongwolbridge: 'images/bridge.jpg',
+    riversidedetention: 'images/riverside.jpg', radiostar: 'images/radiostar.jpg',
+    room_high: 'images/room_high.jpg', room_mid: 'images/room_mid.jpg', room_low: 'images/room_low.jpg'
+};
 
+const themeDetails = {
+    calm: { eng: 'Calm', kor: '정서 안정', target: '조용한 분위기에서 마음을 정리하고 싶은 여행자' },
+    active: { eng: 'Active', kor: '수면 압력', target: '몸을 움직여 건강한 피로를 쌓고 싶은 여행자' },
+    forest: { eng: 'Forest', kor: '숲 치유', target: '자연의 백색소음 속에서 깊은 이완이 필요한 여행자' },
+    night: { eng: 'Night', kor: '야간 전환', target: '밤의 감각을 깨우고 생체리듬을 맞추고 싶은 여행자' },
+    stay: { eng: 'Stay', kor: '치유 숙소', target: '완벽하게 통제된 환경에서 딥 슬립을 경험할 여행자' }
+};
 function openSheet(data) {
   modalTitle.textContent = data.title;
   modalSubtitle.textContent = data.subtitle;
@@ -280,76 +298,121 @@ function drawPathLine(node1, node2) {
 }
 
 // --- 🌟 별 클릭 이벤트 (순서대로 연결) ---
+let currentNodeForCheckin = null; 
+
 document.querySelectorAll('.node-button').forEach(node => {
   node.addEventListener('click', (e) => {
-    // 1. 🌟 파동(Ripple) 효과는 클릭할 때마다 무조건 띄워줍니다!
     const ripple = document.createElement('div');
     ripple.className = 'touch-ripple';
     node.appendChild(ripple);
     setTimeout(() => ripple.remove(), 600); 
     if (navigator.vibrate) navigator.vibrate(50);
 
-    // 2. 🌟 이미 방문한 곳이라면? 선 긋기는 무시하고 '정보 창'만 약간 지연해서 띄워줍니다!
-    if (node.classList.contains('state-visited')) {
-      if (node.id !== 'dynamic-stay-node') { // (숙소는 완료 모달이 따로 뜨므로 제외)
-        setTimeout(() => {
-          openSheet(sheetContent[node.dataset.node]);
-        }, 300); // 0.3초 지연
-      }
-      return; 
+    const nodeId = node.dataset.node;
+    const theme = node.dataset.theme || 'calm';
+
+    // 데이터 준비 (에러 방지망 포함)
+    const data = sheetContent[nodeId] || { 
+        title: '전용 치유 숙소', 
+        subtitle: '진단을 완료하면 맞춤 객실이 배정됩니다.', 
+        items: [['안내', '진단 탭에서 설문을 먼저 완료해 주세요.']] 
+    };
+    const tInfo = themeDetails[theme] || themeDetails.calm;
+    const imgFileName = placeImages[nodeId] || 'images/default.jpg';
+
+    // 모달창에 데이터 채워넣기
+    document.getElementById('pd-image').style.backgroundImage = `url('${imgFileName}')`;
+    document.getElementById('pd-title').textContent = data.title;
+    document.getElementById('pd-eng').textContent = tInfo.eng;
+    document.getElementById('pd-kor').textContent = tInfo.kor;
+    document.getElementById('pd-desc').textContent = data.subtitle;
+    document.getElementById('pd-sleep').textContent = data.items && data.items[0] ? data.items[0][1] : '';
+    document.getElementById('pd-target').textContent = tInfo.target;
+
+    // 방문 상태에 따른 버튼 UI 변경
+    const checkinBtn = document.getElementById('pd-checkin-btn');
+    const starLayer = document.getElementById('star-layer');
+    const isComplete = starLayer && starLayer.classList.contains('constellation-complete');
+    const isVisited = node.classList.contains('state-visited');
+
+    if (isVisited) {
+        checkinBtn.textContent = '방문 완료됨';
+        checkinBtn.style.background = 'rgba(255,255,255,0.1)';
+        checkinBtn.style.color = 'var(--text-soft)';
+        checkinBtn.disabled = true;
+    } else if (isComplete && node.id !== 'dynamic-stay-node') {
+        checkinBtn.textContent = '별자리 완성됨';
+        checkinBtn.style.background = 'rgba(255,255,255,0.1)';
+        checkinBtn.style.color = 'var(--text-soft)';
+        checkinBtn.disabled = true;
+    } else {
+        checkinBtn.textContent = '방문 체크인';
+        checkinBtn.style.background = 'var(--mint)';
+        checkinBtn.style.color = '#020a26';
+        checkinBtn.disabled = false;
     }
 
-    if (document.getElementById('star-layer').classList.contains('constellation-complete')) {
-      return;
-    }
+    currentNodeForCheckin = node;
 
-    if (node.id === 'dynamic-stay-node') {
-      if (pathSequence.length < 2) {
-        alert("숙소는 회복 여정의 마지막 목적지입니다.\n별자리를 완성하려면 최소 2곳 이상의 관광지를 먼저 방문해 주세요!");
-        return; 
-      } else {
-        node.classList.remove('state-default', 'state-recommended');
-        node.classList.add('state-visited');
-        
-        drawPathLine(pathSequence[pathSequence.length - 1], node);
-        pathSequence.push(node);
-
-        document.getElementById('star-layer').classList.add('constellation-complete');
-        setTimeout(() => {
-          const rewardModal = document.getElementById('reward-modal');
-          if(rewardModal) rewardModal.classList.add('open');
-          updateRecordTab(); 
-        }, 800);
-        return; 
-      }
-    }
-
-    // --- 여기부터는 처음 누르는 '일반 관광지'일 때만 실행됨 ---
-    node.classList.remove('state-default', 'state-recommended');
-    node.classList.add('state-visited');
-
-    if (pathSequence.length > 0) {
-      drawPathLine(pathSequence[pathSequence.length - 1], node);
-    }
-    pathSequence.push(node);
-
-    const mapScrollArea = document.getElementById('map-scroll-area');
-    if (mapScrollArea) {
-      const nodeX = node.offsetLeft * currentScale;
-      const nodeY = node.offsetTop * currentScale;
-      mapScrollArea.scrollTo({ 
-        left: nodeX - (mapScrollArea.clientWidth / 2), 
-        top: nodeY - (mapScrollArea.clientHeight / 2), 
-        behavior: 'smooth' 
-      });
-    }
-
-    // 3. 🌟 창이 바로 뜨지 않고 파동을 0.35초 감상한 뒤에 스르륵 띄웁니다!
+    // 풀스크린 모달 띄우기
     setTimeout(() => {
-      openSheet(sheetContent[node.dataset.node]);
-    }, 350);
+        const modal = document.getElementById('place-detail-modal');
+        if(modal) modal.classList.add('open');
+    }, 300);
   });
 });
+
+// 상세창 뒤로가기 버튼 로직
+const pdBackBtn = document.getElementById('pd-back-btn');
+if(pdBackBtn) {
+  pdBackBtn.addEventListener('click', () => {
+      const modal = document.getElementById('place-detail-modal');
+      if(modal) modal.classList.remove('open');
+  });
+}
+
+// 방문 체크인 버튼 로직
+const pdCheckinBtn = document.getElementById('pd-checkin-btn');
+if(pdCheckinBtn) {
+  pdCheckinBtn.addEventListener('click', () => {
+      if (!currentNodeForCheckin) return;
+      const node = currentNodeForCheckin;
+      const modal = document.getElementById('place-detail-modal');
+      if(modal) modal.classList.remove('open'); 
+
+      // 숙소 노드 처리
+      if (node.id === 'dynamic-stay-node') {
+        if (pathSequence.length < 2) {
+          setTimeout(() => alert("숙소는 회복 여정의 마지막 목적지입니다.\\n최소 2곳 이상의 관광지를 먼저 방문해 주세요!"), 300);
+          return; 
+        } else {
+          node.classList.remove('state-default', 'state-recommended');
+          node.classList.add('state-visited');
+          drawPathLine(pathSequence[pathSequence.length - 1], node);
+          pathSequence.push(node);
+
+          const starLayer = document.getElementById('star-layer');
+          if(starLayer) starLayer.classList.add('constellation-complete');
+          setTimeout(() => {
+            const rewardModal = document.getElementById('reward-modal');
+            if(rewardModal) rewardModal.classList.add('open');
+            // 기존 updateRecordTab() 호출
+            if (typeof updateRecordTab === 'function') updateRecordTab(); 
+          }, 800);
+          return; 
+        }
+      }
+
+      // 일반 노드 방문 처리
+      node.classList.remove('state-default', 'state-recommended');
+      node.classList.add('state-visited');
+
+      if (pathSequence.length > 0) {
+        drawPathLine(pathSequence[pathSequence.length - 1], node);
+      }
+      pathSequence.push(node);
+  });
+}
 
 // --- 🌟 기록 탭 데이터 업데이트 함수 ---
 function updateRecordTab() {
@@ -654,36 +717,46 @@ function showSurveyResultModal() {
   Object.values(surveyAnswers.sensitivity).forEach(v => { if (eScore[v] !== undefined) eScore[v]++; });
   const eWinner = Object.entries(eScore).sort((a,b) => b[1]-a[1])[0][0] || 'mid';
 
+  // 🌟 [복구] 상세 진단 데이터 맵
   const travelMap = {
-    calm: '정지된 수면의 고요한 항해자',
-    active: '파동을 만드는 활기찬 항해자',
-    night: '빛의 궤적을 쫓는 심야의 항해자'
-  };
-  const sleepMap = {
-    lack: '지속적인 수면 부족 상태로, 이번 여행에서 수면 회복에 특히 집중이 필요합니다.',
-    mid: '어느 정도 버티고 있지만, 수면의 질을 한 단계 끌어올릴 여지가 있습니다.',
-    enough: '상대적으로 수면 상태는 양호하지만, 여행을 통해 더 좋은 패턴을 유지할 수 있습니다.'
-  };
-  const sensMap = {
-    high: '빛·소리·침구·환경 변화에 매우 민감한 편이라, 숙소와 루트 설계 시 환경 조정이 필수입니다.',
-    mid: '환경에 어느 정도 영향은 받지만, 적절한 가이드만으로도 충분히 조정 가능합니다.',
-    low: '환경 변화에 비교적 둔감한 편이라, 다양한 숙소와 루트를 폭넓게 실험해볼 수 있습니다.'
+    calm: { title: '정지된 수면의 고요한 항해자', desc: '외부 자극을 최소화하고 내면에 집중할 때 에너지가 채워지는 정적인 탐험가입니다.', rx: '시각과 청각의 피로도를 낮추는 것이 수면의 핵심입니다. 인적이 드문 숲길을 걷거나 강가에 가만히 머무르며 교감신경을 부드럽게 안정시키는 \'저자극 힐링\'에 집중해 보세요.', keyword: '#저자극힐링 #교감신경안정', stat: 20, statLabel: '활동 템포 (정적)' },
+    active: { title: '파동을 만드는 활기찬 항해자', desc: '신체적 활동을 통해 에너지를 발산하고 스트레스를 해소할 때 가장 큰 만족을 느끼는 타입입니다.', rx: '밤에 깊은 잠에 빠지기 위해서는 낮 동안 몸을 움직여 \'수면 압력(Sleep Pressure)\'을 최대치로 끌어올려야 합니다. 땀이 나는 동적 코스로 건강한 피로감을 만끽해 보세요.', keyword: '#수면압력극대화 #에너지발산', stat: 90, statLabel: '활동 템포 (동적)' },
+    night: { title: '빛의 궤적을 쫓는 심야의 항해자', desc: '해가 질 무렵부터 밤이 깊어질수록 오히려 감각이 맑게 깨어나는 올빼미형 탐험가입니다.', rx: '억지로 일찍 잠자리에 들려 하기보다, 생체 리듬의 자연스러운 전환이 필요합니다. 늦은 오후에 여정을 시작해 빛과 온도의 변화를 오감으로 느끼는 코스를 추천합니다.', keyword: '#야간감각전환 #생체리듬동기화', stat: 60, statLabel: '활동 템포 (심야형)' }
   };
 
-  if(resultModalTitle) resultModalTitle.textContent = travelMap[tWinner];
-  if(resultModalDesc) {
+  const sleepMap = {
+    lack: { title: '만성 수면 부채 상태', desc: '일상적인 스트레스와 피로로 인해 수면 시간이 절대적으로 부족하거나 질이 저하된 누적 상태입니다.', rx: '이번 여정의 최우선 목표는 \'수면 빚 청산\'입니다. 강박적으로 잠을 자려 하기보다, 낮 시간의 충분한 햇빛 노출로 뇌가 쉴 수 있는 여백을 허락해 주세요.', keyword: '#수면빚청산 #햇빛노출', stat: 95, statLabel: '수면 회복 필요도' },
+    mid: { title: '수면 리듬 불균형 상태', desc: '수면 시간은 어느 정도 확보하고 있지만, 입면 시간이 지연되거나 중간에 깨는 등 효율이 떨어지는 상태입니다.', rx: '\'일주기 리듬(Circadian Rhythm)\'의 복원이 핵심입니다. 저녁 식사 이후의 자극을 줄이고, 블루라이트를 철저히 차단하는 디지털 디톡스를 병행해 보세요.', keyword: '#일주기리듬복원 #디지털디톡스', stat: 65, statLabel: '수면 회복 필요도' },
+    enough: { title: '안정적 수면 유지 상태', desc: '일상 속에서 비교적 규칙적이고 안정적인 수면 패턴을 훌륭하게 유지하고 있는 건강한 상태입니다.', rx: '현재의 좋은 패턴을 유지하면서, 영월의 맑은 공기와 자연 백색소음을 활용해 수면의 질을 \'최상급(Deep Sleep)\'으로 끌어올리는 컨디셔닝 실험에 집중해 보세요.', keyword: '#컨디션최적화 #수면질향상', stat: 30, statLabel: '수면 회복 필요도' }
+  };
+
+  const sensMap = {
+    high: { title: '고관여 수면자 (최고 민감도)', desc: '빛, 소리, 침구의 미세한 변화에도 뇌파가 쉽게 각성하여 얕은 잠을 자게 되는 초예민 상태입니다.', rx: '시청각 자극을 100% 차단해야 합니다. 완벽한 암막 커튼, 백색소음기, 알러지 케어 저자극 침구가 세팅된 \'디펜스형 객실\'에서의 숙박이 필수적입니다.', keyword: '#완벽암막 #디펜스형객실', stat: 100, statLabel: '환경 통제 필요도' },
+    mid: { title: '환경 적응형 수면자', desc: '일상적인 환경에는 무난히 적응하지만, 낯선 곳의 갑작스러운 소음이나 맞지 않는 온도에는 수면을 방해받을 수 있습니다.', rx: '수면 의학 권장 온도(18~21도)를 유지하고, 입면을 돕는 은은한 간접 조명과 릴렉싱 사운드 등 \'부드러운 수면 유도 환경\'을 세팅하는 것을 권장합니다.', keyword: '#부드러운유도 #권장온도', stat: 50, statLabel: '환경 통제 필요도' },
+    low: { title: '저항력 강한 수면자', desc: '환경 변화에 대한 방어력이 뛰어나, 낯선 여행지에서도 비교적 머리를 대면 쉽게 잠에 빠져드는 긍정적인 타입입니다.', rx: '인위적인 환경 통제보다는, 영월의 시원한 밤공기와 자연의 소리를 그대로 받아들이는 개방형 객실이나 별빛 캠핑 등 다양한 수면 환경을 폭넓게 경험해 보세요.', keyword: '#자연친화 #다양한경험', stat: 15, statLabel: '환경 통제 필요도' }
+  };
+
+  if(resultModalTitle) resultModalTitle.textContent = travelMap[tWinner].title;
+
+  if (resultModalDesc) {
     resultModalDesc.innerHTML = `
-      <div>
-        <strong style="font-size:12px; color:#9f8dff;">✦ 여행 성향</strong><br>
-        <span style="font-size:13px; color:rgba(245,247,255,0.76); line-height:1.7;">${travelMap[tWinner]}로 분류되었습니다.</span>
+      <div class="result-card" style="background:rgba(255,255,255,0.05); padding:16px; border-radius:18px; margin-bottom:12px; border:1px solid rgba(159,141,255,0.2);">
+        <strong style="color:var(--primary); font-size:12px;">✦ 여행 성향 · ${travelMap[tWinner].statLabel} ${travelMap[tWinner].stat}%</strong>
+        <p style="font-size:14px; margin:8px 0; line-height:1.5; font-weight: 700; color: #fff;">${travelMap[tWinner].desc}</p>
+        <div style="font-size:13px; color:var(--text-soft); line-height: 1.5; margin-bottom: 8px;">${travelMap[tWinner].rx}</div>
+        <span style="font-size:12px; color:var(--primary); font-weight:800;">${travelMap[tWinner].keyword}</span>
       </div>
-      <div>
-        <strong style="font-size:12px; color:#85e4d1;">☾ 수면 습관</strong><br>
-        <span style="font-size:13px; color:rgba(245,247,255,0.76); line-height:1.7;">${sleepMap[sWinner]}</span>
+      <div class="result-card" style="background:rgba(255,255,255,0.05); padding:16px; border-radius:18px; margin-bottom:12px; border:1px solid rgba(133,228,209,0.2);">
+        <strong style="color:var(--mint); font-size:12px;">☾ 수면 습관 · ${sleepMap[sWinner].statLabel} ${sleepMap[sWinner].stat}%</strong>
+        <p style="font-size:14px; margin:8px 0; line-height:1.5; font-weight: 700; color: #fff;">${sleepMap[sWinner].desc}</p>
+        <div style="font-size:13px; color:var(--text-soft); line-height: 1.5; margin-bottom: 8px;">${sleepMap[sWinner].rx}</div>
+        <span style="font-size:12px; color:var(--mint); font-weight:800;">${sleepMap[sWinner].keyword}</span>
       </div>
-      <div>
-        <strong style="font-size:12px; color:#ffc96b;">◎ 환경 민감도</strong><br>
-        <span style="font-size:13px; color:rgba(245,247,255,0.76); line-height:1.7;">${sensMap[eWinner]}</span>
+      <div class="result-card" style="background:rgba(255,255,255,0.05); padding:16px; border-radius:18px; margin-bottom:12px; border:1px solid rgba(255,201,107,0.2);">
+        <strong style="color:var(--gold); font-size:12px;">◎ 환경 민감도 · ${sensMap[eWinner].statLabel} ${sensMap[eWinner].stat}%</strong>
+        <p style="font-size:14px; margin:8px 0; line-height:1.5; font-weight: 700; color: #fff;">${sensMap[eWinner].desc}</p>
+        <div style="font-size:13px; color:var(--text-soft); line-height: 1.5; margin-bottom: 8px;">${sensMap[eWinner].rx}</div>
+        <span style="font-size:12px; color:var(--gold); font-weight:800;">${sensMap[eWinner].keyword}</span>
       </div>
     `;
   }
@@ -712,16 +785,6 @@ function showSurveyResultModal() {
   }
 
   const courseEyebrow = document.getElementById('course-eyebrow');
-  const courseHeroTitle = document.getElementById('course-hero-title');
-  const courseStep1Title = document.getElementById('course-step1-title');
-  const courseStep1Desc = document.getElementById('course-step1-desc');
-  const courseStep1Tag = document.getElementById('course-step1-tag');
-  const courseStep2Desc = document.querySelector('.step-2 + .timeline-content p'); 
-  const courseStep3Desc = document.getElementById('course-step3-desc');
-
-  if(courseEyebrow) courseEyebrow.textContent = `맞춤 동선 · ${travelMap[tWinner]}`;
-  
-  // --- 🌟 [강화] 모든 코스 요소를 진단 결과에 따라 실시간 생성 ---
   const courseElements = {
     hero: document.getElementById('course-hero-title'),
     step1T: document.getElementById('course-step1-title'),
@@ -735,72 +798,58 @@ function showSurveyResultModal() {
     step4D: document.getElementById('course-step4-desc')
   };
 
-  // 1. 여행 성향(tWinner)에 따른 1~2단계 가변화
+  if(courseEyebrow) courseEyebrow.textContent = `맞춤 동선 · ${travelMap[tWinner].title}`;
+  
   if (tWinner === 'calm') {
-    courseElements.hero.textContent = '느린 호흡으로 자연에 머무는 회복 동선';
-    courseElements.step1T.textContent = '청령포 숲길 산책 & 물멍';
-    courseElements.step1D.textContent = '낮의 햇빛을 받으며 교감신경을 안정시키는 조용한 체류형 코스입니다.';
-    courseElements.step1Tag.textContent = '저자극 힐링';
-    courseElements.step2T.textContent = '수면 유도 티(Tea) 다이닝';
-    courseElements.step2D.textContent = '소화 부담이 적은 영월 나물 정식과 심신 안정을 돕는 약초 차 세션을 진행합니다.';
+    if(courseElements.hero) courseElements.hero.textContent = '느린 호흡으로 자연에 머무는 회복 동선';
+    if(courseElements.step1T) courseElements.step1T.textContent = '청령포 숲길 산책 & 물멍';
+    if(courseElements.step1D) courseElements.step1D.textContent = '낮의 햇빛을 받으며 교감신경을 안정시키는 조용한 체류형 코스입니다.';
+    if(courseElements.step1Tag) courseElements.step1Tag.textContent = '저자극 힐링';
+    if(courseElements.step2T) courseElements.step2T.textContent = '수면 유도 티(Tea) 다이닝';
+    if(courseElements.step2D) courseElements.step2D.textContent = '소화 부담이 적은 영월 나물 정식과 심신 안정을 돕는 약초 차 세션을 진행합니다.';
   } else if (tWinner === 'active') {
-    courseElements.hero.textContent = '활발한 활동으로 리듬을 찾는 에너지 동선';
-    courseElements.step1T.textContent = '동강 트레킹 & 리버버깅';
-    courseElements.step1D.textContent = '강한 신체 활동으로 아데노신을 축적해 야간 수면 압력을 극대화합니다.';
-    courseElements.step1Tag.textContent = '수면 압력 증가';
-    courseElements.step2T.textContent = '고단백 회복 다이닝';
-    courseElements.step2D.textContent = '에너지 소모를 보충하고 멜라토닌 생성을 돕는 육류 위주의 식사와 야간 산책을 즐깁니다.';
+    if(courseElements.hero) courseElements.hero.textContent = '활발한 활동으로 리듬을 찾는 에너지 동선';
+    if(courseElements.step1T) courseElements.step1T.textContent = '동강 트레킹 & 리버버깅';
+    if(courseElements.step1D) courseElements.step1D.textContent = '강한 신체 활동으로 아데노신을 축적해 야간 수면 압력을 극대화합니다.';
+    if(courseElements.step1Tag) courseElements.step1Tag.textContent = '수면 압력 증가';
+    if(courseElements.step2T) courseElements.step2T.textContent = '고단백 회복 다이닝';
+    if(courseElements.step2D) courseElements.step2D.textContent = '에너지 소모를 보충하고 멜라토닌 생성을 돕는 육류 위주의 식사와 야간 산책을 즐깁니다.';
   } else {
-    courseElements.hero.textContent = '밤의 감각을 깨우는 심야 전환 동선';
-    courseElements.step1T.textContent = '강변 노을 감상 & 사진 기록';
-    courseElements.step1D.textContent = '저색온도의 노을빛을 통해 뇌에 밤의 시작을 알리고 각성도를 낮춥니다.';
-    courseElements.step1Tag.textContent = '야간 감각 전환';
-    courseElements.step2T.textContent = '별마로 천문대 별빛 투어';
-    courseElements.step2D.textContent = '인공 조명을 차단하고 별빛에 몰입하며 자연스러운 수면 유도를 준비합니다.';
+    if(courseElements.hero) courseElements.hero.textContent = '밤의 감각을 깨우는 심야 전환 동선';
+    if(courseElements.step1T) courseElements.step1T.textContent = '강변 노을 감상 & 사진 기록';
+    if(courseElements.step1D) courseElements.step1D.textContent = '저색온도의 노을빛을 통해 뇌에 밤의 시작을 알리고 각성도를 낮춥니다.';
+    if(courseElements.step1Tag) courseElements.step1Tag.textContent = '야간 감각 전환';
+    if(courseElements.step2T) courseElements.step2T.textContent = '별마로 천문대 별빛 투어';
+    if(courseElements.step2D) courseElements.step2D.textContent = '인공 조명을 차단하고 별빛에 몰입하며 자연스러운 수면 유도를 준비합니다.';
   }
 
-  // 2. 환경 민감도(eWinner)에 따른 3단계 가변화
   if (eWinner === 'high') {
-    courseElements.step3T.textContent = '딥 슬립 차단 솔루션';
-    courseElements.step3D.textContent = '100% 암막, 특수 방음, 저자극 침구가 세팅된 고민감도 전용 객실로 배정됩니다.';
+    if(courseElements.step3T) courseElements.step3T.textContent = '딥 슬립 차단 솔루션';
+    if(courseElements.step3D) courseElements.step3D.textContent = '체크인 시 분석된 \'고민감도\' 프로파일에 맞춰 100% 암막, 백색소음기, 온습도가 최적화된 저자극 객실이 배정됩니다.';
   } else if (eWinner === 'mid') {
-    courseElements.step3T.textContent = '표준 수면 최적화 세팅';
-    courseElements.step3D.textContent = '적정 온습도 자동 제어와 함께 입면을 돕는 은은한 간접 조명이 세팅됩니다.';
+    if(courseElements.step3T) courseElements.step3T.textContent = '표준 수면 최적화 세팅';
+    if(courseElements.step3D) courseElements.step3D.textContent = '체크인 시 간접 조명과 선호하는 침구 세트가 준비되며, 매트리스 수면 트래킹 센서가 작동을 시작합니다.';
   } else {
-    courseElements.step3T.textContent = '자연 친화형 수면 환경';
-    courseElements.step3D.textContent = '영월의 시원한 밤바람을 활용한 자연 쿨링과 스마트링 트래킹이 시작됩니다.';
+    if(courseElements.step3T) courseElements.step3T.textContent = '자연 친화형 수면 환경';
+    if(courseElements.step3D) courseElements.step3D.textContent = '체크인 후 편안한 휴식을 위한 기본 환경이 제공되며, 스마트링을 통한 자율 수면 트래킹이 시작됩니다.';
   }
 
-  // 3. 수면 상태(sWinner)에 따른 4단계 가변화
   if (sWinner === 'lack') {
-    courseElements.step4T.textContent = '집중 회복 지수 분석';
-    courseElements.step4D.textContent = '만성 피로 해소 정도를 측정하고, 부족한 잠을 채우기 위한 추가 휴식 플랜을 제공합니다.';
+    if(courseElements.step4T) courseElements.step4T.textContent = '집중 회복 지수 분석';
+    if(courseElements.step4D) courseElements.step4D.textContent = '만성 피로 해소 정도를 측정하고, 부족한 잠을 채우기 위한 추가 휴식 플랜을 제공합니다.';
   } else {
-    courseElements.step4T.textContent = '수면 효율 별자리 기록';
-    courseElements.step4D.textContent = '어젯밤의 양질의 수면 데이터를 확인하고, 나만의 회복 별자리를 영구 저장합니다.';
+    if(courseElements.step4T) courseElements.step4T.textContent = '수면 효율 별자리 기록';
+    if(courseElements.step4D) courseElements.step4D.textContent = '어젯밤의 양질의 수면 데이터를 확인하고, 나만의 회복 별자리를 영구 저장합니다.';
   }
 
-  if (courseStep3Desc) {
-    if (eWinner === 'high') {
-      courseStep3Desc.textContent = '체크인 시 분석된 \'고민감도\' 프로파일에 맞춰 100% 암막, 백색소음기, 온습도가 최적화된 저자극 객실이 배정됩니다.';
-    } else if (eWinner === 'mid') {
-      courseStep3Desc.textContent = '체크인 시 간접 조명과 선호하는 침구 세트가 준비되며, 매트리스 수면 트래킹 센서가 작동을 시작합니다.';
-    } else {
-      courseStep3Desc.textContent = '체크인 후 편안한 휴식을 위한 기본 환경이 제공되며, 스마트링을 통한 자율 수면 트래킹이 시작됩니다.';
-    }
-  }
-
-  // 🌟 [추가 로직] 진단 결과에 따라 특정 테마 별들 불 밝히기
   document.querySelectorAll('.node-button').forEach(node => {
     const nodeTheme = node.dataset.theme;
-    
     if (nodeTheme === tWinner || nodeTheme === 'stay' || nodeTheme === 'forest') {
       node.classList.remove('state-default');
       node.classList.add('state-recommended');
     }
   });
 
-  // 🌟 [수정 완료] 숙소 별 이름 및 데이터 가변 처리 (딱 한 번만 실행!)
   const stayNode = document.getElementById('dynamic-stay-node');
   if (stayNode) {
     const stayLabel = stayNode.querySelector('.label');
@@ -820,26 +869,26 @@ function showSurveyResultModal() {
   }
 
   if(surveyResultModal) surveyResultModal.classList.add('open');
-  // 🌟 [추가] 진단 결과를 마이페이지 프로파일에 완벽 동기화
+
   const mypageTitle = document.getElementById('mypage-profile-title');
   const mypageDesc = document.getElementById('mypage-profile-desc');
   const mypageAvatar = document.getElementById('mypage-avatar');
 
   if (mypageTitle && mypageDesc && mypageAvatar) {
-    mypageTitle.textContent = `[${travelMap[tWinner]}]`;
+    mypageTitle.textContent = `[${travelMap[tWinner].title}]`;
     
     if (tWinner === 'calm') {
       mypageDesc.textContent = '조용한 자연 속에서 교감신경을 안정시키는 것을 선호하며, 고도의 환경 제어가 필요한 타입입니다.';
       mypageAvatar.textContent = '🍃'; 
-      mypageAvatar.style.borderColor = '#00FF85'; // 숲 치유 테마색
+      mypageAvatar.style.borderColor = '#00FF85'; 
     } else if (tWinner === 'active') {
       mypageDesc.textContent = '낮 동안 에너지를 발산해 수면 압력을 극대화하여 깊은 수면을 유도하는 타입입니다.';
       mypageAvatar.textContent = '🔥'; 
-      mypageAvatar.style.borderColor = '#FF2E63'; // 활동 테마색
+      mypageAvatar.style.borderColor = '#FF2E63'; 
     } else {
       mypageDesc.textContent = '해질녘부터 밤까지 이어지는 빛 조절과 감각 전환에 최적화된 올빼미형 타입입니다.';
       mypageAvatar.textContent = '🌙'; 
-      mypageAvatar.style.borderColor = '#BF95FF'; // 야간 테마색
+      mypageAvatar.style.borderColor = '#BF95FF'; 
     }
   }
 }
@@ -863,8 +912,26 @@ if(resultCloseBtn) {
 
 if(resultGoCourse) {
   resultGoCourse.addEventListener('click', () => {
-    if(surveyResultModal) surveyResultModal.classList.remove('open');
-    switchTab('course');
+    const overlay = document.getElementById('result-loading-overlay');
+    
+    if (overlay) {
+      // 1. 버튼 누르면 로딩창 먼저 켜기
+      overlay.style.display = 'flex'; 
+      if (navigator.vibrate) navigator.vibrate(50); // 손맛 진동
+      
+      // 2. 1.5초(1500ms) 동안 AI가 고민하는 척 대기하기
+      setTimeout(() => {
+        overlay.style.display = 'none'; // 로딩 끄기
+        if(surveyResultModal) surveyResultModal.classList.remove('open'); // 모달 끄기
+        switchTab('course'); // 코스 탭으로 짜잔! 이동
+        window.scrollTo(0, 0); // 화면 맨 위로 끌어올리기
+      }, 1500);
+      
+    } else {
+      // 만약 에러가 나면 기존처럼 바로 넘어가게 안전망 설치
+      if(surveyResultModal) surveyResultModal.classList.remove('open');
+      switchTab('course');
+    }
   });
 }
 

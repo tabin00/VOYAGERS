@@ -136,7 +136,7 @@
             <div class="map-scroll-area" id="map-scroll-area">
               <div id="map-wrapper" style="position: relative; display: inline-flex; height: 100%; transform-origin: top left; transition: transform 0.2s ease-out;">
                 
-                <img src="map.jpg" class="real-map-img" id="real-map-img" alt="영월 지도">
+                <img src="images/map.jpg?v=999" class="real-map-img" id="real-map-img" alt="영월 지도">
                 
                 <div id="star-layer" style="position: absolute; top:0; left:0; width:100%; height:100%;">
                   
@@ -666,7 +666,7 @@
   </div>
 
   <div class="survey-modal" id="survey-result-modal">
-    <div class="survey-modal-inner">
+    <div class="survey-modal-inner" style="position: relative; overflow: hidden;">
       <div class="survey-modal-header">
         <button class="survey-modal-close" id="survey-result-close">✕</button>
         <span class="survey-modal-label">진단 완료</span>
@@ -682,6 +682,12 @@
       <div class="survey-modal-footer">
         <button class="cta-btn" id="result-go-course">코스 탭에서 맞춤 코스 확인하기</button>
         <button class="sub-btn" id="result-close-btn" style="margin-top:10px;">닫기</button>
+      </div>
+
+      <div id="result-loading-overlay" style="position:absolute; inset:0; background:var(--bg-deep); z-index:100; display:none; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
+        <div class="loading-spinner" style="width:40px; height:40px; border:4px solid rgba(255,255,255,0.1); border-top-color:var(--mint); border-radius:50%; margin-bottom:24px;"></div>
+        <h3 style="font-size:18px; font-weight:800; margin:0 0 8px;">맞춤형 코스 생성 중...</h3>
+        <p style="color:var(--text-soft); font-size:13px; line-height:1.6;">AI가 수면 데이터와<br>영월의 치유 자원을 매칭하고 있습니다.</p>
       </div>
     </div>
   </div>
@@ -713,6 +719,35 @@
       </div>
     </div>
   </div>
+  <div class="modal place-modal" id="place-detail-modal">
+  <div class="place-modal-inner">
+    <div class="place-topbar">
+      <button id="pd-back-btn" class="icon-btn" style="border:none; background:transparent;">←</button>
+      <span>장소 상세</span>
+      <button class="icon-btn" style="border:none; background:transparent; visibility:hidden;">Q</button>
+    </div>
+    <div class="place-hero-img" id="pd-image"></div>
+    <div class="place-content">
+      <div class="place-title-row">
+        <h1 id="pd-title">장소 이름</h1>
+        <span class="place-tag" id="pd-eng">Theme</span>
+        <span class="place-tag ghost" id="pd-kor">테마</span>
+      </div>
+      <p class="place-desc" id="pd-desc">설명</p>
+      <div class="place-section">
+        <h4 style="color: var(--mint);">수면 도움</h4>
+        <p id="pd-sleep">수면 도움</p>
+      </div>
+      <div class="place-section">
+        <h4 style="color: var(--mint);">추천 대상</h4>
+        <p id="pd-target">추천 대상</p>
+      </div>
+    </div>
+    <div class="place-bottom-bar">
+      <button class="cta-btn" id="pd-checkin-btn" style="background: var(--mint); color: #020a26;">방문 체크인</button>
+    </div>
+  </div>
+</div>
   <script src="script.js"></script>
 </body>
 </html>
