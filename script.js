@@ -124,7 +124,13 @@ const sheetContent = {
     items: [['저장 예정 정보', '선호 코스, 환경 민감도, 별자리 기록']], 
     primary: '마이 탭으로 이동' 
   },
-  
+  // 🌟 [새로 추가] 예약 안내 모달 데이터
+  reserve: {
+    title: '서비스 준비 중', 
+    subtitle: '다음 여정 예약 기능은 현재 고도화 단계입니다.',
+    items: [['안내', '정식 버전에서는 영월의 치유 숙소들과 실시간으로 연동되어, 본인의 수면 프로파일에 최적화된 객실을 즉시 예약할 수 있습니다.']], 
+    primary: '확인' 
+  },
   /* 1. Calm (정서 안정) */
   cheongnyeongpo: {
     title: '청령포', subtitle: '고요한 숲과 강변이 어우러진 정서 안정 포인트입니다.',
@@ -433,6 +439,15 @@ function updateRecordTab() {
 
 document.getElementById('open-record-modal').addEventListener('click', () => openSheet(sheetContent.record));
 document.getElementById('open-profile-modal').addEventListener('click', () => openSheet(sheetContent.profile));
+
+// 🌟 [여기에 추가!] 예약 버튼 클릭 시 안내 모달 띄우기
+const btnReserve = document.getElementById('reserve-next-btn');
+if (btnReserve) {
+  btnReserve.addEventListener('click', () => {
+    openSheet(sheetContent.reserve);
+  });
+}
+
 closeModalBtn.addEventListener('click', closeSheet);
 secondaryCloseBtn.addEventListener('click', closeSheet);
 modalScrim.addEventListener('click', closeSheet);
@@ -905,6 +920,42 @@ function showSurveyResultModal() {
       mypageAvatar.style.borderColor = '#BF95FF'; 
     }
   }
+  // 🌟 [새로 추가] 마이탭 '일상 수면 루틴 가이드' 동적 업데이트
+  const routineSection = document.getElementById('mypage-daily-routine');
+  const routineAction = document.getElementById('routine-action');
+  const routineEnv = document.getElementById('routine-env');
+  const routineMind = document.getElementById('routine-mind');
+
+  if (routineSection && routineAction && routineEnv && routineMind) {
+    routineSection.style.display = 'block'; // 진단 완료 시 섹션 보이기
+
+    // 1. 행동 처방 (여행 성향 기반)
+    if (tWinner === 'active') {
+      routineAction.textContent = "퇴근 후 30분 이상의 가벼운 땀나는 운동으로 '수면 압력'을 영월에서처럼 높여주세요.";
+    } else if (tWinner === 'night') {
+      routineAction.textContent = "오후 늦게 커피를 피하고, 퇴근길 노을빛을 눈에 담아 뇌에 저녁이 옴을 알려주세요.";
+    } else { // calm
+      routineAction.textContent = "점심시간이나 퇴근 후, 시각적 자극이 적은 조용한 공원이나 벤치에서 15분간 머물러 보세요.";
+    }
+
+    // 2. 환경 세팅 (환경 민감도 기반)
+    if (eWinner === 'high') {
+      routineEnv.textContent = "침실 조도를 10 lux 이하로 낮추고, 완벽한 암막 커튼과 무소음 시계를 필수적으로 세팅하세요.";
+    } else if (eWinner === 'mid') {
+      routineEnv.textContent = "수면 1시간 전부터 메인 조명을 끄고, 간접 조명(전구색)으로 방 분위기를 전환하세요.";
+    } else { // low
+      routineEnv.textContent = "환경보다는 온도가 중요합니다. 수면 의학 권장 온도인 18~21도를 유지하며 주무시는 걸 권장합니다.";
+    }
+
+    // 3. 마인드 케어 (수면 습관 기반)
+    if (sWinner === 'lack') {
+      routineMind.textContent = "수면 빚을 갚기 위해, 이번 주말에는 알람을 맞추지 않고 뇌가 원하는 만큼 충분히 자도록 허락해 주세요.";
+    } else if (sWinner === 'mid') {
+      routineMind.textContent = "중간에 깨더라도 시계를 보지 마세요. 스마트폰을 멀리 두고 일주기 리듬을 되찾는 데 집중하세요.";
+    } else { // enough
+      routineMind.textContent = "현재의 훌륭한 패턴을 유지하며, 영월에서 들었던 계곡 물소리 같은 자연 백색소음을 일상에서도 틀어보세요.";
+    }
+  }
 }
 
 if(surveyModalClose) {
@@ -1241,4 +1292,39 @@ document.addEventListener('click', function(e) {
     if (typeof switchTab === 'function') switchTab('record');
     window.scrollTo(0, 0);
   }
+});
+// --- 🌟 [새로 추가] 기록 탭: 주관적 수면 만족도 설문 로직 ---
+document.querySelectorAll('.satisfaction-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const value = this.dataset.value;
+    const msgBox = document.getElementById('satisfaction-result-msg');
+    
+    // 1. 모든 버튼 색상 초기화 (눌렸던 흔적 지우기)
+    document.querySelectorAll('.satisfaction-btn').forEach(b => {
+      b.style.background = 'rgba(0,0,0,0.2)';
+      b.style.borderColor = 'rgba(255,255,255,0.1)';
+    });
+    
+    // 2. 방금 내가 누른 버튼만 불이 들어오게 강조
+    this.style.background = 'rgba(159, 141, 255, 0.2)';
+    this.style.borderColor = 'var(--primary)';
+
+    // 3. 선택한 버튼에 따라 맞춤 피드백 메시지 띄우기 (다음 여정 멘트로 수정!)
+    msgBox.style.display = 'block';
+    if (value === 'high') {
+      msgBox.innerHTML = "✨ <b>데이터와 일치하는 완벽한 아침입니다!</b> 영월에서의 활동이 몸과 마음 모두에 긍정적인 영향을 주었네요. 하지만 다양한 데이터를 위해 다음 여정에서는 '저자극 힐링' 코스를 추천 드려요!";
+    } else if (value === 'mid') {
+      msgBox.innerHTML = "💡 <b>데이터 수치에 비해 체감도가 무난한 편이군요.</b> 다음 여정에는 객실 온도를 1도 정도 높이고 빛을 더 줄이는 식으로 수면 환경을 바꿔서 주무시는 걸 추천드려요.";
+    } else {
+      msgBox.innerHTML = "⚠️ <b>데이터는 좋지만 실제론 찌뿌둥하시군요.</b> 기계가 잡지 못한 심리적 피로가 남았을 수 있습니다. 다음 여정에는 '저자극 힐링' 위주의 코스를 경험해 보시는 걸 추천해 드릴게요.";
+    }
+
+    // 스마트폰 진동 손맛 (지원하는 기기만)
+    if (navigator.vibrate) navigator.vibrate(20);
+    
+    // 토스트 알림 띄우기
+    if (typeof showToast === 'function') {
+      showToast('주관적 만족도가 리포트에 반영되었습니다.');
+    }
+  });
 });

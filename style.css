@@ -98,7 +98,7 @@ button { font: inherit; }
   min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  /* 🌟 하단 여백을 90px에서 220px로 늘려 마지막 콘텐츠까지 잘 보이게 합니다. */
+  /* 🌟 하단 여백을 90px에서 120px로 늘려 마지막 콘텐츠까지 잘 보이게 합니다. */
   padding-bottom: calc(220px + env(safe-area-inset-bottom));
 }
 
@@ -1385,7 +1385,7 @@ button { font: inherit; }
   backdrop-filter: blur(24px) saturate(1.5);
   border-top: 1px solid rgba(255,255,255,0.08);
   
-  /* 🌟 하단 여백(Padding-Bottom)을 8px에서 50px로 늘려 탭을 위로 올립니다. */
+  /* 🌟 하단 여백(Padding-Bottom)을 8px에서 24px로 늘려 탭을 위로 올립니다. */
   /* env(safe-area-inset-bottom)은 아이폰의 홈 바 영역을 자동으로 계산해줍니다. */
   padding: 12px max(16px, env(safe-area-inset-right)) calc(50px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
 }

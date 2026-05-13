@@ -514,12 +514,24 @@
                   </div>
                 </div>
               </div>
-
+                  <div class="record-item" style="margin-top: 12px; background: rgba(255, 201, 107, 0.05); border-color: rgba(255, 201, 107, 0.2); display: block;">
+                  <strong style="color: var(--gold); margin-bottom: 8px;">실제 컨디션은 어떤가요?</strong>
+                  <p style="font-size: 12px; color: var(--text-soft); margin-bottom: 12px;">기계가 측정하지 못한 당신의 주관적인 수면 만족도를 알려주세요.</p>
+                  
+                  <div style="display: flex; gap: 8px; justify-content: space-between;">
+                    <button class="satisfaction-btn" data-value="low" style="flex:1; padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; font-size: 12px; cursor: pointer;">찌뿌둥해요 😶‍🌫️</button>
+                    <button class="satisfaction-btn" data-value="mid" style="flex:1; padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; font-size: 12px; cursor: pointer;">적당해요 🙂</button>
+                    <button class="satisfaction-btn" data-value="high" style="flex:1; padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: #fff; font-size: 12px; cursor: pointer;">개운해요! 🤩</button>
+                  </div>
+                  
+                  <div id="satisfaction-result-msg" style="margin-top: 16px; font-size: 13px; line-height: 1.5; color: var(--mint); display: none; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.1);">
+                  </div>
+                </div>
               <div style="margin-top: 20px; padding-top: 16px; border-top: 1px dashed rgba(255,255,255,0.1); text-align: center;">
                 <p style="font-size: 12px; color: var(--text-soft); line-height: 1.5; margin-bottom: 12px;">
                   치유는 한 번으로 끝나지 않습니다.<br>다음 방문 시 다른 코스와 환경을 테스트하여<br>나에게 가장 완벽한 수면 프로파일을 완성해 보세요.
                 </p>
-                <button class="ghost-btn" style="width: 100%; font-size: 13px;">다음 회차 치유 코스 예약하기</button>
+                <button class="ghost-btn" id="reserve-next-btn" style="width: 100%; font-size: 13px;">다음 회차 치유 코스 예약하기</button>
               </div>
 
             </section>
@@ -542,6 +554,37 @@
               <div class="profile-avatar" id="mypage-avatar">?</div>
               <h4 id="mypage-profile-title" style="font-size:18px; font-weight:800; color:#fff; margin-bottom:8px;">미진단 관광자</h4>
               <p id="mypage-profile-desc" style="color:var(--text-soft); font-size:13px; margin:0; line-height:1.5;">진단 탭에서 사전 설문을 완료하면 나만의 프로파일 칭호가 부여됩니다.</p>
+            </div>
+          </section>
+          <section class="section" id="mypage-daily-routine" style="display: none;">
+            <div class="section-header">
+              <h3>일상 수면 루틴 가이드</h3>
+              <p>영월에서의 회복 경험을 일상에서도 이어가세요.</p>
+            </div>
+            <div class="card plain-card" style="background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.01));">
+              <div class="trail-list" style="margin-top: 0;">
+                <div class="trail-step">
+                  <div class="step-dot" style="background: var(--primary); box-shadow: 0 0 0 4px rgba(159,141,255,0.15);"></div>
+                  <div class="step-copy">
+                    <strong style="color: #fff;">행동 처방 (낮)</strong>
+                    <span id="routine-action">진단을 완료하면 맞춤 일상 행동 가이드가 제공됩니다.</span>
+                  </div>
+                </div>
+                <div class="trail-step">
+                  <div class="step-dot" style="background: var(--gold); box-shadow: 0 0 0 4px rgba(255,201,107,0.15);"></div>
+                  <div class="step-copy">
+                    <strong style="color: #fff;">환경 세팅 (밤)</strong>
+                    <span id="routine-env">진단을 완료하면 맞춤 침실 환경 가이드가 제공됩니다.</span>
+                  </div>
+                </div>
+                <div class="trail-step">
+                  <div class="step-dot" style="background: var(--mint); box-shadow: 0 0 0 4px rgba(133,228,209,0.15);"></div>
+                  <div class="step-copy">
+                    <strong style="color: #fff;">마인드 케어 (취침 전)</strong>
+                    <span id="routine-mind">진단을 완료하면 수면 전 마인드 컨트롤 팁이 제공됩니다.</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </section>
 
